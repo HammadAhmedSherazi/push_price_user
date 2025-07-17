@@ -14,22 +14,33 @@ class CustomScreenTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomSheet: (showBottomButton ?? false)? customBottomWidget ?? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),) : null,
-      appBar:AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(title, style: context.textStyle.labelMedium),
-        elevation: 0.0,
-        // leadingWidth: 24.r,
-        leading: Padding(
-          padding: const EdgeInsets.all(14.0),
-          child: CustomBackWidget(
-            onTap: onBackCall,
-          ),
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        top: false,
+        bottom: false,
+        // maintainBottomViewPadding: true,
+        minimum: EdgeInsets.only(
+          bottom: 20.h
         ),
-
+        child: Scaffold(
+          bottomSheet: (showBottomButton ?? false)? customBottomWidget ?? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),) : null,
+          appBar:AppBar(
+            backgroundColor: Colors.transparent,
+            title: Text(title, style: context.textStyle.labelMedium),
+            elevation: 0.0,
+            // leadingWidth: 24.r,
+            leading: Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: CustomBackWidget(
+                onTap: onBackCall,
+              ),
+            ),
+        
+          ),
+          body: child,
+        ),
       ),
-      body: child,
     );
   }
 }

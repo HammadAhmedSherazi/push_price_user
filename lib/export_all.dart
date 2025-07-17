@@ -4,11 +4,18 @@ export 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:flutter/material.dart';
+export 'dart:math';
+
+
+
 
 //VIEWS
 export 'views/onboarding/onboarding_view.dart';
 export 'views/onboarding/select_language_view.dart';
 export 'views/onboarding/tutorial_view.dart';
+export './views/auth/login_view.dart';
+export './views/auth/signup_view.dart';
+export './views/auth/create_profile_view.dart';
 
 
 
@@ -18,6 +25,7 @@ export './widget/app_logo_widget.dart';
 export './widget/custom_button_widget.dart';
 export './widget/custom_back_widget.dart';
 export './widget/custom_screen_template.dart';
+export './widget/custom_circular_timer_widget.dart';
 
 
 

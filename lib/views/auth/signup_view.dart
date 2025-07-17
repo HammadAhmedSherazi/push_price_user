@@ -1,29 +1,32 @@
-import 'package:push_price_user/export_all.dart';
-import 'package:push_price_user/utils/extension.dart';
 import 'package:flutter/gestures.dart';
-import 'package:push_price_user/views/auth/forgot_password_view.dart';
+import 'package:push_price_user/utils/extension.dart';
+import 'package:push_price_user/views/auth/otp_view.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+import '../../export_all.dart';
+
+class SignUpView extends StatefulWidget {
+  const SignUpView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<SignUpView> createState() => _SignUpViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignUpViewState extends State<SignUpView> {
   late final TextEditingController emailTextController;
   late final TextEditingController passwordTextController;
+  late final TextEditingController confirmPasswordTextController;
 
   @override
   void initState() {
     emailTextController = TextEditingController();
     passwordTextController = TextEditingController();
+    confirmPasswordTextController = TextEditingController();
     super.initState();
   }
 
   bool showPass = true;
+  bool showConfirmPass = true;
   bool rememberMeCheck = false;
-
   @override
   Widget build(BuildContext context) {
     return AuthScreenTemplateWidget(
@@ -40,15 +43,15 @@ class _LoginViewState extends State<LoginView> {
                 style: context.textStyle.bodyMedium!,
 
                 children: [
-                  TextSpan(text: "Don't have an account?"),
+                  TextSpan(text: "You Already Have An Account?"),
                   TextSpan(
-                    text: " Sign Un",
+                    text: " Sign In",
                     style: context.textStyle.bodyMedium!.copyWith(
                       color: context.colors.primary,
                     ),
                     recognizer: TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.pushReplacement(SignUpView());
+           AppRouter.pushReplacement(LoginView());
           },
                   ),
                 ],
@@ -77,8 +80,7 @@ class _LoginViewState extends State<LoginView> {
           ],
         ),
       ),
-      
-      title: "Sign In",
+      title: "Sign Up",
       childrens: [
         TextFormField(
           controller: emailTextController,
@@ -117,41 +119,39 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
         ),
-        // 10.ph,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Transform.scale(
-              scale: 0.8,
-              child: Switch.adaptive(
-                padding: EdgeInsets.zero,
+        10.ph,
+        TextFormField(
+          controller: passwordTextController,
+          obscureText: showConfirmPass,
 
-                activeColor: AppColors.primaryColor,
-                value: rememberMeCheck,
-                onChanged: (value) {
-                  rememberMeCheck = value;
-                  setState(() {});
-                },
-              ),
-            ),
-            Text("Remember Me", style: context.textStyle.displayMedium),
-            Spacer(),
-            TextButton(
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.lock, color: AppColors.secondaryColor),
+
+            labelText: "Confirm Password",
+            hintText: "Enter Confirm Password",
+
+            suffixIcon: IconButton(
               onPressed: () {
-                AppRouter.push(ForgotPasswordView());
+                setState(() {
+                  showConfirmPass = !showConfirmPass;
+                });
               },
-              child: Text(
-                "Forgot Password?",
-                style: context.textStyle.displayMedium!.copyWith(
-                  color: context.colors.primary,
-                ),
+              icon: Icon(
+                showPass ? Icons.visibility : Icons.visibility_off,
+                color: AppColors.secondaryColor,
               ),
             ),
-          ],
+          ),
         ),
+        // 10.ph,
+        
         20.ph,
-        CustomButtonWidget(title: "login", onPressed: () {}),
-      ],
-    );
+        CustomButtonWidget(title: "sign up", onPressed: () {
+          AppRouter.push(OtpView(
+            isSignup: true,
+          ));
+        }),
+      ],);
+
   }
 }

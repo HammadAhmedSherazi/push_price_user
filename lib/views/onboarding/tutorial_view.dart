@@ -1,7 +1,4 @@
 import 'package:push_price_user/utils/extension.dart';
-import 'package:push_price_user/views/auth/login_view.dart';
-
-
 import '../../export_all.dart';
 
 class TutorialView extends StatefulWidget {
