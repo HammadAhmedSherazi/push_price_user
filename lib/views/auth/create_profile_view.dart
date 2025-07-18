@@ -30,6 +30,10 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         horizontal: AppTheme.horizontalPadding
       ),
       children: [
+        Center(
+          child: ProfileImageChanger(),
+        ),
+        20.ph,
         TextFormField(
           controller: nameTextController,
           decoration: InputDecoration(
@@ -48,14 +52,16 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         10.ph,
         TextFormField(
           controller: phoneTextController,
+          keyboardType: TextInputType.phone,
           decoration: InputDecoration(
+            
             labelText: "Phone Number",
             hintText: "Enter Phone Number"
           ),
         ),
         10.ph,
         TextFormField(
-          controller: nameTextController,
+          controller: emailTextController,
           decoration: InputDecoration(
             labelText: "Email Address",
             hintText: "Enter Email"

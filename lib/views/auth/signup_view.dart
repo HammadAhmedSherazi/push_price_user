@@ -121,7 +121,7 @@ class _SignUpViewState extends State<SignUpView> {
         ),
         10.ph,
         TextFormField(
-          controller: passwordTextController,
+          controller: confirmPasswordTextController,
           obscureText: showConfirmPass,
 
           decoration: InputDecoration(

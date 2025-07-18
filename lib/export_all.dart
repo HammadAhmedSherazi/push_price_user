@@ -4,6 +4,7 @@ export 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:flutter/material.dart';
+export 'package:image_picker/image_picker.dart';
 export 'dart:math';
 
 
@@ -26,6 +27,8 @@ export './widget/custom_button_widget.dart';
 export './widget/custom_back_widget.dart';
 export './widget/custom_screen_template.dart';
 export './widget/custom_circular_timer_widget.dart';
+export './widget/user_profile_widget.dart';
+export './widget/profile_image_changer_widger.dart';
 
 
 

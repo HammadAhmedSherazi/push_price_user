@@ -24,8 +24,10 @@ class CustomScreenTemplate extends StatelessWidget {
           bottom: 20.h
         ),
         child: Scaffold(
-          bottomSheet: (showBottomButton ?? false)? customBottomWidget ?? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),) : null,
+          // bottomSheet: (showBottomButton ?? false)? customBottomWidget ?? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),) : null,
+          
           appBar:AppBar(
+            centerTitle: true,
             backgroundColor: Colors.transparent,
             title: Text(title, style: context.textStyle.labelMedium),
             elevation: 0.0,
@@ -38,7 +40,19 @@ class CustomScreenTemplate extends StatelessWidget {
             ),
         
           ),
-          body: child,
+          body: Column(
+            children: [
+              Expanded(child: child),
+              20.ph,
+              if( showBottomButton ?? false)...[
+                customBottomWidget ?? Padding(padding: EdgeInsets.symmetric(
+                  horizontal: AppTheme.horizontalPadding
+                ), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),)
+              ],
+              
+         
+            ],
+          ),
         ),
       ),
     );

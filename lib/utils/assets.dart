@@ -11,6 +11,11 @@ abstract class  Assets {
   static const String mailIcon = "${iconPath}mail_icon.svg";
   static const String passLockIcon = "${iconPath}pass_lock_icon.svg";
   static const String hiddenIcon = "${iconPath}hidden_icon.svg";
+  static const String userAvatar = "${imagePath}user_avatar.webp";
+    //Product Placeholder Image
+  static const String placeholderImage = '${imagePath}placeholder_image.webp';
+
+
 
 
 

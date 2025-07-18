@@ -227,6 +227,7 @@ class AppTheme {
     //     .copyWith(fontSize: 16.sp, color: Colors.black.withValues(0.3)),
     errorMaxLines: 3,
     filled: true,
+    floatingLabelBehavior: FloatingLabelBehavior.always,
     fillColor: Colors.transparent,
     labelStyle: TextStyle().copyWith(
       color: AppColors.primaryTextColor
@@ -257,7 +258,7 @@ class AppTheme {
         fontSize: 16.sp,
         color: Colors.white.withValues(alpha: 0.3),
         fontWeight: FontWeight.w400),
-
+  floatingLabelBehavior: FloatingLabelBehavior.always,
     focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10.r),
         borderSide: const BorderSide(color: Colors.white, width: 1)),

@@ -21,7 +21,8 @@ class AuthScreenTemplateWidget extends StatelessWidget {
           child: AppLogoWidget(),
         ),
         30.ph,
-        ...childrens
+        ...childrens,
+       
       ],
     ),);
   }
