@@ -26,6 +26,7 @@ class _TutorialViewState extends State<TutorialView> {
             decoration: BoxDecoration(
               color: Color(0xff353535)
             ),
+            child: Image.asset(Assets.tutorilaGif),
           ),
           Padding(padding: EdgeInsetsGeometry.all(20), child: Text("Lorem ipsum dolor sit amet consectetur adipiscing elit odio, mattis quam tortor taciti aenean luctus nullam enim, dui praesent ad dapibus tempus natoque a. Rh", textAlign: TextAlign.center ,style: context.textStyle.titleMedium ,),)
         ],

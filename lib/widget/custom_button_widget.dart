@@ -100,7 +100,7 @@ class CustomOutlineButtonWidget extends StatelessWidget {
               elevation: const WidgetStatePropertyAll(0.0),
               alignment: Alignment.center,
               side: WidgetStatePropertyAll(
-                  BorderSide(color: outlineColor ?? context.colors.primary)),
+                  BorderSide(color: outlineColor ?? AppColors.borderColor)),
               shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32.r))),
               backgroundColor:
@@ -110,9 +110,9 @@ class CustomOutlineButtonWidget extends StatelessWidget {
               ? child ??
                   (!isLoad
                       ? Text( 
-                          title,
+                          title.toUpperCase(),
                           style: context.textStyle.labelMedium!.copyWith(
-                              color: textColor ?? AppColors.primaryColor,
+                              color: textColor ?? AppColors.primaryTextColor,
                               ),
                         )
                       : CircularProgressIndicator.adaptive(

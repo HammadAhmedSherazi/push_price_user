@@ -16,8 +16,11 @@ export 'views/onboarding/select_language_view.dart';
 export 'views/onboarding/tutorial_view.dart';
 export './views/auth/login_view.dart';
 export './views/auth/signup_view.dart';
+export './views/auth/forgot_password_view.dart';
 export './views/auth/create_profile_view.dart';
-
+export './views/subscription/subscription_plan_view.dart';
+export './views/subscription/my_subscription_plan_view.dart';
+export './views/home/home_view.dart';
 
 
 //WIDGETS
@@ -29,10 +32,12 @@ export './widget/custom_screen_template.dart';
 export './widget/custom_circular_timer_widget.dart';
 export './widget/user_profile_widget.dart';
 export './widget/profile_image_changer_widger.dart';
-
+export './widget/custom_search_bar_widget.dart';
+export './widget/display_network_image.dart';
 
 
 //MODELS
+export './models/category_data_model.dart';
 
 
 

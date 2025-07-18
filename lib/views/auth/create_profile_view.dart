@@ -1,5 +1,6 @@
 import 'package:push_price_user/utils/extension.dart';
 
+
 import '../../export_all.dart';
 
 class CreateProfileView extends StatefulWidget {
@@ -25,7 +26,11 @@ class _CreateProfileViewState extends State<CreateProfileView> {
   }
   @override
   Widget build(BuildContext context) {
-    return CustomScreenTemplate(title: "Create Profile", showBottomButton: true, bottomButtonText: "continue", child: ListView(
+    return CustomScreenTemplate(
+      onButtonTap: (){
+        AppRouter.push(HomeView());
+      },
+      title: "Create Profile", showBottomButton: true, bottomButtonText: "continue", child: ListView(
       padding: EdgeInsets.symmetric(
         horizontal: AppTheme.horizontalPadding
       ),

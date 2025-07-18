@@ -2,11 +2,17 @@ abstract class  Assets {
 
   static const String imagePath = "assets/images/";
   static const String iconPath = "assets/icons/";
+  static const String gifPath = "assets/gifs/";
+
+  static const String tutorilaGif= "$gifPath/tutorial.gif";
 
   static const String logo = "${imagePath}logo.png";
   static const String onBoardingImage = "${imagePath}onboarding_image.png";
   static const String engFlagIcon = "${imagePath}eng_flag.png";
   static const String spainFlagIcon = "${imagePath}spain_flag.png";
+  static const String dollarSquareIcon = "${iconPath}dollar_square_icon.svg";
+  static const String forwardIcon = "${iconPath}forward_icon.svg";
+  static const String filterIcon = "${iconPath}filter_icon.svg";
 
   static const String mailIcon = "${iconPath}mail_icon.svg";
   static const String passLockIcon = "${iconPath}pass_lock_icon.svg";
@@ -14,6 +20,25 @@ abstract class  Assets {
   static const String userAvatar = "${imagePath}user_avatar.webp";
     //Product Placeholder Image
   static const String placeholderImage = '${imagePath}placeholder_image.webp';
+
+  static const String discountIcon = "${iconPath}discount_icon.svg";
+  static const String travelDiscountIcon = "${iconPath}travel_discount_icon.png";
+  static const String notificationAlertIcon = "${iconPath}notification_alert_icon.svg";
+
+  static const String menuNavIcon = "${iconPath}menu_nav_icon.svg";
+  static const String locationIcon = "${iconPath}location_icon.svg";
+  static const String notificationIcon = "${iconPath}notification_icon.svg";
+  static const String addCartIcon = "${iconPath}add_cart_icon.svg";
+  static const String searchIcon = "${iconPath}search_icon.svg";
+
+  static const String specialDiscountBanner = "assets/images/special_banner_image.png";
+
+  static const String fruits = "${imagePath}fruits.png";
+  static const String vegetable = "${imagePath}vegetable.png";
+  static const String meat = "${imagePath}meat.png";
+  static const String seaFood = "${imagePath}sea_food.png";
+  static const String grocery = "${imagePath}grocery.png";
+  static const String store = "${imagePath}store.png";
 
 
 

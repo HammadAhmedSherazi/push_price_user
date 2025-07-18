@@ -1,7 +1,7 @@
-import 'package:push_price_user/export_all.dart';
-import 'package:push_price_user/utils/extension.dart';
 import 'package:flutter/gestures.dart';
-import 'package:push_price_user/views/auth/forgot_password_view.dart';
+import 'package:push_price_user/utils/extension.dart';
+
+import '../../export_all.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -42,7 +42,7 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   TextSpan(text: "Don't have an account?"),
                   TextSpan(
-                    text: " Sign Un",
+                    text: " Sign Up",
                     style: context.textStyle.bodyMedium!.copyWith(
                       color: context.colors.primary,
                     ),
@@ -150,7 +150,9 @@ class _LoginViewState extends State<LoginView> {
           ],
         ),
         20.ph,
-        CustomButtonWidget(title: "login", onPressed: () {}),
+        CustomButtonWidget(title: "login", onPressed: () {
+          AppRouter.push(HomeView());
+        }),
       ],
     );
   }
