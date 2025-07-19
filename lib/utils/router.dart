@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppRouter {
   static GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<ScaffoldState> scaffoldkey = GlobalKey();
 
   static void back() {
     Navigator.of(navKey.currentContext!).pop();

@@ -9,8 +9,9 @@ class CustomScreenTemplate extends StatelessWidget {
   final String ? bottomButtonText;
   final Widget ? customBottomWidget;
   final VoidCallback ? onButtonTap;
+  final Widget? actionWidget;
   final Widget child;
-  const CustomScreenTemplate({super.key, required this.title, this.bottomButtonText, this.customBottomWidget, this.showBottomButton = false, this.onBackCall, this.onButtonTap, required this.child});
+  const CustomScreenTemplate({super.key, required this.title, this.bottomButtonText, this.customBottomWidget, this.showBottomButton = false, this.onBackCall, this.onButtonTap, required this.child, this.actionWidget});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,7 @@ class CustomScreenTemplate extends StatelessWidget {
                 onTap: onBackCall,
               ),
             ),
+            actions: actionWidget != null ? [actionWidget!] : null,
         
           ),
           body: Column(

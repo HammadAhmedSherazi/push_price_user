@@ -77,7 +77,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
       clipBehavior: Clip.none,
       children: [
 
-        Container(
+      _selectedImage == null ?  Container(
           height: 108.r,
           width: 108.r,
           decoration: BoxDecoration(
@@ -87,15 +87,15 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
               color: AppColors.borderColor,
             ),
             color: AppColors.secondaryColor,
-            image: _selectedImage != null? DecorationImage(
+            image:  DecorationImage(
               fit: BoxFit.cover,
               
-              image: FileImage(_selectedImage!) as ImageProvider
+              image: _selectedImage != null? FileImage(_selectedImage!) as ImageProvider : AssetImage(Assets.userAvatar)
                      ,
-            ) : null,
+            ) ,
           ),
-          child: _selectedImage == null ?  UserProfileWidget(radius: 50.r, imageUrl: widget.profileUrl ?? "") : null,
-        ) ,
+          
+        ) : UserProfileWidget(radius: 50.r, imageUrl: widget.profileUrl ?? ""),
         
         Positioned(
           bottom: 0,

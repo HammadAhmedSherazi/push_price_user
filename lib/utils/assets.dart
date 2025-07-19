@@ -40,6 +40,27 @@ abstract class  Assets {
   static const String grocery = "${imagePath}grocery.png";
   static const String store = "${imagePath}store.png";
 
+  static const String home = "${iconPath}home.svg";
+  static const String heart = "${iconPath}heart.svg";
+  static const String profile = "${iconPath}user.svg";
+  static const String explore = "${iconPath}explore.svg";
+
+  static const String menuFavouritIcon = "${iconPath}menu_favourite_icon.svg";
+  static const String menuLocationIcon = "${iconPath}menu_location_icon.svg";
+  static const String menuDollarSquareIcon = "${iconPath}menu_dollar_square_icon.svg";
+  static const String menuMyorderIcon = "${iconPath}menu_myorder_icon.svg";
+  static const String menuSettingIcon = "${iconPath}menu_setting_icon.svg";
+  static const String menuPaymentIcon = "${iconPath}menu_payment_icon.svg";
+  static const String menuHelpIcon = "${iconPath}menu_help_icon.svg";
+  static const String menuVoucherIcon = "${iconPath}menu_voucher_icon.svg";
+
+  static const String groceryBag = "${imagePath}grocery_bag.png";
+
+  static const String menuScanBarIcon = "${iconPath}menu_scan_bar_icon.svg";
+  static const String scanIcon = "${iconPath}scan_icon.svg";
+  static const String barCodeScanIcon = "${iconPath}bar_code_scan_icon.svg" ;
+
+
 
 
 

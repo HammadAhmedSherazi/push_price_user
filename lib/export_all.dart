@@ -20,7 +20,14 @@ export './views/auth/forgot_password_view.dart';
 export './views/auth/create_profile_view.dart';
 export './views/subscription/subscription_plan_view.dart';
 export './views/subscription/my_subscription_plan_view.dart';
-export './views/home/home_view.dart';
+export 'views/home/home_view.dart';
+export 'views/explore/explore_view.dart';
+export 'views/favorites/favourite_view.dart';
+export 'views/profile/profile_view.dart';
+export './views/navigation/navigation_view.dart';
+export './views/favorites/add_new_favorite_view.dart';
+export 'views/favorites/scan_view.dart';
+export './views/favorites/scan_product_view.dart';
 
 
 //WIDGETS
@@ -34,10 +41,15 @@ export './widget/user_profile_widget.dart';
 export './widget/profile_image_changer_widger.dart';
 export './widget/custom_search_bar_widget.dart';
 export './widget/display_network_image.dart';
+export './widget/bottom_nav_bar_widget.dart';
+export './widget/custom_app_bar_widget.dart';
 
 
 //MODELS
 export './models/category_data_model.dart';
+export './models/bottom_data_model.dart';
+export './models/menu_data_model.dart';
+export './models/product_data_model.dart';
 
 
 

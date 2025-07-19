@@ -7,15 +7,26 @@ class UserProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(imageUrl: imageUrl,imageBuilder: (context, imageProvider) => CircleAvatar(
-      radius: radius,
-      backgroundImage: imageProvider,
-    ), placeholder: (context, url) => CircleAvatar(
-      radius: radius,
-      backgroundImage: const AssetImage(Assets.userAvatar),
-    ), errorWidget: (context, url, error) => CircleAvatar(
-      radius: radius,
-      backgroundImage: const AssetImage(Assets.userAvatar),
-    ),);
+    return Container(
+      decoration:BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              width: 5,
+              color: AppColors.borderColor,
+            ),
+            color: AppColors.secondaryColor,
+            
+          ),
+      child: CachedNetworkImage(imageUrl: imageUrl,imageBuilder: (context, imageProvider) => CircleAvatar(
+        radius: radius,
+        backgroundImage: imageProvider,
+      ), placeholder: (context, url) => CircleAvatar(
+        radius: radius,
+        backgroundImage: const AssetImage(Assets.userAvatar),
+      ), errorWidget: (context, url, error) => CircleAvatar(
+        radius: radius,
+        backgroundImage: const AssetImage(Assets.userAvatar),
+      ),),
+    );
   }
 }

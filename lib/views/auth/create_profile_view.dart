@@ -28,7 +28,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
       onButtonTap: (){
-        AppRouter.push(HomeView());
+        AppRouter.push(NavigationView());
       },
       title: "Create Profile", showBottomButton: true, bottomButtonText: "continue", child: ListView(
       padding: EdgeInsets.symmetric(

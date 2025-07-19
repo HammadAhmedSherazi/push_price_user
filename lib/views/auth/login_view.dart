@@ -151,7 +151,7 @@ class _LoginViewState extends State<LoginView> {
         ),
         20.ph,
         CustomButtonWidget(title: "login", onPressed: () {
-          AppRouter.push(HomeView());
+          AppRouter.push(NavigationView());
         }),
       ],
     );
