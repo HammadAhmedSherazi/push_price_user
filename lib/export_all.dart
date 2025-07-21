@@ -25,9 +25,18 @@ export 'views/explore/explore_view.dart';
 export 'views/favorites/favourite_view.dart';
 export 'views/profile/profile_view.dart';
 export './views/navigation/navigation_view.dart';
-export './views/favorites/add_new_favorite_view.dart';
+export 'views/favorites/search_product_view.dart';
 export 'views/favorites/scan_view.dart';
 export './views/favorites/scan_product_view.dart';
+export './views/my_order/my_order_view.dart';
+export './views/my_order/order_detail_view.dart';
+export './views/my_order/modify_order_view.dart';
+export './views/my_order/order_success_modified_view.dart';
+export './views/my_locations/my_location_view.dart';
+export './views/voucher/voucher_view.dart';
+export './views/payment/my_payment_method_view.dart';
+export './views/payment/select_payment_method_view.dart';
+export './views/payment/store_code_view.dart';
 
 
 //WIDGETS
@@ -43,6 +52,7 @@ export './widget/custom_search_bar_widget.dart';
 export './widget/display_network_image.dart';
 export './widget/bottom_nav_bar_widget.dart';
 export './widget/custom_app_bar_widget.dart';
+export './widget/custom_tab_bar_widget.dart';
 
 
 //MODELS

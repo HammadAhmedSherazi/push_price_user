@@ -23,3 +23,25 @@ extension ThemeExtension on BuildContext {
   double get screenwidth => MediaQuery.of(this).size.width;
   double get screenheight => MediaQuery.of(this).size.height;
 }
+
+enum OrderStatus {
+  inProcess,
+  completed,
+  cancelled,
+}
+
+setCardIcon(String type){
+  switch (type) {
+    case "visa":
+      return Assets.visaIcon;
+    case "master":
+      return Assets.masterCardIcon;
+    case "apple pay":
+      return Assets.applePayIcon;
+    case "paypal":
+      return Assets.paypalIcon;
+    default:
+      return Assets.masterCardIcon;
+  }
+  
+}

@@ -59,6 +59,16 @@ abstract class  Assets {
   static const String menuScanBarIcon = "${iconPath}menu_scan_bar_icon.svg";
   static const String scanIcon = "${iconPath}scan_icon.svg";
   static const String barCodeScanIcon = "${iconPath}bar_code_scan_icon.svg" ;
+  static const String checkCircleIcon = "${iconPath}check_circle_icon.svg" ;
+  static const String plusSquareIcon = "${iconPath}plus_square_icon.svg";
+  static const String minusSquareIcon = "${iconPath}minus_square_icon.svg";
+  
+  static const String visaIcon = "${iconPath}visa_icon.svg";
+  static const String masterCardIcon = "${iconPath}master_card_icon.svg";
+  static const String applePayIcon = "${iconPath}apple_pay_icon.svg";
+  static const String paypalIcon = "${iconPath}paypal_icon.svg";
+
+  static const String userImage = "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D";
 
 
 

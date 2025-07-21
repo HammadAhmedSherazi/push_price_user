@@ -1,10 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="push_price_user"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
+            android:allowBackup = "false"
+            android:fullBackupContent = "false"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""

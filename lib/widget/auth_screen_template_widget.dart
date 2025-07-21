@@ -6,12 +6,15 @@ class AuthScreenTemplateWidget extends StatelessWidget {
   final String title;
   final List<Widget> childrens;
   final Widget? bottomWidget;
+  final VoidCallback ? onBackTap;
   
-  const AuthScreenTemplateWidget({super.key, required this.title, this.bottomWidget, required this.childrens});
+  const AuthScreenTemplateWidget({super.key, required this.title, this.bottomWidget, required this.childrens, this.onBackTap});
 
   @override
   Widget build(BuildContext context) {
-    return CustomScreenTemplate(title: title, showBottomButton: bottomWidget != null, customBottomWidget: bottomWidget, child: ListView(
+    return CustomScreenTemplate(
+      onBackCall: onBackTap,
+      title: title, showBottomButton: bottomWidget != null, customBottomWidget: bottomWidget, child: ListView(
       padding: EdgeInsets.symmetric(
         horizontal: AppTheme.horizontalPadding,
         vertical: 20.r

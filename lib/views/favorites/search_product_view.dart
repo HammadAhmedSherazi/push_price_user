@@ -2,14 +2,14 @@ import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
 
-class AddNewFavoriteView extends StatefulWidget {
-  const AddNewFavoriteView({super.key});
+class SearchProductView extends StatefulWidget {
+  const SearchProductView({super.key});
 
   @override
-  State<AddNewFavoriteView> createState() => _AddNewFavoriteViewState();
+  State<SearchProductView> createState() => _SearchProductViewState();
 }
 
-class _AddNewFavoriteViewState extends State<AddNewFavoriteView> {
+class _SearchProductViewState extends State<SearchProductView> {
    addFavoriteProduct(int index){
     final product = products[index];
     products[index] = product.copyWith(isSelect: !product.isSelect);

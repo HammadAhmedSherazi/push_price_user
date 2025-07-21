@@ -27,6 +27,9 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return AuthScreenTemplateWidget(
+      onBackTap: (){
+        AppRouter.pushAndRemoveUntil(OnboardingView());
+      },
       bottomWidget: SizedBox(
         width: double.infinity,
         child: Column(
@@ -79,6 +82,7 @@ class _LoginViewState extends State<LoginView> {
       ),
       
       title: "Sign In",
+      
       childrens: [
         TextFormField(
           controller: emailTextController,

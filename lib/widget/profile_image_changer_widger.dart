@@ -3,10 +3,10 @@ import 'dart:io';
 import '../export_all.dart';
 
 class ProfileImageChanger extends StatefulWidget {
-  final String? profileUrl;
+   String? profileUrl;
   final void Function(File file)? onImageSelected;
 
-  const ProfileImageChanger({super.key, this.onImageSelected, this.profileUrl});
+  ProfileImageChanger({super.key, this.onImageSelected, this.profileUrl});
 
   @override
   State<ProfileImageChanger> createState() => _ProfileImageChangerState();
@@ -66,6 +66,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
       final imageFile = File(picked.path);
       setState(() {
         _selectedImage = imageFile;
+        widget.profileUrl = null;
       });
       widget.onImageSelected?.call(imageFile);
     }
@@ -77,7 +78,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
       clipBehavior: Clip.none,
       children: [
 
-      _selectedImage == null ?  Container(
+      widget.profileUrl == null ?  Container(
           height: 108.r,
           width: 108.r,
           decoration: BoxDecoration(

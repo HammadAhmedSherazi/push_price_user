@@ -15,6 +15,7 @@ class _SelectLanguageViewState extends State<SelectLanguageView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         title: Text("Languages", style: context.textStyle.labelMedium),

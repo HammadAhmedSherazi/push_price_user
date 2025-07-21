@@ -271,4 +271,12 @@ class AppTheme {
   );
 
   static double get horizontalPadding => 20.r;
+
+  static BoxDecoration boxDecoration =  BoxDecoration(
+            color: Color.fromRGBO(251, 251, 251, 1),
+            border: Border.all(
+              color: AppColors.borderColor
+            ),
+            borderRadius: BorderRadius.circular(8.r)
+          );
 }

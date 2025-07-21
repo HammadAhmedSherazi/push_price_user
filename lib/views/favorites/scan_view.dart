@@ -10,6 +10,10 @@ class ScanView extends StatelessWidget {
       title: "Barcode",
       showBottomButton: true,
       bottomButtonText: "scan now",
+      onButtonTap: (){
+        AppRouter.push(ScanProductView());
+      },
+      
       child: ListView(
         padding: EdgeInsets.all(AppTheme.horizontalPadding), children: [
           Container(

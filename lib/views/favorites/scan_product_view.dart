@@ -1,4 +1,5 @@
 import 'package:push_price_user/utils/extension.dart';
+import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../export_all.dart';
 
@@ -58,7 +59,9 @@ class ScanProductView extends StatelessWidget {
                   ],
                 ),
                 5.ph,
-                CustomButtonWidget(title: "select product", onPressed: (){})
+                CustomButtonWidget(title: "select product", onPressed: (){
+                  AppRouter.push(AddNewFavouriteView());
+                })
               ],
             ),
           )
@@ -75,15 +78,15 @@ class DottedLinePainter extends CustomPainter {
 
   DottedLinePainter({
     this.color = Colors.black,
-    this.dashWidth = 5,
-    this.dashSpace = 3,
+    this.dashWidth = 3,
+    this.dashSpace = 2,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1;
+      ..strokeWidth = 0.5;
 
     double startX = 0;
     while (startX < size.width) {

@@ -32,7 +32,7 @@ class _FavouriteViewState extends State<FavouriteView> {
                 }, separatorBuilder: (context, index)=> 10.ph, itemCount: products.length),
             ),
             Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "add new favorite", onPressed: (){
-              AppRouter.push(AddNewFavoriteView());
+              AppRouter.push(SearchProductView());
             }),)
           ],
         ),

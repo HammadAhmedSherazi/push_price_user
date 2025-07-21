@@ -4,7 +4,8 @@ import 'package:push_price_user/utils/extension.dart';
 import '../../export_all.dart';
 
 class CreateProfileView extends StatefulWidget {
-  const CreateProfileView({super.key});
+  final bool? isEdit;
+  const CreateProfileView({super.key, this.isEdit = false});
 
   @override
   State<CreateProfileView> createState() => _CreateProfileViewState();
@@ -18,25 +19,33 @@ class _CreateProfileViewState extends State<CreateProfileView> {
 
   @override
   void initState() {
-    nameTextController = TextEditingController();
-    addressTextController = TextEditingController();
-    phoneTextController = TextEditingController();
-    emailTextController = TextEditingController();
+    nameTextController = TextEditingController(text: widget.isEdit! ?"John Smith" : null);
+    addressTextController = TextEditingController( text: widget.isEdit! ?"Abc street, Lorem Ipsum" : null);
+    phoneTextController = TextEditingController(text: widget.isEdit! ?"00000000" : null);
+    emailTextController = TextEditingController(text: widget.isEdit! ?"Abc@domain.com" : null);
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
       onButtonTap: (){
-        AppRouter.push(NavigationView());
+        if(widget.isEdit!){
+          AppRouter.back();
+        }
+        else{
+        AppRouter.push(SubscriptionPlanView(isPro: true,));
+
+        }
       },
-      title: "Create Profile", showBottomButton: true, bottomButtonText: "continue", child: ListView(
+      title: widget.isEdit!? "Edit Profile": "Create Profile", showBottomButton: true, bottomButtonText: widget.isEdit!?"save" :"continue", child: ListView(
       padding: EdgeInsets.symmetric(
         horizontal: AppTheme.horizontalPadding
       ),
       children: [
         Center(
-          child: ProfileImageChanger(),
+          child: ProfileImageChanger(
+            profileUrl: Assets.userImage ,
+          ),
         ),
         20.ph,
         TextFormField(

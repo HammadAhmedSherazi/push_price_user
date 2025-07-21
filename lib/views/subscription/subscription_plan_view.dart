@@ -20,13 +20,17 @@ class SubscriptionPlanView extends StatelessWidget {
                   Expanded(
                     child: CustomButtonWidget(
                       title: "subscribe",
-                      onPressed: () {},
+                      onPressed: () {
+                        AppRouter.pushAndRemoveUntil(NavigationView());
+                      },
                     ),
                   ),
                   Expanded(
                     child: CustomOutlineButtonWidget(
                       title: "not now",
-                      onPressed: () {},
+                      onPressed: () {
+                        AppRouter.push(SubscriptionPlanView());
+                      },
                     ),
                   ),
                 ],
@@ -36,7 +40,7 @@ class SubscriptionPlanView extends StatelessWidget {
       showBottomButton: true,
       bottomButtonText: "next",
       onButtonTap: () {
-        AppRouter.push(MySubscriptionPlanView());
+        AppRouter.pushAndRemoveUntil(NavigationView());
       },
       title: "Subscription",
       child: ListView(
@@ -58,7 +62,7 @@ class SubscriptionPlanView extends StatelessWidget {
             ),
             child: Text(
               isPro!
-                  ? "People usually save 3x of subscription  fees"
+                  ? "People usually save 3x of subscription fees"
                   : "People usually save 30% on grocery",
               textAlign: TextAlign.center,
               style: context.textStyle.displayLarge!.copyWith(

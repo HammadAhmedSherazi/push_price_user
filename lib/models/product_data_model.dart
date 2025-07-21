@@ -2,8 +2,9 @@ class ProductDataModel {
   late final String title;
   late final String description;
   late final String image;
+  late final double ? price;
   
-  ProductDataModel({required this.title, required this.description, required this.image});
+  ProductDataModel({required this.title, required this.description, required this.image, this.price});
 }
 
 class ProductSelectionDataModel extends ProductDataModel {
@@ -14,6 +15,7 @@ class ProductSelectionDataModel extends ProductDataModel {
     required super.description,
     required super.image,
     required this.isSelect,
+    
   });
 
   ProductSelectionDataModel copyWith({
