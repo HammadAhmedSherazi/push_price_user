@@ -13,78 +13,41 @@ class _NewPasswordViewState extends State<NewPasswordView> {
   late final TextEditingController passwordTextController;
   late final TextEditingController confirmPasswordTextController;
 
-   @override
+  @override
   void initState() {
     passwordTextController = TextEditingController();
     confirmPasswordTextController = TextEditingController();
     super.initState();
   }
-  bool showPass = true;
-  bool showConfirmPass = true;
+
   @override
   Widget build(BuildContext context) {
     return AuthScreenTemplateWidget(
-       title: "Forgot Password",
+      title: "Forgot Password",
       childrens: [
-        
-        TextFormField(
+        GenericPasswordTextField(
           controller: passwordTextController,
-          obscureText: showPass,
 
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.lock, color: AppColors.secondaryColor),
-
-            labelText: "Password",
-            hintText: "Enter Password",
-
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  showPass = !showPass;
-                });
-              },
-              icon: Icon(
-                showPass ? Icons.visibility : Icons.visibility_off,
-                color: AppColors.secondaryColor,
-              ),
-            ),
-          ),
+          label: "Password",
+          hint: "Enter Password",
         ),
         10.ph,
-        TextFormField(
+        GenericPasswordTextField(
           controller: confirmPasswordTextController,
-          obscureText: showConfirmPass,
 
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.lock, color: AppColors.secondaryColor),
-
-            labelText: "Confirm Password",
-            hintText: "Enter Confirm Password",
-
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  showConfirmPass = !showConfirmPass;
-                });
-              },
-              icon: Icon(
-                showConfirmPass ? Icons.visibility : Icons.visibility_off,
-                color: AppColors.secondaryColor,
-              ),
-            ),
-          ),
+          label: "Confirm Password",
+          hint: "Enter Confirm Password",
         ),
-        // 10.ph,
-        
-        20.ph,
-        CustomButtonWidget(title: "confirm password", onPressed: () {
-          AppRouter.customback(times: 3);
-        }),
-     
-      ],);
 
+        // 10.ph,
+        20.ph,
+        CustomButtonWidget(
+          title: "confirm password",
+          onPressed: () {
+            AppRouter.customback(times: 3);
+          },
+        ),
+      ],
+    );
   }
 }
-
-
-

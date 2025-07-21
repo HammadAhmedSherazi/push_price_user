@@ -37,6 +37,13 @@ export './views/voucher/voucher_view.dart';
 export './views/payment/my_payment_method_view.dart';
 export './views/payment/select_payment_method_view.dart';
 export './views/payment/store_code_view.dart';
+export './views/setting/about_app_view.dart';
+export './views/setting/change_password_view.dart';
+export './views/setting/term_conditions_view.dart';
+export './views/setting/privacy_policy_view.dart';
+export './views/setting/change_language_view.dart';
+export './views/help_feedback/help_feedback_view.dart';
+
 
 
 //WIDGETS
@@ -53,6 +60,8 @@ export './widget/display_network_image.dart';
 export './widget/bottom_nav_bar_widget.dart';
 export './widget/custom_app_bar_widget.dart';
 export './widget/custom_tab_bar_widget.dart';
+export './widget/custom_switch_widget.dart';
+export './widget/generic_password_textfield_widget.dart';
 
 
 //MODELS

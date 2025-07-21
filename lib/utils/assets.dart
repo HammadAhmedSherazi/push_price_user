@@ -68,25 +68,16 @@ abstract class  Assets {
   static const String applePayIcon = "${iconPath}apple_pay_icon.svg";
   static const String paypalIcon = "${iconPath}paypal_icon.svg";
 
+  static const String notificationToggleIcon = "${iconPath}notification_toggle_icon.svg";
+  static const String travelModeIcon = "${iconPath}travel_mode_icon.svg";
+  static const String languageIcon = "${iconPath}language_icon.svg";
+  static const String privacyIcon = "${iconPath}privacy_icon.svg";
+  static const String securityIcon = "${iconPath}security_icon.svg";
+  static const String termConditionIcon = "${iconPath}term_condicon_icon.svg";
+  static const String aboutIcon = "${iconPath}about_icon.svg";
+  
   static const String userImage = "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D";
 
-
-
-
-
-
-  //HOME SCREEN ICONS
-
-  // static const String homeTopImage = "${imagePath}";
-  // static const String requestIcon = "${iconPath}";
-  // static const String complaintIcon = "${iconPath}";
-  // static const String salarySlipIcon = "${iconPath}";
-  // static const String chatIcon = "${iconPath}";
-  // static const String loanBalanceIcon = "${iconPath}";
-  // static const String assetAcceptanceIcon = "${iconPath}";
-  // static const String updateInformationIcon = "${iconPath}";
-  // static const String emergencyContactIcon = "${iconPath}";
-  // static const String announcementAlertIcon = "${iconPath}";
 
 
 

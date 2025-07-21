@@ -170,8 +170,8 @@ class _HomeViewState extends State<HomeView> {
 
               Text("Travel Mode", style: context.textStyle.displayMedium),
               10.pw,
-              Switch.adaptive(
-                activeColor: AppColors.secondaryColor,
+              CustomSwitchWidget(
+               scale: 1.0,
                 value: travelMode,
                 onChanged: (val) {
                   travelMode = val;

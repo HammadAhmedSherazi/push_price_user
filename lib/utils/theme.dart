@@ -16,6 +16,17 @@ class AppTheme {
     bottomNavigationBarTheme: bottomNavigationBarDakTheme,
     inputDecorationTheme: inputDecorationDarkTheme,
     scaffoldBackgroundColor: Colors.white,
+    switchTheme: SwitchThemeData(
+ 
+ 
+).copyWith(
+   thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.selected)) {
+      return AppColors.secondaryColor; // Thumb color when switch is ON
+    }
+    return Colors.white; // Thumb color when switch is OFF
+  }),
+),
     outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
       elevation: const WidgetStatePropertyAll(0.0),
@@ -92,6 +103,18 @@ class AppTheme {
       scaffoldBackgroundColor: Colors.white,
       bottomNavigationBarTheme: bottomNavigationBarLightTheme,
       inputDecorationTheme: inputDecorationLightTheme,
+      
+      switchTheme: SwitchThemeData(
+ 
+ 
+).copyWith(
+   thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.selected)) {
+      return AppColors.secondaryColor; // Thumb color when switch is ON
+    }
+    return Colors.white; // Thumb color when switch is OFF
+  }),
+),
       outlinedButtonTheme: OutlinedButtonThemeData(
           style: ButtonStyle(
         elevation: const WidgetStatePropertyAll(0.0),

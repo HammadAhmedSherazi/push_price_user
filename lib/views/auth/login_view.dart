@@ -21,7 +21,7 @@ class _LoginViewState extends State<LoginView> {
     super.initState();
   }
 
-  bool showPass = true;
+
   bool rememberMeCheck = false;
 
   @override
@@ -98,45 +98,20 @@ class _LoginViewState extends State<LoginView> {
           ),
         ),
         10.ph,
-        TextFormField(
-          controller: passwordTextController,
-          obscureText: showPass,
-
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.lock, color: AppColors.secondaryColor),
-
-            labelText: "Password",
-            hintText: "Enter Password",
-
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  showPass = !showPass;
-                });
-              },
-              icon: Icon(
-                showPass ? Icons.visibility : Icons.visibility_off,
-                color: AppColors.secondaryColor,
-              ),
-            ),
-          ),
-        ),
+        GenericPasswordTextField(controller: passwordTextController, label: "Password", hint: "Enter Password",),
+        
         // 10.ph,
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Transform.scale(
+            CustomSwitchWidget(
               scale: 0.8,
-              child: Switch.adaptive(
-                padding: EdgeInsets.zero,
-
-                activeColor: AppColors.primaryColor,
                 value: rememberMeCheck,
                 onChanged: (value) {
                   rememberMeCheck = value;
                   setState(() {});
                 },
-              ),
+              
             ),
             Text("Remember Me", style: context.textStyle.displayMedium),
             Spacer(),

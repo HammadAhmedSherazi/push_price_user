@@ -1,5 +1,6 @@
 import 'package:push_price_user/utils/extension.dart';
 import 'package:push_price_user/views/payment/my_payment_method_view.dart';
+import 'package:push_price_user/views/setting/setting_view.dart';
 
 import '../../export_all.dart';
 
@@ -135,12 +136,16 @@ class _NavigationViewState extends State<NavigationView> {
     MenuDataModel(
       title: "Settings",
       icon: Assets.menuSettingIcon,
-      onTap: () {},
+      onTap: () {
+        AppRouter.push(SettingView());
+      },
     ),
     MenuDataModel(
       title: "Help & Feedback",
       icon: Assets.menuHelpIcon,
-      onTap: () {},
+      onTap: () {
+        AppRouter.push(HelpFeedbackView());
+      },
     ),
   ];
   @override
