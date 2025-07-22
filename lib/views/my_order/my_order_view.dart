@@ -63,10 +63,7 @@ class OrderCardWidget extends StatelessWidget {
       horizontal: 20.r
     ),
     
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8.r),
-      color: Color.fromRGBO(243, 243, 243, 1)
-    ),
+    decoration: AppTheme.productBoxDecoration,
     child: Row(
       spacing: 15,
       children: [

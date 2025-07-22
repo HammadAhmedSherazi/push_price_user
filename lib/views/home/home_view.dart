@@ -263,29 +263,34 @@ class StoreCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      // width: 94.w,
-      padding: EdgeInsets.symmetric(horizontal: 20.r),
-      decoration: BoxDecoration(
-        color: Color.fromRGBO(243, 243, 243, 1),
-        borderRadius: BorderRadius.circular(10.r),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(data.icon, width: 50.r, height: 50.r),
-          Text(data.title, maxLines: 1, style: context.textStyle.bodySmall),
-          Text(data.address, style: context.textStyle.titleSmall, maxLines: 1),
-          Row(
-            spacing: 4,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.star, color: Color.fromRGBO(255, 144, 28, 1)),
-              Text(data.rating.toString()),
-            ],
-          ),
-        ],
+    return GestureDetector(
+      onTap: (){
+        AppRouter.push(StoreView());
+      },
+      child: Container(
+        height: double.infinity,
+        // width: 94.w,
+        padding: EdgeInsets.symmetric(horizontal: 20.r),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(243, 243, 243, 1),
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(data.icon, width: 50.r, height: 50.r),
+            Text(data.title, maxLines: 1, style: context.textStyle.bodySmall),
+            Text(data.address, style: context.textStyle.titleSmall, maxLines: 1),
+            Row(
+              spacing: 4,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.star, color: Color.fromRGBO(255, 144, 28, 1)),
+                Text(data.rating.toString()),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

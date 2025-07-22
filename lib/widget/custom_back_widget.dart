@@ -2,7 +2,8 @@ import '../export_all.dart';
 
 class CustomBackWidget extends StatelessWidget {
   final VoidCallback ? onTap;
-  const CustomBackWidget({super.key, this.onTap});
+  final double? width,height;
+  const CustomBackWidget({super.key, this.onTap, this.height, this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +12,8 @@ class CustomBackWidget extends StatelessWidget {
         AppRouter.back();
       },
       child: Container(
-        // width: 24.r,
-        // height: 24.r,
+        width: width,
+        height: height,
         alignment: Alignment.center,
         padding: EdgeInsets.only(
           left: 6.r,

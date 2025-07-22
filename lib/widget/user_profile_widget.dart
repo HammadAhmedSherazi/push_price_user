@@ -3,7 +3,8 @@ import '../export_all.dart';
 class UserProfileWidget extends StatelessWidget {
   final double radius;
   final String imageUrl;
-  const UserProfileWidget({super.key, required this.radius , required this.imageUrl});
+  final double? borderWidth;
+  const UserProfileWidget({super.key, required this.radius , required this.imageUrl, this.borderWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class UserProfileWidget extends StatelessWidget {
       decoration:BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              width: 5,
+              width: borderWidth ?? 5,
               color: AppColors.borderColor,
             ),
             color: AppColors.secondaryColor,

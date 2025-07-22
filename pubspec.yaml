@@ -39,6 +39,8 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_otp_text_field: ^1.5.1+1
   image_picker: ^1.1.2
+  flutter_rating_bar: ^4.0.1
+  flutter_stripe: ^11.5.0
 
 dev_dependencies:
   flutter_test:

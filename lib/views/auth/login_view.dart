@@ -67,12 +67,12 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   TextSpan(text: "Terms & Conditions",  recognizer: TapGestureRecognizer()
           ..onTap = () {
-           
+           AppRouter.push(TermConditionsView());
           },),
                   TextSpan(text: "  |  "),
                   TextSpan(text: "Privacy Policy",  recognizer: TapGestureRecognizer()
           ..onTap = () {
-           
+           AppRouter.push(PrivacyPolicyView());
           },),
                 ],
               ),

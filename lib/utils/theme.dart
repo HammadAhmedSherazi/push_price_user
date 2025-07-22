@@ -302,4 +302,8 @@ class AppTheme {
             ),
             borderRadius: BorderRadius.circular(8.r)
           );
+  static BoxDecoration productBoxDecoration = BoxDecoration(
+      borderRadius: BorderRadius.circular(8.r),
+       color: Color.fromRGBO(243, 243, 243, 1)
+  );
 }

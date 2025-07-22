@@ -1,11 +1,12 @@
 import 'package:push_price_user/utils/extension.dart';
-import 'package:push_price_user/views/payment/my_payment_method_view.dart';
+
 import 'package:push_price_user/views/setting/setting_view.dart';
 
 import '../../export_all.dart';
 
 class NavigationView extends StatefulWidget {
   const NavigationView({super.key});
+ 
 
   @override
   State<NavigationView> createState() => _NavigationViewState();
@@ -148,6 +149,8 @@ class _NavigationViewState extends State<NavigationView> {
       },
     ),
   ];
+  final ScrollController scrollController = ScrollController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -246,18 +249,25 @@ class _NavigationViewState extends State<NavigationView> {
                   //       ))
                   SizedBox(
                     height: context.screenheight * 0.40,
-                    child: ListView(
-                      padding: EdgeInsets.all(20.r),
-                      children: List.generate(menuData.length, (index) {
-                        final menu = menuData[index];
-                        return ListTile(
-                          onTap: menu.onTap,
-                          leading: SvgPicture.asset(menu.icon),
-                          title: Text(menu.title),
-                          titleTextStyle: context.textStyle.displayMedium!
-                              .copyWith(fontSize: 16.sp),
-                        );
-                      }),
+                    child: Scrollbar(
+                      trackVisibility: true,
+                      thumbVisibility: true,
+                      controller: scrollController,
+                      child: ListView(
+                        primary: false,
+                        controller: scrollController,
+                        padding: EdgeInsets.all(20.r),
+                        children: List.generate(menuData.length, (index) {
+                          final menu = menuData[index];
+                          return ListTile(
+                            onTap: menu.onTap,
+                            leading: SvgPicture.asset(menu.icon),
+                            title: Text(menu.title),
+                            titleTextStyle: context.textStyle.displayMedium!
+                                .copyWith(fontSize: 16.sp),
+                          );
+                        }),
+                      ),
                     ),
                   ),
                 ],

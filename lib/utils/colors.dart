@@ -3,6 +3,7 @@ import '../export_all.dart';
 abstract class AppColors {
   static const primaryColor = Color(0xff0B7BD2);
   static const secondaryColor = Color(0xff008B83);
+  static const primaryAppBarColor = Color.fromRGBO(230, 243, 253, 0.5);
 
   static const primaryTextColor = Color(0xff2F2F2F);
 

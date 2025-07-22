@@ -67,12 +67,12 @@ class _SignUpViewState extends State<SignUpView> {
                 children: [
                   TextSpan(text: "Terms & Conditions",  recognizer: TapGestureRecognizer()
           ..onTap = () {
-           
+           AppRouter.push(TermConditionsView());
           },),
                   TextSpan(text: "  |  "),
                   TextSpan(text: "Privacy Policy",  recognizer: TapGestureRecognizer()
           ..onTap = () {
-           
+           AppRouter.push(PrivacyPolicyView());
           },),
                 ],
               ),

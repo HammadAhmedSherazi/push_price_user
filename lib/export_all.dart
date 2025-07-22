@@ -5,6 +5,8 @@ export 'package:flutter_svg/flutter_svg.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:flutter/material.dart';
 export 'package:image_picker/image_picker.dart';
+export 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
 export 'dart:math';
 
 
@@ -43,6 +45,12 @@ export './views/setting/term_conditions_view.dart';
 export './views/setting/privacy_policy_view.dart';
 export './views/setting/change_language_view.dart';
 export './views/help_feedback/help_feedback_view.dart';
+export './views/store/store_view.dart';
+export './views/store/product_detail_view.dart';
+export './views/cart/cart_view.dart';
+export './views/cart/voucher_apply_view.dart';
+export './views/setting/notification_view.dart';
+export './views/store/store_detail_view.dart';
 
 
 
@@ -62,6 +70,7 @@ export './widget/custom_app_bar_widget.dart';
 export './widget/custom_tab_bar_widget.dart';
 export './widget/custom_switch_widget.dart';
 export './widget/generic_password_textfield_widget.dart';
+export './widget/select_chip_widget.dart';
 
 
 //MODELS
@@ -69,7 +78,9 @@ export './models/category_data_model.dart';
 export './models/bottom_data_model.dart';
 export './models/menu_data_model.dart';
 export './models/product_data_model.dart';
-
+export './models/notification_data_model.dart';
+export './models/user_rating_data_model.dart';
+export './models/store_data_model.dart';
 
 
 //PROVIDERS

@@ -62,10 +62,15 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSize {
                       spacing: 10,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
-                          radius: 20.r,
-                          child: SvgPicture.asset(Assets.notificationIcon),
+                        GestureDetector(
+                          onTap: (){
+                            AppRouter.push(NotificationView());
+                          },
+                          child: CircleAvatar(
+                            backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
+                            radius: 20.r,
+                            child: SvgPicture.asset(Assets.notificationIcon),
+                          ),
                         ),
                         CircleAvatar(
                           backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),

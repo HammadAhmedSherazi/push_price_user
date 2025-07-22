@@ -3,7 +3,8 @@ import 'package:push_price_user/utils/extension.dart';
 import '../../export_all.dart';
 
 class OrderSuccessModifiedView extends StatelessWidget {
-  const OrderSuccessModifiedView({super.key});
+  final String message;
+  const OrderSuccessModifiedView({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class OrderSuccessModifiedView extends StatelessWidget {
             Text("Thankyou!", style: context.textStyle.displayMedium!.copyWith(
               color: AppColors.secondaryColor
             ),),
-            Text("Your Order Has Been Placed Successfully!", style: context.textStyle.displayMedium!.copyWith(
+            Text(message, style: context.textStyle.displayMedium!.copyWith(
               fontSize: 16.sp
             ),),
             CustomButtonWidget(title: "view order", onPressed: (){
@@ -30,9 +31,9 @@ class OrderSuccessModifiedView extends StatelessWidget {
             }),
             CustomOutlineButtonWidget(title: "back to home", onPressed: (){
               AppRouter.customback(
-                times: 4
+                times: message.contains("Modified")? 4 : 2
               );
-              
+              // AppRouter.pushAndRemoveUntil(NavigationView());
             })
           ],
         ),

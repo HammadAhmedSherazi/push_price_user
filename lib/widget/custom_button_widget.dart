@@ -6,7 +6,7 @@ import '../export_all.dart';
 class CustomButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback? onPressed;
-  final double? height, width;
+  final double? height, width,radius;
   final Color? color;
   final Color? textColor;
   final Widget? child;
@@ -26,6 +26,7 @@ class CustomButtonWidget extends StatelessWidget {
       this.textColor,
       this.child,
       this.isLoad = false,
+      this.radius,
       this.border,
       this.width});
 
@@ -36,7 +37,7 @@ class CustomButtonWidget extends StatelessWidget {
       decoration: BoxDecoration(
         border: border,
           color:  color == null ? context.colors.primary : null,
-          borderRadius: BorderRadius.circular(32.r)),
+          borderRadius: BorderRadius.circular(radius ?? 32.r)),
       height: height ?? 40.h,
       child: ElevatedButton(
           style: ButtonStyle(
@@ -45,7 +46,7 @@ class CustomButtonWidget extends StatelessWidget {
             backgroundColor:
                 WidgetStatePropertyAll(color ?? Colors.transparent),
             shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32.r))),
+                borderRadius: BorderRadius.circular( radius ?? 32.r))),
           ),
           onPressed: !isLoad ? onPressed : () {},
           child: !isLoad
