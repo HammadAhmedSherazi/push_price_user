@@ -2,7 +2,8 @@ import 'package:push_price_user/utils/extension.dart';
 import '../../export_all.dart';
 
 class FavouriteView extends StatefulWidget {
-  const FavouriteView({super.key});
+  final ScrollController scrollController;
+  const FavouriteView({super.key, required this.scrollController});
 
   @override
   State<FavouriteView> createState() => _FavouriteViewState();
@@ -25,6 +26,7 @@ class _FavouriteViewState extends State<FavouriteView> {
           children: [
             Expanded(
               child: ListView.separated(
+                controller: widget.scrollController,
                 padding: EdgeInsets.all(AppTheme.horizontalPadding),
                 itemBuilder: (context, index) {
                   final product = products[index];

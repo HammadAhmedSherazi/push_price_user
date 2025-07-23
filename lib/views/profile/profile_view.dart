@@ -3,7 +3,8 @@ import 'package:push_price_user/utils/extension.dart';
 import '../../export_all.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+
+  const ProfileView({super.key, });
 
   @override
   State<ProfileView> createState() => _ProfileViewState();

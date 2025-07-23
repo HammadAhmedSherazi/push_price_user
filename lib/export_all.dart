@@ -51,6 +51,7 @@ export './views/cart/cart_view.dart';
 export './views/cart/voucher_apply_view.dart';
 export './views/setting/notification_view.dart';
 export './views/store/store_detail_view.dart';
+export './views/setting/setting_view.dart';
 
 
 

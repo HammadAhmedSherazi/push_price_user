@@ -1,11 +1,10 @@
-import 'package:push_price_user/models/store_data_model.dart';
 import 'package:push_price_user/utils/extension.dart';
-import 'package:push_price_user/widget/custom_app_bar_widget.dart';
 
 import '../../export_all.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  final ScrollController scrollController;
+  const HomeView({super.key, required this.scrollController});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -184,6 +183,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: ListView(
         padding: EdgeInsets.all(AppTheme.horizontalPadding),
+        controller: widget.scrollController,
         children: [
           SpecialOfferBannerSection(),
           10.ph,

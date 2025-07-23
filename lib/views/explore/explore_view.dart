@@ -3,7 +3,8 @@ import '../../export_all.dart';
 
 
 class ExploreView extends StatefulWidget {
-  const ExploreView({super.key});
+  final ScrollController scrollController;
+  const ExploreView({super.key, required this.scrollController});
 
   @override
   State<ExploreView> createState() => _ExploreViewState();
@@ -18,6 +19,7 @@ class _ExploreViewState extends State<ExploreView> {
         CustomSearchBarWidget(hintText: "Hinted search text")
       ]),
       body: ListView(
+        controller: widget.scrollController,
         padding: EdgeInsets.symmetric(
           horizontal: AppTheme.horizontalPadding,
           vertical: AppTheme.horizontalPadding,
