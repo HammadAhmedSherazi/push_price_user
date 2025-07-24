@@ -1,4 +1,5 @@
 import 'package:push_price_user/utils/extension.dart';
+import 'package:push_price_user/views/home/all_store_view.dart';
 
 import '../../export_all.dart';
 
@@ -229,7 +230,9 @@ class PopularStoresSection extends StatelessWidget {
                     horizontal: -4.0,
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  AppRouter.push(AllStoreView(title: "Popular Stores"));
+                },
                 child: Text(
                   "See All",
                   style: context.textStyle.bodySmall!.copyWith(
@@ -277,15 +280,18 @@ class StoreCardWidget extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(data.icon, width: 50.r, height: 50.r),
             Text(data.title, maxLines: 1, style: context.textStyle.bodySmall),
             Text(data.address, style: context.textStyle.titleSmall, maxLines: 1),
             Row(
-              spacing: 4,
+              
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.star, color: Color.fromRGBO(255, 144, 28, 1)),
+                Icon(Icons.star, color: Color.fromRGBO(255, 144, 28, 1), size: 22.r,),
                 Text(data.rating.toString()),
               ],
             ),
@@ -327,7 +333,9 @@ class NearbyStoresSection extends StatelessWidget {
                     horizontal: -4.0,
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  AppRouter.push(AllStoreView(title: "Nearby Stores"));
+                },
                 child: Text(
                   "See All",
                   style: context.textStyle.bodySmall!.copyWith(
@@ -384,7 +392,9 @@ class CategoriesSection extends StatelessWidget {
                     horizontal: -4.0,
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  AppRouter.push(AllCategoryView());
+                },
                 child: Text(
                   "See All",
                   style: context.textStyle.bodySmall!.copyWith(

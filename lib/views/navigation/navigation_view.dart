@@ -18,6 +18,7 @@ class _NavigationViewState extends State<NavigationView> {
   bool _isBottomBarVisible = true;
 
   final ScrollController scrollController = ScrollController();
+  final ScrollController drawerScrollController = ScrollController();
   late final List<BottomDataModel> bottomNavItems ;
 
   @override
@@ -86,8 +87,18 @@ class _NavigationViewState extends State<NavigationView> {
     );
   }
 
-  final List<MenuDataModel> menuData = [
-    MenuDataModel(title: "My Favorites", icon: Assets.menuFavouritIcon, onTap: () {}),
+ 
+
+  @override
+  Widget build(BuildContext context) {
+     final List<MenuDataModel> menuData = [
+    MenuDataModel(title: "My Favorites", icon: Assets.menuFavouritIcon, onTap: () {
+      AppRouter.back();
+      setState(() {
+        selectIndex = 2;
+      });
+      
+    }),
     MenuDataModel(title: "My Orders", icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
     MenuDataModel(title: "My Locations", icon: Assets.menuLocationIcon, onTap: () => AppRouter.push(MyLocationView())),
     MenuDataModel(title: "Subscription & Savings", icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
@@ -96,9 +107,6 @@ class _NavigationViewState extends State<NavigationView> {
     MenuDataModel(title: "Settings", icon: Assets.menuSettingIcon, onTap: () => AppRouter.push(SettingView())),
     MenuDataModel(title: "Help & Feedback", icon: Assets.menuHelpIcon, onTap: () => AppRouter.push(HelpFeedbackView())),
   ];
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       key: AppRouter.scaffoldkey,
       drawerEnableOpenDragGesture: false,
@@ -176,10 +184,10 @@ class _NavigationViewState extends State<NavigationView> {
                     child: Scrollbar(
                       trackVisibility: true,
                       thumbVisibility: true,
-                      controller: scrollController,
+                      controller: drawerScrollController,
                       child: ListView(
                         primary: false,
-                        controller: scrollController,
+                        controller: drawerScrollController,
                         padding: EdgeInsets.all(20.r),
                         children: List.generate(menuData.length, (index) {
                           final menu = menuData[index];

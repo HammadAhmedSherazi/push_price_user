@@ -16,11 +16,12 @@ class _FavouriteViewState extends State<FavouriteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: "My Favorites", children: [
         CustomSearchBarWidget(hintText: "Hinted search text")
       ]),
       body: SizedBox(
-        height: double.infinity,
+        height: context.screenheight * 0.7,
         width: double.infinity,
         child: Column(
           children: [
