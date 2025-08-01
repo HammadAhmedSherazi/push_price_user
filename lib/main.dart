@@ -21,12 +21,23 @@ class MyApp extends StatelessWidget {
     
       // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (_ , child) {
-        return MaterialApp(
-          navigatorKey: AppRouter.navKey,
-          debugShowCheckedModeBanner: false,
-          title: 'Push Price',
-          theme: AppTheme.lightTheme,
-          home: child,
+        return Container(
+          color: Colors.white,
+          child: SafeArea(
+            top: false,
+            // bottom: false,
+            // maintainBottomViewPadding: true,
+            minimum: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom
+            ),
+            child: MaterialApp(
+              navigatorKey: AppRouter.navKey,
+              debugShowCheckedModeBanner: false,
+              title: 'Push Price',
+              theme: AppTheme.lightTheme,
+              home: child,
+            ),
+          ),
         );
       },
       useInheritedMediaQuery: true,
