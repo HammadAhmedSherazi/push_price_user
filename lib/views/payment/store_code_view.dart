@@ -11,6 +11,9 @@ class StoreCodeView extends StatelessWidget {
       padding: EdgeInsets.all(AppTheme.horizontalPadding),
       children: [
         TextFormField(
+          onTapOutside: (event) {
+  FocusScope.of(context).unfocus();
+},
           decoration: InputDecoration(
             labelText: "Code",
             hintText: "Enter Store Code"

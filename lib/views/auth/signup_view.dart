@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:push_price_user/utils/extension.dart';
 import 'package:push_price_user/views/auth/otp_view.dart';
@@ -51,7 +53,7 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     recognizer: TapGestureRecognizer()
           ..onTap = () {
-           AppRouter.pushReplacement(LoginView());
+           AppRouter.back();
           },
                   ),
                 ],
@@ -83,6 +85,9 @@ class _SignUpViewState extends State<SignUpView> {
       title: "Sign Up",
       childrens: [
         TextFormField(
+          onTapOutside: (event) {
+  FocusScope.of(context).unfocus();
+},
           controller: emailTextController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
@@ -96,52 +101,21 @@ class _SignUpViewState extends State<SignUpView> {
           ),
         ),
         10.ph,
-        TextFormField(
+        GenericPasswordTextField(
           controller: passwordTextController,
-          obscureText: showPass,
+           label: "Password",
+            hint: "Enter Password",
 
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.lock, color: AppColors.secondaryColor),
 
-            labelText: "Password",
-            hintText: "Enter Password",
-
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  showPass = !showPass;
-                });
-              },
-              icon: Icon(
-                showPass ? Icons.visibility : Icons.visibility_off,
-                color: AppColors.secondaryColor,
-              ),
-            ),
-          ),
+         
         ),
         10.ph,
-        TextFormField(
+        GenericPasswordTextField(
           controller: confirmPasswordTextController,
-          obscureText: showConfirmPass,
-
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.lock, color: AppColors.secondaryColor),
-
-            labelText: "Confirm Password",
-            hintText: "Enter Confirm Password",
-
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  showConfirmPass = !showConfirmPass;
-                });
-              },
-              icon: Icon(
-                showPass ? Icons.visibility : Icons.visibility_off,
-                color: AppColors.secondaryColor,
-              ),
-            ),
-          ),
+     
+            label: "Confirm Password",
+            hint: "Enter Confirm Password",
+          
         ),
         // 10.ph,
         
@@ -151,6 +125,46 @@ class _SignUpViewState extends State<SignUpView> {
             isSignup: true,
           ));
         }),
+        10.ph,
+        CustomOutlineButtonWidget(title: "Continue with Google", onPressed: (){
+          AppRouter.pushAndRemoveUntil(NavigationView());
+        }, child: Row(
+          spacing: 20,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(Assets.googleIcon),
+            SizedBox(
+              // color: Colors.red,
+              width: context.screenwidth * 0.45,
+              child: Text("Continue with Google", style: context.textStyle.displayMedium!.copyWith(
+                fontSize: 16.sp
+              ),),
+
+            )
+          ],
+        ),),
+        if(Platform.isIOS)...[
+           10.ph,
+        CustomOutlineButtonWidget(title: "Continue with Google", onPressed: (){
+          AppRouter.pushAndRemoveUntil(NavigationView());
+        }, child: Row(
+          spacing: 20,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(Assets.appleIcon),
+            SizedBox(
+              // color: Colors.red,
+              width: context.screenwidth * 0.45,
+              child: Text("Continue with Apple", style: context.textStyle.displayMedium!.copyWith(
+                fontSize: 16.sp
+              ),),
+
+            )
+          ],
+        ),)
+        ]
+        
+      
       ],);
 
   }

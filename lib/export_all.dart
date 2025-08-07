@@ -6,8 +6,9 @@ export 'package:cached_network_image/cached_network_image.dart';
 export 'package:flutter/material.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
+// export 'package:intl_phone_field/intl_phone_field.dart';
 export 'dart:math';
+
 
 
 
@@ -53,6 +54,7 @@ export './views/setting/notification_view.dart';
 export './views/store/store_detail_view.dart';
 export './views/setting/setting_view.dart';
 export './views/home/all_category_view.dart';
+export './views/auth/new_password_view.dart';
 
 
 

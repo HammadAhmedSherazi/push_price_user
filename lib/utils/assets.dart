@@ -13,6 +13,8 @@ abstract class  Assets {
   static const String dollarSquareIcon = "${iconPath}dollar_square_icon.svg";
   static const String forwardIcon = "${iconPath}forward_icon.svg";
   static const String filterIcon = "${iconPath}filter_icon.svg";
+  static const String googleIcon = "${iconPath}google_icon.svg";
+  static const String appleIcon = "${iconPath}apple_icon.svg";
 
   static const String mailIcon = "${iconPath}mail_icon.svg";
   static const String passLockIcon = "${iconPath}pass_lock_icon.svg";

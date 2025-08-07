@@ -96,6 +96,6 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSize {
   Size get preferredSize => Size.fromHeight(height);
   
   @override
-  // TODO: implement child
+
   Widget get child => throw UnimplementedError();
 }

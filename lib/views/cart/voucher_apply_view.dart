@@ -11,6 +11,9 @@ class VoucherApplyView extends StatelessWidget {
       padding: EdgeInsets.all(AppTheme.horizontalPadding),
       children: [
         TextFormField(
+          onTapOutside: (event) {
+  FocusScope.of(context).unfocus();
+},
           decoration: InputDecoration(
             labelText: "Voucher",
             hintText: "Enter Voucher Code"

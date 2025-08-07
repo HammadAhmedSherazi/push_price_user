@@ -16,7 +16,9 @@ class _ExploreViewState extends State<ExploreView> {
     return Scaffold(
       
       appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: "Explore", children: [
-        CustomSearchBarWidget(hintText: "Hinted search text")
+        CustomSearchBarWidget(hintText: "Hinted search text", onTapOutside: (v){
+          FocusScope.of(context).unfocus();
+        },)
       ]),
       body: ListView(
         controller: widget.scrollController,

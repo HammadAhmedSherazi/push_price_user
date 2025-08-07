@@ -143,6 +143,9 @@ class _HomeViewState extends State<HomeView> {
           CustomSearchBarWidget(
             hintText: "Hinted search text",
             suffixIcon: SvgPicture.asset(Assets.filterIcon),
+            onTapOutside: (c){
+               FocusScope.of(context).unfocus();
+            },
           ),
           Row(
             children: [

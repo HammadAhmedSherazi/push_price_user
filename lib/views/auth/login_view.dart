@@ -51,7 +51,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     recognizer: TapGestureRecognizer()
           ..onTap = () {
-            AppRouter.pushReplacement(SignUpView());
+            AppRouter.push(SignUpView());
           },
                   ),
                 ],
@@ -85,6 +85,9 @@ class _LoginViewState extends State<LoginView> {
       
       childrens: [
         TextFormField(
+          onTapOutside: (event) {
+  FocusScope.of(context).unfocus();
+},
           controller: emailTextController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
@@ -130,7 +133,7 @@ class _LoginViewState extends State<LoginView> {
         ),
         20.ph,
         CustomButtonWidget(title: "login", onPressed: () {
-          AppRouter.push(NavigationView());
+          AppRouter.pushAndRemoveUntil(NavigationView());
         }),
       ],
     );

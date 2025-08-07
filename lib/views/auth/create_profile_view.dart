@@ -2,6 +2,7 @@ import 'package:push_price_user/utils/extension.dart';
 
 
 import '../../export_all.dart';
+import '../../widget/custom_phone_textfield_widget.dart';
 
 class CreateProfileView extends StatefulWidget {
   final bool? isEdit;
@@ -16,6 +17,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
   late final TextEditingController addressTextController;
   late final TextEditingController phoneTextController;
   late final TextEditingController emailTextController;
+
 
   @override
   void initState() {
@@ -50,6 +52,9 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         20.ph,
         TextFormField(
           controller: nameTextController,
+          onTapOutside: (event) {
+  FocusScope.of(context).unfocus();
+},
           decoration: InputDecoration(
             labelText: "Name",
             hintText: "Enter Name"
@@ -58,27 +63,36 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         10.ph,
         TextFormField(
           controller: addressTextController,
+          onTapOutside: (event) {
+  FocusScope.of(context).unfocus();
+},
           decoration: InputDecoration(
             labelText: "Address",
             hintText: "Address (can add multiple addresses)"
           ),
         ),
         10.ph,
-        TextFormField(
-          controller: phoneTextController,
-          keyboardType: TextInputType.phone,
-          decoration: InputDecoration(
+        CustomPhoneTextfieldWidget(phoneNumberController: phoneTextController, initialCountryCode: "US", onCountryChanged: (c){}),
+        // TextFormField(
+        //   controller: phoneTextController,
+        //   keyboardType: TextInputType.phone,
+        //   decoration: InputDecoration(
             
-            labelText: "Phone Number",
-            hintText: "Enter Phone Number"
-          ),
-        ),
+        //     labelText: "Phone Number",
+        //     hintText: "Enter Phone Number"
+        //   ),
+        // ),
         10.ph,
         TextFormField(
+          onTapOutside: (event) {
+  FocusScope.of(context).unfocus();
+},
           controller: emailTextController,
+          readOnly: widget.isEdit ?? false,
           decoration: InputDecoration(
             labelText: "Email Address",
-            hintText: "Enter Email"
+            hintText: "Enter Email",
+            suffixIcon: Icon(Icons.check_circle_rounded, color: AppColors.secondaryColor,)
           ),
         ),
        

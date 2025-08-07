@@ -15,15 +15,17 @@ class _FavouriteViewState extends State<FavouriteView> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-      appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: "My Favorites", children: [
-        CustomSearchBarWidget(hintText: "Hinted search text")
-      ]),
-      body: SizedBox(
-        height: context.screenheight * 0.7,
-        width: double.infinity,
-        child: Column(
+    return SafeArea(
+      bottom:true,
+      top: false,
+      child: Scaffold(
+        
+        appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: "My Favorites", children: [
+          CustomSearchBarWidget(hintText: "Hinted search text", onTapOutside: (x){
+             FocusScope.of(context).unfocus();
+          },)
+        ]),
+        body: Column(
           children: [
             Expanded(
               child: ListView.separated(
@@ -36,8 +38,8 @@ class _FavouriteViewState extends State<FavouriteView> {
             ),
             Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "add new favorite", onPressed: (){
               AppRouter.push(SearchProductView());
-            }),)
-          ],
+            }),),
+           ],
         ),
       ),
     );
