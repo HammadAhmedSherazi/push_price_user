@@ -34,7 +34,7 @@ class ProductSelectionDataModel extends ProductDataModel {
 }
 
 class ProductPurchasingDataModel extends ProductDataModel {
-  final int quantity;
+  int quantity;
   final num discountAmount;
 
   ProductPurchasingDataModel({

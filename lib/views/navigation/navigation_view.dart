@@ -140,7 +140,7 @@ class _NavigationViewState extends State<NavigationView> {
               ),
               Positioned(
                 left: 0,
-                bottom: 80.r,
+                bottom: 40.r,
                 child: GestureDetector(
                   onTap: () => showLogoutDialog(context),
                   child: Container(
@@ -182,7 +182,7 @@ class _NavigationViewState extends State<NavigationView> {
                     ),
                   ),
                   SizedBox(
-                    height: context.screenheight * 0.40,
+                    height: context.screenheight * 0.50,
                     child: Scrollbar(
                       trackVisibility: true,
                       thumbVisibility: true,

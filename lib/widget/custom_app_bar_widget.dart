@@ -72,10 +72,15 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSize {
                             child: SvgPicture.asset(Assets.notificationIcon),
                           ),
                         ),
-                        CircleAvatar(
-                          backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
-                          radius: 20.r,
-                          child: SvgPicture.asset(Assets.addCartIcon),
+                        GestureDetector(
+                          onTap: (){
+                            AppRouter.push(CartView());
+                          },
+                          child: CircleAvatar(
+                            backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
+                            radius: 20.r,
+                            child: SvgPicture.asset(Assets.addCartIcon),
+                          ),
                         ),
                       ],
                     ),

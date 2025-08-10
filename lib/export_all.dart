@@ -55,6 +55,9 @@ export './views/store/store_detail_view.dart';
 export './views/setting/setting_view.dart';
 export './views/home/all_category_view.dart';
 export './views/auth/new_password_view.dart';
+export './views/home/add_new_address_view.dart';
+export './views/home/all_store_view.dart';
+
 
 
 
@@ -75,6 +78,7 @@ export './widget/custom_tab_bar_widget.dart';
 export './widget/custom_switch_widget.dart';
 export './widget/generic_password_textfield_widget.dart';
 export './widget/select_chip_widget.dart';
+export './widget/page_dot_widget.dart';
 
 
 //MODELS

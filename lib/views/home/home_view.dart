@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:push_price_user/utils/extension.dart';
-import 'package:push_price_user/views/home/all_store_view.dart';
+
 
 import '../../export_all.dart';
 
@@ -112,6 +114,7 @@ class _HomeViewState extends State<HomeView> {
                     child: TextButton.icon(
                       onPressed: () {
                         // Handle adding new address
+                        AppRouter.push(AddNewAddressView());
                       },
                       icon: Icon(Icons.add, color: AppColors.secondaryColor),
                       label: Text(
@@ -373,7 +376,7 @@ class CategoriesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<CategoryDataModel> categories = [
       CategoryDataModel(title: "Fruits", icon: Assets.fruits),
-      CategoryDataModel(title: "Vegtables", icon: Assets.vegetable),
+      CategoryDataModel(title: "Vegetables", icon: Assets.vegetable),
       CategoryDataModel(title: "Meat", icon: Assets.meat),
       CategoryDataModel(title: "Sea Food", icon: Assets.seaFood),
       CategoryDataModel(title: "Groceries", icon: Assets.grocery),
@@ -430,6 +433,7 @@ class CategoriesSection extends StatelessWidget {
                         category.title,
                         style: context.textStyle.bodyMedium,
                         maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -459,15 +463,104 @@ class SpecialOfferBannerSection extends StatelessWidget {
         children: [
           Text("Special Offers", style: context.textStyle.displayMedium),
           Expanded(
-            child: ClipRRect(
-              child: Image.asset(
-                Assets.specialDiscountBanner,
-                fit: BoxFit.contain,
-              ),
-            ),
+            child:AdSliderWidget(images: ["", "", "", "", ""]),
+            //  ClipRRect(
+            //   child: Image.asset(
+            //     Assets.specialDiscountBanner,
+            //     fit: BoxFit.contain,
+            //   ),
+            // ),
           ),
         ],
       ),
     );
+  }
+}
+class AdSliderWidget extends StatefulWidget {
+  final List<String> images;
+  const AdSliderWidget({super.key, required this.images});
+
+  @override
+  State<AdSliderWidget> createState() => _AdSliderWidgetState();
+}
+
+class _AdSliderWidgetState extends State<AdSliderWidget> {
+  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Automatically transition images every 3 seconds
+    _timer = Timer.periodic(const Duration(seconds: 3), _onTimerTick);
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onTimerTick(Timer timer) {
+    if (widget.images.isNotEmpty) {
+      if (_currentIndex < widget.images.length - 1) {
+        _currentIndex++;
+      } else {
+        _currentIndex = 0;
+      }
+
+      _pageController.animateToPage(
+        _currentIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.images.isNotEmpty
+        ? Column(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: widget.images.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    // return DisplayNetworkImage(
+                    //     imageUrl: widget.images[index])
+                    //     ;
+                    return Image.asset(
+                            Assets.specialDiscountBanner,
+                            fit: BoxFit.cover,
+                      );
+                  },
+                ),
+              ),
+            ),
+            7.ph,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PagerDot(
+                  length: widget.images.length,
+                  currentIndex: _currentIndex,
+                  isCircle: true,
+                )
+              ],
+            ),
+          ],
+        )
+        : const SizedBox.shrink();
   }
 }

@@ -12,7 +12,19 @@ class MyLocationView extends StatefulWidget {
 class _MyLocationViewState extends State<MyLocationView> {
   @override
   Widget build(BuildContext context) {
-    return CustomScreenTemplate(title: "My Locations", child: ListView.separated(
+    return CustomScreenTemplate(
+      showBottomButton: true,
+      customBottomButtonWidget:  Row(
+                  spacing: 5,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add),
+                    Text("ADD NEW LOCATION", style: context.textStyle.displayMedium!.copyWith(
+                      color: Colors.white
+                    ),)
+                  ],
+                ),
+      title: "My Locations", child: ListView.separated(
       padding: EdgeInsets.symmetric(
         vertical: AppTheme.horizontalPadding
       ),
@@ -50,6 +62,8 @@ class _MyLocationViewState extends State<MyLocationView> {
         ),
         onTap: () {
           // Handle tap
+          AppRouter.customback(times: 2);
+
         },
       ),
       separatorBuilder: (context, index)=>const Divider(), itemCount: 5));
