@@ -45,7 +45,8 @@ dependencies:
   intl_phone_number_input: ^0.7.4
   # phone_numbers_parser: ^9.0.3
   # intl_phone_number_input: ^0.7.4
-
+dependency_overrides:
+  semver: ^24.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
