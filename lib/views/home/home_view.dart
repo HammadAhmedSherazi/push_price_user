@@ -189,7 +189,9 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
       body: ListView(
-        padding: EdgeInsets.all(AppTheme.horizontalPadding),
+        padding: EdgeInsets.all(AppTheme.horizontalPadding).copyWith(
+          bottom: 100.r
+        ),
         controller: widget.scrollController,
         children: [
           SpecialOfferBannerSection(),
@@ -199,6 +201,7 @@ class _HomeViewState extends State<HomeView> {
           PopularStoresSection(),
           10.ph,
           NearbyStoresSection(),
+          
         ],
       ),
     );
@@ -363,6 +366,7 @@ class NearbyStoresSection extends StatelessWidget {
               itemCount: stores.length,
             ),
           ),
+        
         ],
       ),
     );

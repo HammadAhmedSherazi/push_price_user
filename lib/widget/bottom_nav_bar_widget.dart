@@ -15,8 +15,8 @@ class CustomBottomNavBarWidget extends StatelessWidget {
     Container(
       width: double.infinity,
      padding: EdgeInsets.only(
-      left: 20.r,
-      right: 20.r,
+      // left: 20.r,
+      // right: 20.r,
       top: 15.r,
       bottom: 30.r
      ),
