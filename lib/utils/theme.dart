@@ -273,7 +273,7 @@ class AppTheme {
         ),
         borderRadius: BorderRadius.circular(4.r),),
   );
-  static InputDecorationTheme inputDecorationDarkTheme = InputDecorationTheme(
+  static InputDecorationThemeData inputDecorationDarkTheme = InputDecorationThemeData(
     // hintStyle: lightTheme.textTheme.bodyLarge!
     //     .copyWith(fontSize: 16.sp, color: Colors.black.withValues(0.3)),
     errorMaxLines: 3,
