@@ -38,18 +38,18 @@ jobs:
         run: flutter build apk --release --split-per-abi
 
       # iOS BUILD
-      - name: Set iOS Deployment Target to 17
-        run: |
-          sed -i.bak 's/platform :ios, .*/platform :ios, '\''17.0'\''/' ios/Podfile
-          grep "platform :" ios/Podfile
+      # - name: Set iOS Deployment Target to 17
+      #   run: |
+      #     sed -i.bak 's/platform :ios, .*/platform :ios, '\''17.0'\''/' ios/Podfile
+      #     grep "platform :" ios/Podfile
 
-      - name: Build iOS (no codesign)
-        run: |
-          flutter build ios --release --no-codesign
-          cd build/ios/iphoneos
-          mkdir Payload
-          cp -r Runner.app Payload/
-          zip -r app.ipa Payload
+      # - name: Build iOS (no codesign)
+      #   run: |
+      #     flutter build ios --release --no-codesign
+      #     cd build/ios/iphoneos
+      #     mkdir Payload
+      #     cp -r Runner.app Payload/
+      #     zip -r app.ipa Payload
 
       # RELEASE
       - name: Push to Releases
