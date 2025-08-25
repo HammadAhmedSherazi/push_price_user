@@ -1,9 +1,8 @@
 import 'export_all.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+// import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() async {
   await ScreenUtil.ensureScreenSize();
-  Stripe.publishableKey = "sk_test_BQokikJOvBiI2HlWgH4olfQ2";
   runApp(const MyApp());
 }
 

@@ -3,8 +3,9 @@ import 'package:push_price_user/utils/extension.dart';
 import '../../export_all.dart';
 
 class AddNewFavouriteView extends StatefulWidget {
+  final bool isSignUp;
   final bool? isEdit;
-  const AddNewFavouriteView({super.key, this.isEdit = false});
+  const AddNewFavouriteView({super.key, this.isEdit = false, required this.isSignUp});
 
   @override
   State<AddNewFavouriteView> createState() => _AddNewFavouriteViewState();
@@ -23,12 +24,18 @@ class _AddNewFavouriteViewState extends State<AddNewFavouriteView> {
       showBottomButton: true,
       bottomButtonText: "add favorite",
       onButtonTap: (){
-        if(!widget.isEdit!){
+        if(widget.isSignUp){
+          AppRouter.pushAndRemoveUntil(NavigationView());
+        }
+        else{
+          if(!widget.isEdit!){
           AppRouter.customback(times: 4);
         }
         else{
           AppRouter.back();
         }
+        }
+        
       },
       title: widget.isEdit!? "save": "Add New Favorite", child: ListView(
       padding: EdgeInsets.symmetric(

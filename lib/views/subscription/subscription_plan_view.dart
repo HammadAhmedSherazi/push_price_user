@@ -21,7 +21,7 @@ class SubscriptionPlanView extends StatelessWidget {
                     child: CustomButtonWidget(
                       title: "subscribe",
                       onPressed: () {
-                        AppRouter.pushAndRemoveUntil(NavigationView());
+                        AppRouter.pushReplacement(AddFavouriteView());
                       },
                     ),
                   ),
@@ -40,7 +40,7 @@ class SubscriptionPlanView extends StatelessWidget {
       showBottomButton: true,
       bottomButtonText: "next",
       onButtonTap: () {
-        AppRouter.pushAndRemoveUntil(NavigationView());
+        AppRouter.push(AddFavouriteView());
       },
       title: "Subscription",
       child: ListView(

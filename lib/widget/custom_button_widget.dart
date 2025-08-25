@@ -72,7 +72,7 @@ class CustomButtonWidget extends StatelessWidget {
 class CustomOutlineButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
-  final double? height, width;
+  final double? height, width,radius;
   final Color? color;
   final Color? textColor;
   final Widget? child;
@@ -84,6 +84,7 @@ class CustomOutlineButtonWidget extends StatelessWidget {
       required this.title,
       required this.onPressed,
       this.height,
+      this.radius,
       this.color,
       this.textColor,
       this.child,
@@ -103,7 +104,7 @@ class CustomOutlineButtonWidget extends StatelessWidget {
               side: WidgetStatePropertyAll(
                   BorderSide(color: outlineColor ?? AppColors.borderColor)),
               shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32.r))),
+                  borderRadius: BorderRadius.circular(radius ?? 32.r))),
               backgroundColor:
                   WidgetStatePropertyAll(color ?? Colors.transparent)),
           onPressed: !isLoad ? onPressed : null,

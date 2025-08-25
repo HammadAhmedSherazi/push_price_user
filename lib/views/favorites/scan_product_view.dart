@@ -4,7 +4,8 @@ import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 import '../../export_all.dart';
 
 class ScanProductView extends StatelessWidget {
-  const ScanProductView({super.key});
+  final bool isSignUp;
+  const ScanProductView({super.key, required this.isSignUp});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +61,7 @@ class ScanProductView extends StatelessWidget {
                 ),
                 5.ph,
                 CustomButtonWidget(title: "select product", onPressed: (){
-                  AppRouter.push(AddNewFavouriteView());
+                  AppRouter.push(AddNewFavouriteView(isSignUp: isSignUp,));
                 })
               ],
             ),

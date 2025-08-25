@@ -3,7 +3,8 @@ import 'package:push_price_user/utils/extension.dart';
 import '../../export_all.dart';
 
 class SearchProductView extends StatefulWidget {
-  const SearchProductView({super.key});
+  final bool? isSignUp;
+  const SearchProductView({super.key, this.isSignUp = false});
 
   @override
   State<SearchProductView> createState() => _SearchProductViewState();
@@ -24,13 +25,19 @@ class _SearchProductViewState extends State<SearchProductView> {
       showBottomButton: true,
       bottomButtonText: "next",
       onButtonTap: (){
-        AppRouter.back();
+        if(widget.isSignUp!){
+          AppRouter.pushAndRemoveUntil(NavigationView());
+        }
+        else{
+          AppRouter.back();
+        }
+        
       },
       title: "Search", actionWidget: Row(
       children: [
         GestureDetector(
           onTap: (){
-            AppRouter.push(ScanView());
+            AppRouter.push(ScanView(isSignUp: widget.isSignUp!,));
           },
           child: Container(
             

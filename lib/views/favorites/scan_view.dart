@@ -2,7 +2,8 @@ import 'package:push_price_user/utils/extension.dart';
 import '../../export_all.dart';
 
 class ScanView extends StatelessWidget {
-  const ScanView({super.key});
+  final bool isSignUp;
+  const ScanView({super.key, required this.isSignUp });
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class ScanView extends StatelessWidget {
       showBottomButton: true,
       bottomButtonText: "scan now",
       onButtonTap: (){
-        AppRouter.push(ScanProductView());
+        AppRouter.push(ScanProductView(isSignUp: isSignUp,));
       },
       
       child: ListView(

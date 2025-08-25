@@ -57,6 +57,7 @@ export './views/home/all_category_view.dart';
 export './views/auth/new_password_view.dart';
 export './views/home/add_new_address_view.dart';
 export './views/home/all_store_view.dart';
+export './views/auth/add_favourite_view.dart';
 
 
 
