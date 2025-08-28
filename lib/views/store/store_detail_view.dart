@@ -1,8 +1,9 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
 class StoreDetailView extends StatelessWidget {
+
   const StoreDetailView({super.key});
 
   @override

@@ -30,7 +30,7 @@ enum OrderStatus {
   cancelled,
 }
 
-setCardIcon(String type){
+String setCardIcon(String type){
   switch (type) {
     case "visa":
       return Assets.visaIcon;

@@ -1,4 +1,4 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 import '../../export_all.dart';
 
 class NotificationView extends StatelessWidget {

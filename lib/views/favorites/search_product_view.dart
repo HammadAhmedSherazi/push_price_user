@@ -1,4 +1,5 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
+import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../export_all.dart';
 
@@ -11,7 +12,7 @@ class SearchProductView extends StatefulWidget {
 }
 
 class _SearchProductViewState extends State<SearchProductView> {
-   addFavoriteProduct(int index){
+   void addFavoriteProduct(int index){
     final product = products[index];
     products[index] = product.copyWith(isSelect: !product.isSelect);
     setState(() {
@@ -22,14 +23,14 @@ class _SearchProductViewState extends State<SearchProductView> {
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
-      showBottomButton: true,
+      showBottomButton: products.indexWhere((item)=> item.isSelect) != -1,
       bottomButtonText: "next",
       onButtonTap: (){
         if(widget.isSignUp!){
           AppRouter.pushAndRemoveUntil(NavigationView());
         }
         else{
-          AppRouter.back();
+          AppRouter.push(AddNewFavouriteView(isSignUp: widget.isSignUp!));
         }
         
       },

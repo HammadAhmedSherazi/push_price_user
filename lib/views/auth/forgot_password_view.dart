@@ -1,5 +1,5 @@
-import 'package:push_price_user/utils/extension.dart';
-import 'package:push_price_user/views/auth/otp_view.dart';
+import '../../utils/extension.dart';
+import 'otp_view.dart';
 
 import '../../export_all.dart';
 

@@ -1,4 +1,6 @@
-import 'package:push_price_user/utils/extension.dart';
+import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
+
+import '../../utils/extension.dart';
 import '../../export_all.dart';
 
 class FavouriteView extends StatefulWidget {
@@ -33,7 +35,10 @@ class _FavouriteViewState extends State<FavouriteView> {
                 padding: EdgeInsets.all(AppTheme.horizontalPadding),
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  return ProductTitleWidget(product: product);
+                  return ProductTitleWidget(product: product, onEditCall: (){
+                    // AppRouter.push()
+                    AppRouter.push(AddNewFavouriteView(isSignUp: false, isEdit: true,));
+                  },);
                 }, separatorBuilder: (context, index)=> 10.ph, itemCount: products.length),
             ),
             Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "add new favorite", onPressed: (){
@@ -47,46 +52,57 @@ class _FavouriteViewState extends State<FavouriteView> {
 }
 
 class ProductTitleWidget extends StatelessWidget {
+  final VoidCallback ? onEditCall;
   const ProductTitleWidget({
     super.key,
     required this.product,
+    this.onEditCall
   });
 
   final ProductDataModel product;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 10.r,
-        vertical: 3.r
-      ),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8.r),
-      color: Color.fromRGBO(243, 243, 243, 1)
-    ),
-    child: Row(
-      spacing: 10,
-      children: [
-        Image.asset(product.image, width: 57.w, height: 70.h,),
-        Expanded(
-          child: Column(
-            spacing: 12,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(product.title, style: context.textStyle.bodyMedium),
-              Text(product.description, style: context.textStyle.bodySmall!.copyWith(
-                color: AppColors.primaryTextColor.withValues(alpha: 0.7),
-                
-              )),
-            
-            ],
-          ),
+    return GestureDetector(
+      onTap: (){
+        AppRouter.push(ProductDetailView(quatity: 0));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 10.r,
+          vertical: 3.r
         ),
-        20.pw
-       
-      ],
-    ),
-                    );
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.r),
+        color: Color.fromRGBO(243, 243, 243, 1)
+      ),
+      child: Row(
+        spacing: 10,
+        children: [
+          Image.asset(product.image, width: 57.w, height: 70.h,),
+          Expanded(
+            child: Column(
+              spacing: 12,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(product.title, style: context.textStyle.bodyMedium),
+                Text(product.description, style: context.textStyle.bodySmall!.copyWith(
+                  color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                  
+                )),
+              
+              ],
+            ),
+          ),
+          if(onEditCall == null)
+          20.pw,
+          if(onEditCall != null)
+          IconButton(onPressed: onEditCall, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))
+
+         
+        ],
+      ),
+                      ),
+    );
   }
 }

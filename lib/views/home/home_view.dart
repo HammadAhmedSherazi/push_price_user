@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 
 import '../../export_all.dart';
@@ -422,25 +422,30 @@ class CategoriesSection extends StatelessWidget {
                 final category = categories[index];
                 return SizedBox(
                   width: context.screenwidth * 0.17,
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      CircleAvatar(
-                        radius: 25.r,
-                        backgroundColor: Color.fromRGBO(238, 247, 254, 1),
-                        child: Padding(
-                          padding: EdgeInsets.all(5.r),
-                          child: Image.asset(category.icon),
+                  child: GestureDetector(
+                    onTap: (){
+                      AppRouter.push(CategoryProductView(title: category.title));
+                    },
+                    child: Column(
+                      spacing: 10,
+                      children: [
+                        CircleAvatar(
+                          radius: 25.r,
+                          backgroundColor: Color.fromRGBO(238, 247, 254, 1),
+                          child: Padding(
+                            padding: EdgeInsets.all(5.r),
+                            child: Image.asset(category.icon),
+                          ),
                         ),
-                      ),
-                      Text(
-                        category.title,
-                        style: context.textStyle.bodyMedium,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        Text(
+                          category.title,
+                          style: context.textStyle.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

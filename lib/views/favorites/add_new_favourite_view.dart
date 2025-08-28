@@ -1,4 +1,4 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
@@ -22,7 +22,7 @@ class _AddNewFavouriteViewState extends State<AddNewFavouriteView> {
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
       showBottomButton: true,
-      bottomButtonText: "add favorite",
+      bottomButtonText: widget.isEdit!? "save" :"add favorite",
       onButtonTap: (){
         if(widget.isSignUp){
           AppRouter.pushAndRemoveUntil(NavigationView());
@@ -37,7 +37,7 @@ class _AddNewFavouriteViewState extends State<AddNewFavouriteView> {
         }
         
       },
-      title: widget.isEdit!? "save": "Add New Favorite", child: ListView(
+      title: widget.isEdit!? "Edit": "Add New Favorite", child: ListView(
       padding: EdgeInsets.symmetric(
         vertical: AppTheme.horizontalPadding
       ),

@@ -81,6 +81,7 @@ abstract class  Assets {
   static const String voucherOutlineIcon = "${iconPath}voucher_outline_icon.svg";
   static const String notificationWhiteIcon = "${iconPath}notification_white_icon.svg";
   static const String addPlusIcon = "${iconPath}add_plus_icon.svg";
+  static const String deleteIcon = "${iconPath}delete_icon.svg";
   
   static const String userImage = "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D";
 

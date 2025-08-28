@@ -19,7 +19,7 @@ class AppRouter {
   }
   focusScope.unfocus();
 }
-  static push(page, {Function()? fun}) async {
+  static Future<void> push(page, {Function()? fun}) async {
     await Navigator.push(
       navKey.currentContext!,
       MaterialPageRoute(builder: (context) => page),

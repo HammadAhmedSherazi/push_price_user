@@ -1,4 +1,4 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
@@ -39,7 +39,7 @@ class _StoreViewState extends State<StoreView> {
   ];
   List<ProductPurchasingDataModel> cartList = [];
 
-  addQuantity(index) {
+  void addQuantity(int index) {
     final product = products[index];
     setState(() {
       
@@ -50,7 +50,7 @@ class _StoreViewState extends State<StoreView> {
 
     });
   }
-  removeQuantity(index){
+  void removeQuantity(int index){
     final product = products[index];
     if(product.quantity >0){
        setState(() {
@@ -200,7 +200,9 @@ class _StoreViewState extends State<StoreView> {
                 final product = products[index];
                 return GestureDetector(
                   onTap: (){
-                    AppRouter.push(ProductDetailView());
+                    AppRouter.push(ProductDetailView(
+                      quatity: product.quantity,
+                    ));
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
@@ -233,13 +235,30 @@ class _StoreViewState extends State<StoreView> {
                               onTap: () {
                                 removeQuantity(index);
                               },
-                              child: Icon(Icons.delete, color: Color(0xffAE1B0D),)),
+                              child: product.quantity == 1? SvgPicture.asset(Assets.deleteIcon) : Container(
+                                width: 17.r,
+                                height: 17.r,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: AppColors.secondaryColor
+                                  )
+
+                                ),
+                                child: Text("-", style: TextStyle(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: 12.sp,
+                                  height: 1.0
+                                ),),
+                              )),
                             Text("${product.quantity}", style: context.textStyle.displayMedium,),
                             GestureDetector(
                               onTap: (){
                                 addQuantity(index);
                               },
-                              child: SvgPicture.asset(Assets.addCircleIcon)),
+                              child: SvgPicture.asset(Assets.addCircleIcon,)),
                           ],
                         ),
                       ): IconButton(

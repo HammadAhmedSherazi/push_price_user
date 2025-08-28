@@ -1,25 +1,31 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
 class CartView extends StatefulWidget {
-  const CartView({super.key});
+  final int? count;
+  const CartView({super.key, this.count});
 
   @override
   State<CartView> createState() => _CartViewState();
 }
 
 class _CartViewState extends State<CartView> {
-  addQuantity(index) {
+  void addQuantity(int index) {
     setState(() {
       myCartItem[index].quantity = myCartItem[index].quantity + 1;
     });
   }
 
-  removeQuantity(index) {
+  void removeQuantity(int index) {
     if (myCartItem[index].quantity > 1) {
       setState(() {
         myCartItem[index].quantity = myCartItem[index].quantity - 1;
+      });
+    }
+    if(myCartItem[index].quantity == 1){
+      setState(() {
+        myCartItem.removeAt(index);
       });
     }
   }
@@ -56,11 +62,13 @@ class _CartViewState extends State<CartView> {
   );
   @override
   Widget build(BuildContext context) {
+    final total = myCartItem.fold(0.0, (sum, item) => sum + item.discountAmount * item.quantity);
     return CustomScreenTemplate(
-      showBottomButton: true,
+      showBottomButton: total > 0.0,
       onButtonTap: () {
         AppRouter.pushReplacement(
           OrderSuccessModifiedView(
+            count:widget.count,
             message: "Your Order Has Been Placed Successfully!",
           ),
         );
@@ -178,7 +186,7 @@ class _CartViewState extends State<CartView> {
                                     removeQuantity(index);
                                   },
                                   child: SvgPicture.asset(
-                                    Assets.minusSquareIcon,
+                                 product.quantity == 1 ? Assets.deleteIcon :   Assets.minusSquareIcon,
                                   ),
                                 ),
                                 Text(
@@ -301,13 +309,13 @@ class _CartViewState extends State<CartView> {
                 OrderDetailTitleWidget(
                   title: "Item Total",
                   value:
-                      "\$${myCartItem.fold(0.0, (sum, item) => sum + item.discountAmount * item.quantity)}",
+                      "\$$total",
                 ),
                 10.ph,
                 OrderDetailTitleWidget(
                   title: "Total",
                   value:
-                      "\$${myCartItem.fold(0.0, (sum, item) => sum + item.discountAmount * item.quantity)}",
+                      "\$$total",
                 ),
                 10.ph,
                 GestureDetector(
@@ -339,10 +347,7 @@ class _CartViewState extends State<CartView> {
                   children: [
                     Text("Total", style: context.textStyle.displayMedium),
                     Text(
-                      "\$${myCartItem.fold(
-  0.0,
-  (sum, item) => sum + item.discountAmount * item.quantity,
-)}",
+                      "\$$total",
                       style: context.textStyle.displayMedium!.copyWith(
                         color: AppColors.secondaryColor,
                       ),
@@ -356,7 +361,7 @@ class _CartViewState extends State<CartView> {
                       "\$${myCartItem.fold(
   0.0,
   (sum, item) => sum + item.price! * item.quantity,
-)}",
+).toStringAsFixed(2)}",
                       style: context.textStyle.displaySmall!.copyWith(
                         decoration: TextDecoration.lineThrough,
                       ),

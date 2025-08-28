@@ -1,33 +1,79 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
 class ProductDetailView extends StatefulWidget {
-  const ProductDetailView({super.key});
+  final int quatity;
+  const ProductDetailView({super.key, required this.quatity});
 
   @override
   State<ProductDetailView> createState() => _ProductDetailViewState();
 }
 
 class _ProductDetailViewState extends State<ProductDetailView> {
-  int quantity = 1;
-   addQuantity(){
+  int quantity = 0;
+  int count = 0;
+   void addQuantity(){
    
     setState(() {
        quantity++;
+       count++;
     });
   }
-  removeQuantity(){
-    if(quantity > 1){
+  void removeQuantity(){
+    if(quantity > 0){
       setState(() {
         quantity--;
+        count--;
     });
     }
     
   }
   @override
+  void initState() {
+   quantity = widget.quatity;
+   count = widget.quatity;
+    super.initState();
+    
+  }
+  int listCount = 5;
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: count > 0? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "", onPressed: (){
+        AppRouter.push(CartView(
+          count: 5,
+        ));
+      }, child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 20.r,
+              height: 20.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 0.8
+                )
+              ),
+              alignment: Alignment.center,
+              child: Text("$count", style: context.textStyle.titleSmall!.copyWith(
+                color: Colors.white
+              ),),
+            ),
+            Text("View Your Cart", style: context.textStyle.bodyMedium!.copyWith(
+              color: Colors.white
+            ),),
+            Text("\$${count * 80}", style: context.textStyle.bodySmall!.copyWith(
+              color: Colors.white
+            ),),
+          ],
+        ),
+      ),),) : null,
       appBar: PreferredSize(preferredSize: Size.fromHeight(context.screenheight * 0.16), child: Container(
         width: double.infinity,
         height: double.infinity,
@@ -107,7 +153,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                     ),
                   10.ph,
                   Row(
-                    children: [
+                    children: quantity > 0? [
                       Container(
                           // height: 30.h,
                           padding: EdgeInsets.all(8.r),
@@ -128,19 +174,29 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                                 onTap: () {
                                   removeQuantity();
                                 },
-                                child: SvgPicture.asset(Assets.minusSquareIcon)),
+                                child: quantity == 1?  SvgPicture.asset(Assets.deleteIcon):   SvgPicture.asset(Assets.minusSquareIcon)
+                                ),
                               Text("$quantity", style: context.textStyle.displayMedium,),
+                             
+                              
                               GestureDetector(
                                 onTap: (){
                                   addQuantity();
                                 },
                                 child: SvgPicture.asset(Assets.plusSquareIcon)),
-                            ],
+                            ]
                           ),
                         ),
-                    ],
+                    ]  : [
+                               GestureDetector(
+                              onTap: (){
+                                addQuantity();
+                              },
+                              child: SvgPicture.asset(Assets.addCircleIcon,)),
+                            ],
                   ),
-                  20.ph,
+                  if(listCount > 0)...[
+                    20.ph,
                   Text("Promotional Products", style: context.textStyle.headlineMedium,),
                   10.ph,
                   SizedBox(
@@ -167,7 +223,12 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                                   horizontal: -4.0
                                 ),
                                 padding: EdgeInsets.zero,
-                                onPressed: (){}, icon: SvgPicture.asset(Assets.addCircleIcon)),
+                                onPressed: (){
+                                  setState(() {
+                                    listCount--;
+                                    count++;
+                                  });
+                                }, icon: SvgPicture.asset(Assets.addCircleIcon)),
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -188,7 +249,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                               ),
                               Row(
                                 children: [
-                                  Expanded(child: Text("\$ 199.99", style: context.textStyle.titleSmall,)),
+                                  Expanded(child: Text("\$ 80.00", style: context.textStyle.titleSmall,)),
                                   
                                 ],
                               ),
@@ -197,8 +258,10 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                           ),
                         ],
                       ),
-                    ), separatorBuilder: (context, index)=> 10.pw, itemCount: 5),
+                    ), separatorBuilder: (context, index)=> 10.pw, itemCount: listCount),
                   )
+                  ]
+                  
                     
         ],
       ),
