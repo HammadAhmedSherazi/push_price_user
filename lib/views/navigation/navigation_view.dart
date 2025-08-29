@@ -188,6 +188,8 @@ class _NavigationViewState extends State<NavigationView> {
                       controller: drawerScrollController,
                       child: ListView(
                         primary: false,
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
                         controller: drawerScrollController,
                         padding: EdgeInsets.all(20.r),
                         children: List.generate(menuData.length, (index) {

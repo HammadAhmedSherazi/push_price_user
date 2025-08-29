@@ -1,3 +1,5 @@
+import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
+
 import '../../utils/extension.dart';
 import '../../export_all.dart';
 
@@ -33,7 +35,10 @@ class _FavouriteViewState extends State<FavouriteView> {
                 padding: EdgeInsets.all(AppTheme.horizontalPadding),
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  return ProductTitleWidget(product: product);
+                  return ProductTitleWidget(product: product, onEditCall: (){
+                    // AppRouter.push()
+                    AppRouter.push(AddNewFavouriteView(isSignUp: false, isEdit: true,));
+                  },);
                 }, separatorBuilder: (context, index)=> 10.ph, itemCount: products.length),
             ),
             Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "add new favorite", onPressed: (){
@@ -47,9 +52,11 @@ class _FavouriteViewState extends State<FavouriteView> {
 }
 
 class ProductTitleWidget extends StatelessWidget {
+  final VoidCallback ? onEditCall;
   const ProductTitleWidget({
     super.key,
     required this.product,
+    this.onEditCall
   });
 
   final ProductDataModel product;
@@ -87,7 +94,11 @@ class ProductTitleWidget extends StatelessWidget {
               ],
             ),
           ),
-          20.pw
+          if(onEditCall == null)
+          20.pw,
+          if(onEditCall != null)
+          IconButton(onPressed: onEditCall, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))
+
          
         ],
       ),
