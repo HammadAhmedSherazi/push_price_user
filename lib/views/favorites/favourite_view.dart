@@ -1,4 +1,4 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 import '../../export_all.dart';
 
 class FavouriteView extends StatefulWidget {
@@ -56,37 +56,42 @@ class ProductTitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 10.r,
-        vertical: 3.r
-      ),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8.r),
-      color: Color.fromRGBO(243, 243, 243, 1)
-    ),
-    child: Row(
-      spacing: 10,
-      children: [
-        Image.asset(product.image, width: 57.w, height: 70.h,),
-        Expanded(
-          child: Column(
-            spacing: 12,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(product.title, style: context.textStyle.bodyMedium),
-              Text(product.description, style: context.textStyle.bodySmall!.copyWith(
-                color: AppColors.primaryTextColor.withValues(alpha: 0.7),
-                
-              )),
-            
-            ],
-          ),
+    return GestureDetector(
+      onTap: (){
+        AppRouter.push(ProductDetailView(quatity: 0));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 10.r,
+          vertical: 3.r
         ),
-        20.pw
-       
-      ],
-    ),
-                    );
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.r),
+        color: Color.fromRGBO(243, 243, 243, 1)
+      ),
+      child: Row(
+        spacing: 10,
+        children: [
+          Image.asset(product.image, width: 57.w, height: 70.h,),
+          Expanded(
+            child: Column(
+              spacing: 12,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(product.title, style: context.textStyle.bodyMedium),
+                Text(product.description, style: context.textStyle.bodySmall!.copyWith(
+                  color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                  
+                )),
+              
+              ],
+            ),
+          ),
+          20.pw
+         
+        ],
+      ),
+                      ),
+    );
   }
 }

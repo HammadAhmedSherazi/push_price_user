@@ -1,4 +1,4 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 
 import '../../export_all.dart';
@@ -40,6 +40,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         }
       },
       title: widget.isEdit!? "Edit Profile": "Create Profile", showBottomButton: true, bottomButtonText: widget.isEdit!?"save" :"continue", child: ListView(
+        physics: BouncingScrollPhysics(),
       padding: EdgeInsets.symmetric(
         horizontal: AppTheme.horizontalPadding
       ),

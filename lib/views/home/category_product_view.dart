@@ -2,23 +2,17 @@ import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
-class StoreView extends StatefulWidget {
-  const StoreView({super.key});
+class CategoryProductView extends StatefulWidget {
+  final String title;
+  const CategoryProductView({super.key, required this.title});
 
   @override
-  State<StoreView> createState() => _StoreViewState();
+  State<CategoryProductView> createState() => _CategoryProductViewState();
 }
 
-class _StoreViewState extends State<StoreView> {
-  int selectIndex = 0;
-  int count = 0;
+class _CategoryProductViewState extends State<CategoryProductView> {
+   int count = 0;
   num price = 0;
-  final List<String> listType = [
-    "Best by Products",
-    "Instant Sales",
-    "Weighted Items",
-    "Promotional Products",
-  ];
   final List<ProductPurchasingDataModel> products = [
     ProductPurchasingDataModel(
       title: "ABC Product",
@@ -74,9 +68,12 @@ class _StoreViewState extends State<StoreView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomSheet: count >0? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "", onPressed: (){
-        AppRouter.push(CartView());
+    return CustomScreenTemplate(
+      showBottomButton: count >0,
+      customBottomWidget: count >0? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "", onPressed: (){
+        AppRouter.push(CartView(
+          count: 3,
+        ));
       }, child: Padding(
         padding: const EdgeInsets.all(8.0),
         
@@ -107,94 +104,7 @@ class _StoreViewState extends State<StoreView> {
           ],
         ),
       ),),) : null,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(context.screenheight * 0.10),
-        child:
-            // Container(
-            //   decoration: BoxDecoration(
-            //     color: AppColors.primaryAppBarColor,
-            //     borderRadius: BorderRadius.vertical(
-            //       bottom: Radius.circular(30.r)
-            //     )
-            //   ),
-            // )
-            AppBar(
-              elevation: 0.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(30.r),
-                ),
-              ),
-              backgroundColor: AppColors.primaryAppBarColor,
-              leadingWidth: context.screenwidth * 0.35,
-              leading: Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppTheme.horizontalPadding,
-                      vertical: 10.r,
-                    ),
-                    child: CustomBackWidget(),
-                  ),
-                ],
-              ),
-              centerTitle: true,
-              title: GestureDetector(
-                onTap: (){
-                  AppRouter.push(StoreDetailView());
-                },
-                child: Text("Abc Store", style: context.textStyle.displayMedium)),
-              actions: [
-                UserProfileWidget(
-                  radius: 18.r,
-                  imageUrl: Assets.userImage,
-                  borderWidth: 2,
-                ),
-                20.pw,
-              ],
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(context.screenheight),
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 20.r),
-                  child: Row(
-                    spacing: 10,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(Assets.locationIcon),
-                      Text(
-                        'ABC, Street Lorem Ipsum, NY City',
-                        style: context.textStyle.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SelectChipWidget(
-            items: listType,
-            selectedIndex: selectIndex,
-            onSelected: (index) {
-              setState(() {
-                selectIndex = index;
-              });
-            },
-          ),
-          5.ph,
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppTheme.horizontalPadding,
-            ),
-            child: Text(
-              listType[selectIndex],
-              style: context.textStyle.displayMedium,
-            ),
-          ),
-          Expanded(
-            child: ListView.separated(
+      title: widget.title, child: ListView.separated(
               padding: EdgeInsets.all(AppTheme.horizontalPadding),
               itemBuilder: (context, index) {
                 final product = products[index];
@@ -331,9 +241,7 @@ class _StoreViewState extends State<StoreView> {
                                   ),
                                   8.ph,
                                   Text(
-                                    listType[selectIndex] == "Best by Products"
-                                        ? "Best By: April 25, 2025"
-                                        : product.description,
+                                     product.description,
                                     style: context.textStyle.bodySmall!.copyWith(
                                       color: AppColors.primaryTextColor
                                           .withValues(alpha: 0.7),
@@ -354,9 +262,6 @@ class _StoreViewState extends State<StoreView> {
               separatorBuilder: (context, index) => 10.ph,
               itemCount: products.length,
             ),
-          ),
-        ],
-      ),
-    );
+         );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
@@ -19,6 +19,10 @@ class AllCategoryView extends StatelessWidget {
       itemBuilder: (context, index) {
       final category = categories[index];
       return ListTile(
+        onTap: (){
+            AppRouter.push(CategoryProductView(title: category.title));
+                  
+        },
       contentPadding: EdgeInsets.symmetric(
         horizontal: 0.0
       ),

@@ -1,10 +1,11 @@
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 import '../../export_all.dart';
 
 class OrderSuccessModifiedView extends StatelessWidget {
   final String message;
-  const OrderSuccessModifiedView({super.key, required this.message});
+  final int? count;
+  const OrderSuccessModifiedView({super.key, required this.message, this.count});
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +28,21 @@ class OrderSuccessModifiedView extends StatelessWidget {
               fontSize: 16.sp
             ),),
             CustomButtonWidget(title: "view order", onPressed: (){
-              AppRouter.back();
+              if(count != null){
+                AppRouter.customback(times: 3);
+                AppRouter.push(MyOrderView());
+                
+              }
+              else{
+                AppRouter.customback(times: 2);
+                AppRouter.push(MyOrderView());
+
+              }
+              
             }),
             CustomOutlineButtonWidget(title: "back to home", onPressed: (){
               AppRouter.customback(
-                times: message.contains("Modified")? 4 : 2
+                times: message.contains("Modified")? 4 : count ?? 2
               );
               // AppRouter.pushAndRemoveUntil(NavigationView());
             })

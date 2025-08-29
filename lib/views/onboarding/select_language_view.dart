@@ -1,5 +1,5 @@
 import 'package:push_price_user/export_all.dart';
-import 'package:push_price_user/utils/extension.dart';
+import '../../utils/extension.dart';
 
 class SelectLanguageView extends StatefulWidget {
   const SelectLanguageView({super.key});
