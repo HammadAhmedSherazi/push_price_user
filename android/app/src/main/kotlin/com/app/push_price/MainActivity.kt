@@ -1,4 +1,4 @@
-package com.app.push_price_user
+package com.app.push_price
 
 import io.flutter.embedding.android.FlutterActivity
 
