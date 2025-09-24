@@ -1,4 +1,4 @@
-# ai_project
+# Push Price
 
 A new Flutter project.
 
