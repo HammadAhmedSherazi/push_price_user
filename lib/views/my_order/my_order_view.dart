@@ -104,7 +104,7 @@ class OrderCardWidget extends StatelessWidget {
   }
 }
 
-setOrderStatus(int index){
+OrderStatus setOrderStatus(int index){
   switch (index) {
     case 0:
       return OrderStatus.inProcess;
@@ -112,6 +112,8 @@ setOrderStatus(int index){
       return OrderStatus.completed;
     case 2:
       return OrderStatus.cancelled;
+    default:
+      return OrderStatus.inProcess;
   }
   
 }

@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import '../../utils/extension.dart';
-
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class HomeView extends StatefulWidget {
   final ScrollController scrollController;
@@ -291,9 +289,9 @@ class StoreCardWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(data.icon, width: 50.r, height: 50.r),
-            Text(data.title, maxLines: 1, style: context.textStyle.bodySmall),
-            Text(data.address, style: context.textStyle.titleSmall, maxLines: 1),
+            Image.asset(data.icon!, width: 50.r, height: 50.r),
+            Text(data.title!, maxLines: 1, style: context.textStyle.bodySmall),
+            Text(data.address!, style: context.textStyle.titleSmall, maxLines: 1),
             Row(
               
               mainAxisSize: MainAxisSize.min,

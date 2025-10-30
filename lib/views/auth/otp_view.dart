@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
+
 
 
 import '../../export_all.dart';
@@ -23,9 +24,9 @@ class _OtpViewState extends State<OtpView> {
           style: context.textStyle.bodyMedium!,
 
           children: [
-            TextSpan(text: "Didn't receive the OTP?"),
+            TextSpan(text: context.tr("didnt_receive_otp")),
             TextSpan(
-              text: " Resend",
+              text: " ${context.tr("resend")}",
               style: context.textStyle.bodyMedium!.copyWith(
                 color: context.colors.primary,
               ),
@@ -40,14 +41,14 @@ class _OtpViewState extends State<OtpView> {
           ],
         ),
       ) : null,
-      title: "OTP",
+      title: context.tr("otp"),
       childrens: [
         Padding(
           padding: EdgeInsetsGeometry.symmetric(
             horizontal: AppTheme.horizontalPadding,
           ),
           child: Text(
-            "We have sent you an email containing 6 digits verification code. Please enter the code to verify your identityh",
+            context.tr("we_have_sent_you_an_email_containing_6_digits_verification_code_please_enter_the_code_to_verify_your_identity"),
             textAlign: TextAlign.center,
             style: context.textStyle.titleMedium,
           ),
@@ -55,6 +56,7 @@ class _OtpViewState extends State<OtpView> {
         20.ph,
         OtpTextField(
           numberOfFields: 6,
+          
           onSubmit: (value) {
             if (widget.isSignup) {
               AppRouter.push(CreateProfileView());

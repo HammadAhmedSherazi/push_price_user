@@ -1,19 +1,16 @@
 
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
 
-class NavigationView extends StatefulWidget {
+class NavigationView extends ConsumerStatefulWidget {
   const NavigationView({super.key});
 
   @override
-  State<NavigationView> createState() => _NavigationViewState();
+  ConsumerState<NavigationView> createState() => _NavigationViewState();
 }
 
-class _NavigationViewState extends State<NavigationView> {
- 
-
-  int selectIndex = 0;
+class _NavigationViewState extends ConsumerState<NavigationView> {
   // bool _isBottomBarVisible = true;
 
   final ScrollController scrollController = ScrollController();
@@ -53,10 +50,10 @@ class _NavigationViewState extends State<NavigationView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Logout', style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp)),
+                Text(context.tr('logout'), style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp)),
                 10.ph,
                 Text(
-                  'Are you sure you want to logout?',
+                  context.tr('are_you_sure_you_want_to_logout'),
                   textAlign: TextAlign.center,
                   style: context.textStyle.bodyMedium!.copyWith(color: Colors.grey),
                 ),
@@ -66,14 +63,20 @@ class _NavigationViewState extends State<NavigationView> {
                   children: [
                     Expanded(
                       child: CustomOutlineButtonWidget(
-                        title: "cancel",
+                        title: context.tr("cancel"),
                         onPressed: () => AppRouter.back(),
                       ),
                     ),
                     Expanded(
-                      child: CustomButtonWidget(
-                        title: "logout",
-                        onPressed: () => AppRouter.pushAndRemoveUntil(LoginView()),
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          return CustomButtonWidget(
+                            title: context.tr("logout"),
+                            onPressed: () {
+                              ref.read(authProvider.notifier).logout();
+                            },
+                          );
+                        }
                       ),
                     ),
                   ],
@@ -93,9 +96,9 @@ class _NavigationViewState extends State<NavigationView> {
      final List<MenuDataModel> menuData = [
     MenuDataModel(title: "My Favorites", icon: Assets.menuFavouritIcon, onTap: () {
       AppRouter.back();
-      setState(() {
-        selectIndex = 2;
-      });
+      // setState(() {
+      //   selectIndex = 2;
+      // });
       
     }),
     MenuDataModel(title: "My Orders", icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
@@ -139,7 +142,7 @@ class _NavigationViewState extends State<NavigationView> {
               ),
               Positioned(
                 left: 0,
-                bottom: 50.r,
+                bottom: 60.r,
                 child: GestureDetector(
                   onTap: () => showLogoutDialog(context),
                   child: Container(
@@ -155,7 +158,7 @@ class _NavigationViewState extends State<NavigationView> {
                       children: [
                         const Icon(Icons.exit_to_app, color: Colors.white),
                         Text(
-                          "Logout",
+                          context.tr("logout"),
                           style: context.textStyle.headlineMedium!.copyWith(
                             fontSize: 16.sp,
                             color: Colors.white,
@@ -169,29 +172,37 @@ class _NavigationViewState extends State<NavigationView> {
               Column(
                 children: [
                   50.ph,
-                  Center(
-                    child: Column(
-                      spacing: 7,
-                      children: [
-                        UserProfileWidget(radius: 45.r, imageUrl: Assets.userImage),
-                        5.ph,
-                        Text("John Smit", style: context.textStyle.headlineMedium!.copyWith(fontSize: 18.sp)),
-                        Text("Johnsmith@domain.com", style: context.textStyle.bodyMedium),
-                      ],
-                    ),
+                  Consumer(
+                    builder: (context, ref, child) {
+
+                      final user = ref.watch(authProvider.select((e)=>e.staffInfo))!;
+                      return Center(
+                        child: Column(
+                          spacing: 7,
+                          children: [
+                            UserProfileWidget(radius: 45.r, imageUrl: user.profileImage),
+                            5.ph,
+                            Text(user.fullName, style: context.textStyle.headlineMedium!.copyWith(fontSize: 18.sp)),
+                            Text(user.email, style: context.textStyle.bodyMedium),
+                          ],
+                        ),
+                      );
+                    }
                   ),
                   SizedBox(
-                    height: context.screenheight * 0.50,
+                    height: context.screenheight * 0.48,
                     child: Scrollbar(
                       trackVisibility: true,
                       thumbVisibility: true,
                       controller: drawerScrollController,
                       child: ListView(
                         primary: false,
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
                         controller: drawerScrollController,
-                        padding: EdgeInsets.all(20.r),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.r
+                        ).copyWith(
+                          top: 20.r
+                        ),
                         children: List.generate(menuData.length, (index) {
                           final menu = menuData[index];
                           return ListTile(
@@ -199,7 +210,7 @@ class _NavigationViewState extends State<NavigationView> {
                             visualDensity: VisualDensity(
                               vertical: -2.0
                             ),
-                            leading: SvgPicture.asset(menu.icon),
+                            leading: SvgPicture.asset(menu.icon,  ),
                             title: Text(menu.title),
                             titleTextStyle: context.textStyle.displayMedium!.copyWith(fontSize: 16.sp),
                           );
@@ -213,17 +224,31 @@ class _NavigationViewState extends State<NavigationView> {
           ),
         ),
       ),
-      body: bottomNavItems[selectIndex].child,
-      bottomNavigationBar: CustomBottomNavBarWidget(
-          items: bottomNavItems,
-          currentIndex: selectIndex,
-          onTap: (index) {
-            setState(() => selectIndex = index);
-          },
-        ),
-      // bottomNavigationBar: AnimatedSlide(
-      //   offset: _isBottomBarVisible ? Offset.zero : const Offset(0, 1),
-      //   duration: const Duration(milliseconds: 300),
+      body: Consumer(
+        builder: (context, ref, child) {
+          final selectedIndex = ref.watch(navigationProvider);
+          return bottomNavItems[selectedIndex].child;
+        },
+      ),
+
+      bottomNavigationBar: Consumer(
+        builder: (context, ref, child) {
+          final selectedIndex = ref.watch(navigationProvider);
+          return CustomBottomNavBarWidget(
+            items: bottomNavItems,
+            currentIndex: selectedIndex,
+            onTap: (index) {
+              ref.read(navigationProvider.notifier).setIndex(index);
+              if(index == 3){
+                 ref.read(authProvider.notifier).getMyStores();
+              }
+            },
+          );
+        },
+      )
+      //  AnimatedSlide(
+      //   offset: _isBottomBarVisible ? Offset.zero : const Offset(0, 100),
+      //   duration: const Duration(milliseconds: 2000),
       //   child: CustomBottomNavBarWidget(
       //     items: bottomNavItems,
       //     currentIndex: selectIndex,

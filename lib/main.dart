@@ -1,25 +1,25 @@
-import 'package:flutter/services.dart';
-
 import 'export_all.dart';
-// import 'package:flutter_stripe/flutter_stripe.dart';
+
+
 
 void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
-  ]);
+  WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
-  
-  runApp(const MyApp());
+  await SharedPreferenceManager.init();
+   runApp(
+    // Adding ProviderScope enables Riverpod for the entire project
+    const ProviderScope(child: MyApp()),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(localeProvider);
+    final prefs = SharedPreferenceManager.sharedInstance;
     //Set the fit size (Find your UI design, look at the dimensions of the device screen and fill it in,unit in dp)
     return ScreenUtilInit(
       designSize: const Size(360, 690),
@@ -32,32 +32,42 @@ class MyApp extends StatelessWidget {
           color: Colors.white,
           child: SafeArea(
             top: false,
-            // bottom: false,
-            // maintainBottomViewPadding: true,
+            bottom: false,
             minimum: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom
-            ),
+            bottom: MediaQuery.of(context).padding.bottom
+          ),
             child: MaterialApp(
               navigatorKey: AppRouter.navKey,
+              localizationsDelegates: const [
+                LocalizationService.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en', ""), // English
+                Locale('es', ""), // Spanish
+                // Add more languages here
+              ],
+              locale: currentLocale,
               debugShowCheckedModeBanner: false,
-              title: 'Push Price',
+              title: 'Push Price Store',
               theme: AppTheme.lightTheme,
               builder: (context, child) {
                 return MediaQuery(
                   data: MediaQuery.of(context).copyWith(
                     textScaler: const TextScaler.linear(1.0),
                   ),
-                  child: child!, 
+                  child: child!,
                 );
               },
-
               home: child,
             ),
           ),
         );
       },
       useInheritedMediaQuery: true,
-      child: OnboardingView(),
+      child: prefs.getStartedCheck()?LoginView() :OnboardingView(),
     );
   }
 }

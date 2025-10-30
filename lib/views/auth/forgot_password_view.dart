@@ -1,5 +1,5 @@
-import '../../utils/extension.dart';
-import 'otp_view.dart';
+import 'package:push_price_user/utils/extension.dart';
+import 'package:push_price_user/views/auth/otp_view.dart';
 
 import '../../export_all.dart';
 
@@ -21,12 +21,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   }
   @override
   Widget build(BuildContext context) {
-    return AuthScreenTemplateWidget(title: "Forgot Password", childrens: [
+    return AuthScreenTemplateWidget(title: context.tr("forgot_password"), childrens: [
       TextFormField(
-        onTapOutside: (event) {
+          controller: emailTextController,
+          onTapOutside: (event) {
   FocusScope.of(context).unfocus();
 },
-          controller: emailTextController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             prefixIcon: Icon(
@@ -34,12 +34,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               color: AppColors.secondaryColor,
             ),
 
-            labelText: "Email",
-            hintText: "Enter Email Address",
+            labelText: context.tr("email"),
+            hintText: context.tr("enter_email_address"),
           ),
         ),
         20.ph,
-        CustomButtonWidget(title: "continue", onPressed: () {
+        CustomButtonWidget(title: context.tr("continue"), onPressed: () {
           AppRouter.push(OtpView());
         }),
            

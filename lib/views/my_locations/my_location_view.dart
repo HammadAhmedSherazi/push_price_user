@@ -14,7 +14,7 @@ class _MyLocationViewState extends State<MyLocationView> {
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
       showBottomButton: true,
-      customBottomButtonWidget:  Row(
+      customBottomWidget:  Row(
                   spacing: 5,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

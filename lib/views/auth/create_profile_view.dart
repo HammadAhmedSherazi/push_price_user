@@ -1,8 +1,7 @@
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
 
 
 import '../../export_all.dart';
-import '../../widget/custom_phone_textfield_widget.dart';
 
 class CreateProfileView extends StatefulWidget {
   final bool? isEdit;
@@ -14,22 +13,22 @@ class CreateProfileView extends StatefulWidget {
 
 class _CreateProfileViewState extends State<CreateProfileView> {
   late final TextEditingController nameTextController;
-  late final TextEditingController addressTextController;
+  late final TextEditingController employeeIdTextController;
   late final TextEditingController phoneTextController;
   late final TextEditingController emailTextController;
-
 
   @override
   void initState() {
     nameTextController = TextEditingController(text: widget.isEdit! ?"John Smith" : null);
-    addressTextController = TextEditingController( text: widget.isEdit! ?"Abc street, Lorem Ipsum" : null);
+    employeeIdTextController = TextEditingController( text: widget.isEdit! ?"123 456 789" : null);
     phoneTextController = TextEditingController(text: widget.isEdit! ?"00000000" : null);
-    emailTextController = TextEditingController(text: widget.isEdit! ?"Abc@domain.com" : null);
+    emailTextController = TextEditingController(text: widget.isEdit! ?"Abc@gmail.com" : null);
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
+      
       onButtonTap: (){
         if(widget.isEdit!){
           AppRouter.back();
@@ -39,7 +38,8 @@ class _CreateProfileViewState extends State<CreateProfileView> {
 
         }
       },
-      title: widget.isEdit!? "Edit Profile": "Create Profile", showBottomButton: true, bottomButtonText: widget.isEdit!?"save" :"continue", child: ListView(
+      title: widget.isEdit!? context.tr("edit_profile"): context.tr("create_profile"), showBottomButton: true, bottomButtonText: widget.isEdit!? context.tr("save") : context.tr("continue"), child: ListView(
+        shrinkWrap: true,
         physics: BouncingScrollPhysics(),
       padding: EdgeInsets.symmetric(
         horizontal: AppTheme.horizontalPadding
@@ -54,30 +54,35 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         TextFormField(
           controller: nameTextController,
           onTapOutside: (event) {
-  FocusScope.of(context).unfocus();
+ FocusScope.of(context).unfocus();
 },
           decoration: InputDecoration(
-            labelText: "Name",
-            hintText: "Enter Name"
+            labelText: context.tr("name"),
+            hintText: context.tr("name")
           ),
         ),
         10.ph,
-        TextFormField(
-          controller: addressTextController,
+       TextFormField(
+          readOnly: widget.isEdit ?? false,
           onTapOutside: (event) {
   FocusScope.of(context).unfocus();
 },
+          controller: emailTextController,
           decoration: InputDecoration(
-            labelText: "Address",
-            hintText: "Address (can add multiple addresses)"
+            labelText: context.tr("email"),
+            hintText: context.tr("enter_email_address"),
+            suffixIcon: Icon(Icons.check_circle_rounded, color: AppColors.secondaryColor,)
           ),
         ),
         10.ph,
         CustomPhoneTextfieldWidget(phoneNumberController: phoneTextController, initialCountryCode: "US", onCountryChanged: (c){}),
         // TextFormField(
-        //   controller: phoneTextController,
-        //   keyboardType: TextInputType.phone,
-        //   decoration: InputDecoration(
+//           controller: phoneTextController,
+//           onTapOutside: (event) {
+//   FocusScope.of(context).unfocus();
+// },
+//           keyboardType: TextInputType.phone,
+//           decoration: InputDecoration(
             
         //     labelText: "Phone Number",
         //     hintText: "Enter Phone Number"

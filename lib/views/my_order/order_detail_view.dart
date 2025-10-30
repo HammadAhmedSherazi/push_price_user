@@ -195,7 +195,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   }
 }
 
-setTitle(OrderStatus status){
+String setTitle(OrderStatus status){
   switch (status) {
     case OrderStatus.inProcess:
       return "Order In-Process";

@@ -1,4 +1,4 @@
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 
@@ -14,11 +14,13 @@ class CustomBottomNavBarWidget extends StatelessWidget {
     return 
     Container(
       width: double.infinity,
+      height: 80.r,
+      alignment: Alignment.center,
      padding: EdgeInsets.only(
-      // left: 20.r,
-      // right: 20.r,
+      // left: 10.r,
+      // right: 10.r,
       top: 15.r,
-      bottom: 30.r
+      // bottom: 30.r
      ),
      
       decoration: BoxDecoration(
@@ -32,6 +34,8 @@ class CustomBottomNavBarWidget extends StatelessWidget {
         )
       ),
       child: Row(
+        // spacing: 10,
+        // crossAxisAlignment: CrossAxisAlignment.center,
         children:List.generate(items.length, (index) {
           final item = items[index];
           final Color selectColor = currentIndex == index? AppColors.primaryColor : AppColors.primaryColor.withValues(alpha: 0.6);
@@ -42,12 +46,19 @@ class CustomBottomNavBarWidget extends StatelessWidget {
               },
               child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               spacing: 10,
               children: [
-                  SvgPicture.asset(item.icon, colorFilter: ColorFilter.mode(selectColor, BlendMode.srcIn),),
-                  Text(item.title, style: context.textStyle.displaySmall!.copyWith(
-                    color: selectColor
-                  ),)
+               SvgPicture.asset(item.icon,  colorFilter: ColorFilter.mode(selectColor, BlendMode.srcIn),),
+                  Expanded(
+                    child: Text(item.title, 
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    style: context.textStyle.displaySmall!.copyWith(
+                      color: selectColor
+                    ),),
+                  )
                       
               ],
                       ),
@@ -85,7 +96,7 @@ class CustomBottomNavBarWidget extends StatelessWidget {
 //               height: 54,
 //               width: 54,
 //             ),
-//             Text("Home",
+//             Text(context.tr("home"),
 //               style: TextStyle(
 //                 color: isSelected ? AppColorTheme().primary : AppColorTheme().secondaryText,
 //                 fontSize: 12,

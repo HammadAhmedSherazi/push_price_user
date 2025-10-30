@@ -1,4 +1,4 @@
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 
@@ -49,8 +49,7 @@ class _AuthScreenTemplateWidgetState extends State<AuthScreenTemplateWidget> wit
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
       onBackCall: widget.onBackTap,
-      title: widget.title, showBottomButton: widget.bottomWidget != null, customBottomWidget: widget.bottomWidget, child:
-       ListView(
+      title: widget.title, showBottomButton: widget.bottomWidget != null, customBottomWidget: widget.bottomWidget, child: ListView(
         shrinkWrap: true,
         physics: BouncingScrollPhysics(),
       padding: EdgeInsets.symmetric(

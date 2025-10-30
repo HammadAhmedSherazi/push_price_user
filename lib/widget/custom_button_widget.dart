@@ -1,4 +1,4 @@
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 
@@ -41,6 +41,7 @@ class CustomButtonWidget extends StatelessWidget {
       height: height ?? 40.h,
       child: ElevatedButton(
           style: ButtonStyle(
+            animationDuration: Duration(milliseconds: 300),
             elevation: isElevated!? null : const WidgetStatePropertyAll(0.0),
             alignment: Alignment.center,
             backgroundColor:
@@ -54,6 +55,7 @@ class CustomButtonWidget extends StatelessWidget {
                   (!isLoad
                       ? Text( 
                           title.toUpperCase(),
+                          textAlign: TextAlign.center,
                           style: context.textStyle.labelMedium!.copyWith(
                               color: textColor ?? Colors.white,
                              ),
@@ -72,7 +74,7 @@ class CustomButtonWidget extends StatelessWidget {
 class CustomOutlineButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
-  final double? height, width,radius;
+  final double? height, width, radius;
   final Color? color;
   final Color? textColor;
   final Widget? child;
@@ -84,12 +86,12 @@ class CustomOutlineButtonWidget extends StatelessWidget {
       required this.title,
       required this.onPressed,
       this.height,
-      this.radius,
       this.color,
       this.textColor,
       this.child,
       this.outlineColor,
       this.isLoad = false,
+      this.radius,
       this.width});
 
   @override
@@ -99,6 +101,7 @@ class CustomOutlineButtonWidget extends StatelessWidget {
       height: height ?? 40.h,
       child: OutlinedButton(
           style: ButtonStyle(
+            animationDuration: Duration(milliseconds: 300),
               elevation: const WidgetStatePropertyAll(0.0),
               alignment: Alignment.center,
               side: WidgetStatePropertyAll(
@@ -113,6 +116,7 @@ class CustomOutlineButtonWidget extends StatelessWidget {
                   (!isLoad
                       ? Text( 
                           title.toUpperCase(),
+                           textAlign: TextAlign.center,
                           style: context.textStyle.labelMedium!.copyWith(
                               color: textColor ?? AppColors.primaryTextColor,
                               ),

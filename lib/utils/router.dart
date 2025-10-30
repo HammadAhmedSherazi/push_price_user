@@ -30,7 +30,7 @@ class AppRouter {
     });
   }
 
-  static pushReplacement(
+  static Future<void> pushReplacement(
     page,
   ) async {
     await Navigator.pushReplacement(
@@ -39,7 +39,7 @@ class AppRouter {
     );
   }
 
-  static pushAndRemoveUntil(page) async {
+  static Future<void> pushAndRemoveUntil(page) async {
     await Navigator.pushAndRemoveUntil(
       navKey.currentContext!,
       MaterialPageRoute(builder: (context) => page),
@@ -89,7 +89,7 @@ class AppRouter {
 // }
 
 // Right to Left
-  static pushAndRemoveUntilWithAnimation(page) async {
+  static Future<void> pushAndRemoveUntilWithAnimation(page) async {
     await Navigator.pushAndRemoveUntil(
       navKey.currentContext!,
       PageRouteBuilder(
@@ -111,7 +111,7 @@ class AppRouter {
     );
   }
 
-  static pushWithAnimation(page) async {
+  static Future<void> pushWithAnimation(page) async {
     await Navigator.push(
       navKey.currentContext!,
       PageRouteBuilder(

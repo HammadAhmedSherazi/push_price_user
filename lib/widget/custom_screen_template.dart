@@ -1,4 +1,4 @@
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 
@@ -7,12 +7,12 @@ class CustomScreenTemplate extends StatelessWidget {
   final VoidCallback ? onBackCall;
   final bool? showBottomButton;
   final String ? bottomButtonText;
-  final Widget ? customBottomButtonWidget;
   final Widget ? customBottomWidget;
   final VoidCallback ? onButtonTap;
   final Widget? actionWidget;
   final Widget child;
-  const CustomScreenTemplate({super.key, required this.title, this.bottomButtonText, this.customBottomWidget, this.showBottomButton = false, this.onBackCall, this.onButtonTap, required this.child, this.actionWidget, this.customBottomButtonWidget});
+  final PreferredSizeWidget? bottom;
+  const CustomScreenTemplate({super.key, required this.title, this.bottomButtonText, this.customBottomWidget, this.showBottomButton = false, this.onBackCall, this.onButtonTap, required this.child, this.actionWidget, this.bottom});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class CustomScreenTemplate extends StatelessWidget {
         appBar:AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
-          title: Text(title, style: context.textStyle.labelMedium),
+          title: Text(title, style: context.textStyle.labelMedium, maxLines: 2, textAlign: TextAlign.center,),
           elevation: 0.0,
           // leadingWidth: 24.r,
           leading: Padding(
@@ -39,6 +39,7 @@ class CustomScreenTemplate extends StatelessWidget {
             ),
           ),
           actions: actionWidget != null ? [actionWidget!] : null,
+          bottom: bottom,
       
         ),
         body: Column(
@@ -48,7 +49,7 @@ class CustomScreenTemplate extends StatelessWidget {
             if( showBottomButton ?? false)...[
               customBottomWidget ?? Padding(padding: EdgeInsets.symmetric(
                 horizontal: AppTheme.horizontalPadding
-              ), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap, child: customBottomButtonWidget,),)
+              ), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),)
             ],
             
        

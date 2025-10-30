@@ -6,12 +6,12 @@ export 'package:cached_network_image/cached_network_image.dart';
 export 'package:flutter/material.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:flutter_rating_bar/flutter_rating_bar.dart';
-// export 'package:intl_phone_field/intl_phone_field.dart';
+export 'package:fl_chart/fl_chart.dart';
 export 'dart:math';
-
-
-
-
+export 'package:shared_preferences/shared_preferences.dart';
+export 'package:flutter_riverpod/flutter_riverpod.dart';
+export 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+export 'package:flutter_localizations/flutter_localizations.dart';
 
 //VIEWS
 export 'views/onboarding/onboarding_view.dart';
@@ -81,7 +81,19 @@ export './widget/custom_switch_widget.dart';
 export './widget/generic_password_textfield_widget.dart';
 export './widget/select_chip_widget.dart';
 export './widget/page_dot_widget.dart';
-
+// export './widget/product_list_title_widget.dart';
+export './widget/custom_drop_down_widget.dart';
+export './widget/custom_date_select_widget.dart';
+export 'widget/product_display_box_widget.dart';
+export './widget/product_display_widget.dart';
+export './widget/custom_phone_textfield_widget.dart';
+export './widget/quantity_selector_widget.dart';
+export './widget/async_state_handler.dart';
+export './widget/custom_loading_widget.dart';
+export './widget/custom_error_widget.dart';
+export './widget/show_empty_item_diaplay_widget.dart';
+export './widget/time_range_selector_widget.dart';
+export './widget/category_display_generic_widget.dart';
 
 //MODELS
 export './models/category_data_model.dart';
@@ -91,10 +103,17 @@ export './models/product_data_model.dart';
 export './models/notification_data_model.dart';
 export './models/user_rating_data_model.dart';
 export './models/store_data_model.dart';
+export './models/info_data_model.dart';
+export './models/user_data_model.dart';
+export './models/listing_data_model.dart';
+export './models/staff_data_model.dart';
+export './models/calender_data_model.dart';
+
 
 
 //PROVIDERS
-
+export './providers/auth_provider/auth_provider.dart';
+export './providers/navigation_provider/navigation_provider.dart';
 
 
 //UTILS
@@ -104,5 +123,20 @@ export './utils/assets.dart';
 export './utils/constant.dart';
 export './utils/router.dart';
 export './utils/theme.dart';
+export './utils/localization_service.dart';
+
+
+//DATA
+export './data/enums/api_status.dart';
+export './data/network/http_client.dart';
+export './data/network/api_endpoints.dart';
+
+
+//SERVICES
+export './services/base_api_services.dart';
+export './services/shared_preferences.dart';
+
+
+
 
 

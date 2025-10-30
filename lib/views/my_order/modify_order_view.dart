@@ -11,13 +11,13 @@ class ModifyOrderView extends StatefulWidget {
 
 class _ModifyOrderViewState extends State<ModifyOrderView> {
   int quantity = 1;
-  addQuantity() {
+  void addQuantity() {
     setState(() {
       quantity++;
     });
   }
 
-  removeQuantity() {
+  void removeQuantity() {
     if (quantity > 1) {
       setState(() {
         quantity--;

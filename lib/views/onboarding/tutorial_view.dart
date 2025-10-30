@@ -1,8 +1,10 @@
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
+
 import '../../export_all.dart';
 
 class TutorialView extends StatefulWidget {
-  const TutorialView({super.key});
+  bool? isOnboarding;
+  TutorialView({super.key, this.isOnboarding = true});
 
   @override
   State<TutorialView> createState() => _TutorialViewState();
@@ -12,12 +14,12 @@ class _TutorialViewState extends State<TutorialView> {
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
-      showBottomButton: true,
-      bottomButtonText: "Next",
+      showBottomButton: widget.isOnboarding,
+      bottomButtonText: context.tr("next"),
       onButtonTap: (){
         AppRouter.push(LoginView());
       },
-      title: "Tutorial", child: Column(
+      title: context.tr("tutorial"), child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -28,7 +30,7 @@ class _TutorialViewState extends State<TutorialView> {
             ),
             child: Image.asset(Assets.tutorilaGif),
           ),
-          Padding(padding: EdgeInsetsGeometry.all(20), child: Text("Lorem ipsum dolor sit amet consectetur adipiscing elit odio, mattis quam tortor taciti aenean luctus nullam enim, dui praesent ad dapibus tempus natoque a. Rh", textAlign: TextAlign.center ,style: context.textStyle.titleMedium ,),)
+          Padding(padding: EdgeInsets.all(20), child: Text(context.tr("tutorial_description"), textAlign: TextAlign.center ,style: context.textStyle.titleMedium ,),)
         ],
       ));
   }

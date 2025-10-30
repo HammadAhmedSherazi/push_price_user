@@ -1,15 +1,22 @@
 import 'package:push_price_user/export_all.dart';
-import '../../utils/extension.dart';
+import 'package:push_price_user/utils/extension.dart';
 
-class SelectLanguageView extends StatefulWidget {
+class SelectLanguageView extends ConsumerStatefulWidget {
   const SelectLanguageView({super.key});
 
   @override
-  State<SelectLanguageView> createState() => _SelectLanguageViewState();
+  ConsumerState<SelectLanguageView> createState() => _SelectLanguageViewState();
 }
 
-class _SelectLanguageViewState extends State<SelectLanguageView> {
+class _SelectLanguageViewState extends ConsumerState<SelectLanguageView> {
   String lang = "en";
+  
+  @override
+  void initState() {
+    super.initState();
+    // Get current language from provider
+    lang = SharedPreferenceManager.sharedInstance.getLangCode();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class _SelectLanguageViewState extends State<SelectLanguageView> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: Text("Languages", style: context.textStyle.labelMedium),
+        title: Text(context.tr("languages"), style: context.textStyle.labelMedium),
       ),
       body: Container(
         width: double.infinity,
@@ -29,7 +36,7 @@ class _SelectLanguageViewState extends State<SelectLanguageView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SelectLanguageWidget(
-              title: "English (Default)",
+              title: context.tr("english_default"),
               icon: Assets.engFlagIcon,
               isSelect: lang == "en",
               onTap: () {
@@ -40,12 +47,12 @@ class _SelectLanguageViewState extends State<SelectLanguageView> {
             ),
             10.ph,
             SelectLanguageWidget(
-              title: "Spanish",
+              title: context.tr("spanish"),
               icon: Assets.spainFlagIcon,
-              isSelect: lang == "sp",
+              isSelect: lang == "es",
               onTap: () {
                 setState(() {
-                  lang = "sp";
+                  lang = "es";
                 });
               },
             ),
@@ -55,7 +62,7 @@ class _SelectLanguageViewState extends State<SelectLanguageView> {
               children: [
                 Expanded(
                   child: CustomOutlineButtonWidget(
-                    title: "SKIP",
+                    title: context.tr("skip"),
                     onPressed: () {
                       AppRouter.push(TutorialView());
                     },
@@ -63,8 +70,10 @@ class _SelectLanguageViewState extends State<SelectLanguageView> {
                 ),
                 Expanded(
                   child: CustomButtonWidget(
-                    title: "CONTINUE",
+                    title: context.tr("continue"),
                     onPressed: () {
+                      // Save selected language
+                      ref.read(localeProvider.notifier).changeLanguage(lang);
                       AppRouter.push(TutorialView());
                     },
                   ),
@@ -97,7 +106,7 @@ class SelectLanguageWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         // height: 60.h,
-        padding: EdgeInsets.symmetric(
+         padding: EdgeInsets.symmetric(
           horizontal: 15,
           vertical: 18
         ),
