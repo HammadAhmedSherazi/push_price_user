@@ -57,9 +57,9 @@ class _LoginViewState extends State<LoginView> {
                   style: context.textStyle.bodyMedium!,
       
                   children: [
-                    TextSpan(text: "Don't have an account?"),
+                    TextSpan(text: context.tr("you_already_have_an_account?")),
                     TextSpan(
-                      text: " Sign Up",
+                      text: " ${context.tr("sign_up")}",
                       style: context.textStyle.bodyMedium!.copyWith(
                         color: context.colors.primary,
                       ),

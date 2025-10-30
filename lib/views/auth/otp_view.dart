@@ -1,8 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:push_price_user/utils/extension.dart';
 
-
-
 import '../../export_all.dart';
 
 class OtpView extends StatefulWidget {
@@ -17,29 +15,33 @@ class _OtpViewState extends State<OtpView> {
   bool resetTimeChk = false;
   @override
   Widget build(BuildContext context) {
-    return AuthScreenTemplateWidget(
-      bottomWidget: resetTimeChk? RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          style: context.textStyle.bodyMedium!,
-
-          children: [
-            TextSpan(text: context.tr("didnt_receive_otp")),
-            TextSpan(
-              text: " ${context.tr("resend")}",
-              style: context.textStyle.bodyMedium!.copyWith(
-                color: context.colors.primary,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  // AppRouter.push(SignUpView());
-                  setState(() {
-                resetTimeChk = false;
-              });
-                },
+    return Consumer(
+      builder: (context, ref, child) {
+        return AuthScreenTemplateWidget(
+      bottomWidget: resetTimeChk? Consumer(
+        builder: (context, ref, child) {
+          return RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: context.textStyle.bodyMedium!,
+          
+              children: [
+                TextSpan(text: context.tr("didnt_receive_otp")),
+                TextSpan(
+                  text: " ${context.tr("resend")}",
+                  style: context.textStyle.bodyMedium!.copyWith(
+                    color: context.colors.primary,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      ref.read(authProvider.notifier).resendOtp();
+                      
+                    },
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        }
       ) : null,
       title: context.tr("otp"),
       childrens: [
@@ -58,12 +60,7 @@ class _OtpViewState extends State<OtpView> {
           numberOfFields: 6,
           
           onSubmit: (value) {
-            if (widget.isSignup) {
-              AppRouter.push(CreateProfileView());
-            } else {
-              AppRouter.push(NewPasswordView());
-            }
-            // AppRouter.push()
+            ref.read(authProvider.notifier).verifyOtp(otp: value);
           },
           fieldWidth: (context.screenwidth / 6) * 0.75,
           keyboardType: TextInputType.number,
@@ -100,6 +97,8 @@ class _OtpViewState extends State<OtpView> {
           ),
         ),
       ],
+        );
+      }
     );
   }
 }

@@ -239,9 +239,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
             currentIndex: selectedIndex,
             onTap: (index) {
               ref.read(navigationProvider.notifier).setIndex(index);
-              if(index == 3){
-                 ref.read(authProvider.notifier).getMyStores();
-              }
+             
             },
           );
         },

@@ -73,12 +73,19 @@ extension StringValidation on String {
   /// ✅ Password validation
   String? validatePassword() {
     if (trim().isEmpty) return AppRouter.navKey.currentContext!.tr('password_is_required');
-    if (trim().length < 6) return AppRouter.navKey.currentContext!.tr('password_must_be_at_least_6_characters');
-    // final hasLetter = contains(RegExp(r'[A-Za-z]'));
-    // final hasNumber = contains(RegExp(r'[0-9]'));
-    // if (!hasLetter || !hasNumber) {
-    //   return 'Password must contain letters and numbers';
-    // }
+    if (trim().length < 8) return AppRouter.navKey.currentContext!.tr('password_must_be_at_least_8_characters');
+    final hasUpperCase = contains(RegExp(r'[A-Z]'));
+    final hasLowerCase = contains(RegExp(r'[a-z]'));
+    final hasNumber = contains(RegExp(r'[0-9]'));
+    if (!hasUpperCase) {
+      return AppRouter.navKey.currentContext!.tr('password_must_contain_at_least_one_uppercase_letter');
+    }
+    if (!hasLowerCase) {
+      return AppRouter.navKey.currentContext!.tr('password_must_contain_at_least_one_lowercase_letter');
+    }
+    if (!hasNumber) {
+      return AppRouter.navKey.currentContext!.tr('password_must_contain_at_least_one_number');
+    }
     return null;
   }
 

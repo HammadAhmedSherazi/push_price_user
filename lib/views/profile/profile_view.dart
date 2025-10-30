@@ -17,7 +17,7 @@ class _ProfileViewState extends State<ProfileView> {
       body:  Consumer(builder: (context, ref, child){
         final response = ref.watch(authProvider.select((e)=>e.getStoresApiRes));
         return AsyncStateHandler(status: response.status, dataList: [1], itemBuilder: null, onRetry: (){
-          ref.read(authProvider.notifier).getMyStores();
+
         }, customSuccessWidget: SizedBox(
         width: double.infinity,
         height: double.infinity,
@@ -55,9 +55,9 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final data = ref.watch(authProvider.select((e)=>(e.staffInfo, e.stores)));
-                    final user = data.$1!;
-                    final stores = data.$2!;
+
+                    final user = ref.watch(authProvider.select((e)=>e.staffInfo))!;
+                 ;
                     return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [

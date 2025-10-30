@@ -265,12 +265,15 @@
   "weight_must_be_between_30_and_300": "El peso debe estar entre 30 y 300",
   "height_is_required": "La altura es obligatoria",
   "enter_a_valid_height_e_g_5_6": "Ingrese una altura válida (ej. 5.6)",
-  "height_must_be_between_3_0_and_8_0_feet": "La altura debe estar entre 3.0 y 8.0 pies"
-
-
-
-
-
-
-
+  "height_must_be_between_3_0_and_8_0_feet": "La altura debe estar entre 3.0 y 8.0 pies",
+  "registration_successful": "Registro exitoso",
+  "otp_verified": "OTP verificado",
+  "otp_resent": "OTP reenviado",
+  "profile_completed": "Perfil completado",
+  "invalid_otp": "OTP inválido",
+  "failed_to_resend_otp": "Error al reenviar OTP",
+  "failed_to_complete_profile": "Error al completar el perfil",
+  "password_must_contain_at_least_one_uppercase_letter": "La contraseña debe contener al menos una letra mayúscula",
+  "password_must_contain_at_least_one_lowercase_letter": "La contraseña debe contener al menos una letra minúscula",
+  "password_must_contain_at_least_one_number": "La contraseña debe contener al menos un número"
 }

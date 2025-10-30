@@ -4,22 +4,28 @@ import 'dart:convert';
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
 import 'package:push_price_user/providers/auth_provider/auth_state.dart';
+import 'package:push_price_user/views/auth/otp_view.dart';
 
 class AuthProvider  extends Notifier<AuthState> {
   @override
   AuthState build() {
     return AuthState(
       loginApiResponse: ApiResponse.undertermined(),
+      registrationApiResponse: ApiResponse.undertermined(),
+      verifyOtpApiResponse: ApiResponse.undertermined(),
+      resendOtpApiResponse: ApiResponse.undertermined(),
+      completeProfileApiResponse: ApiResponse.undertermined(),
+      getUserApiResponse: ApiResponse.undertermined(),
       getStoresApiRes: ApiResponse.undertermined(),
       getCategoriesApiResponse: ApiResponse.undertermined(),
-      myStores: [],
-      selectedStores: [],
+
       categories: [],
       categoriesSkip: 0,
     );
   }
-
+  String emailText = "";
   FutureOr<void> login({required String email, required String password})async{
+    emailText = email;
     if (!ref.mounted) return;
     try {
       state = state.copyWith(loginApiResponse: ApiResponse.loading());
@@ -66,45 +72,48 @@ class AuthProvider  extends Notifier<AuthState> {
     if (!ref.mounted) return;
 
     try {
+      // Make API call to logout
+      await MyHttpClient.instance.post(ApiEndpoints.logout, {});
+      // Clear local data
       SharedPreferenceManager.sharedInstance.clearAll();
 
       AppRouter.pushAndRemoveUntil(LoginView());
     } catch (e) {
       if (!ref.mounted) return;
-      throw Exception(e);
+      // Even if API call fails, clear local data and logout
+      SharedPreferenceManager.sharedInstance.clearAll();
+      AppRouter.pushAndRemoveUntil(LoginView());
     }
   }
-  FutureOr<void> getMyStores({String? searchText}) async {
+
+  FutureOr<void> registration({required String email, required String password})async{
+    emailText = email;
     if (!ref.mounted) return;
     try {
-      state = state.copyWith(getStoresApiRes: ApiResponse.loading());
-      final response = await MyHttpClient.instance.get(ApiEndpoints.getMyStore);
+      state = state.copyWith(registrationApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.post(ApiEndpoints.register, {
+        "email": email,
+        "password": password
+      }, isToken: false);
       if (!ref.mounted) return;
 
       // Add condition check
-      if (response != null && !(response is Map && response.containsKey('detail'))) {
-        state = state.copyWith(
-          getStoresApiRes: ApiResponse.completed(response),
-        );
-        List temp = response['assigned_stores'] ?? [];
-        final List<StoreSelectDataModel> tempStoreList = List.from(
-            temp.map((e) => StoreSelectDataModel.fromJson(e)),
-          );
-        // if (temp.isNotEmpty) {
-        state = state.copyWith(
-          selectedStores: [],
-          staffInfo: StaffModel.fromJson(response['staff_info'] ?? { "staff_id": 2, "username": "abcmanager", "email": "naheedmanager@example.com", "full_name": "Jerry Mick", "phone_number": "+15123123", "profile_image": "https://www.svgrepo.com/show/384670/account-avatar-profile-user.svg", "role_type": "MANAGER", "chain_id": 1 } ),
-          myStores: tempStoreList,
-          stores: tempStoreList
-        );
-        // }
-      } else {
+      if(response != null && !(response is Map && response.containsKey('detail'))){
+        Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("registration_successful"));
+
+        state = state.copyWith(registrationApiResponse: ApiResponse.completed(response['data']));
+       
+                // Navigate to OTP verification or next step
+        AppRouter.push(OtpView(isSignup: true,)); // Assuming such a view exists
+
+      }
+      else{
         // Show error message if condition is false
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
           message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
         );
-        state = state.copyWith(getStoresApiRes: ApiResponse.error());
+        state = state.copyWith(registrationApiResponse: ApiResponse.error());
       }
     } catch (e) {
       if (!ref.mounted) return;
@@ -113,36 +122,142 @@ class AuthProvider  extends Notifier<AuthState> {
         AppRouter.navKey.currentContext!,
         message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
       );
-      state = state.copyWith(getStoresApiRes: ApiResponse.error());
+      state = state.copyWith(registrationApiResponse: ApiResponse.error());
     }
   }
-  void addSelectStore(int index) {
-    final stores = List<StoreSelectDataModel>.from(state.myStores ?? []);
-    final selectedStores = List<StoreSelectDataModel>.from(
-      state.selectedStores ?? [],
-    );
 
-    final store = stores[index];
-    selectedStores.add(store.copyWith(isSelected: true));
-    stores.removeAt(index);
+  FutureOr<void> verifyOtp({required String otp})async{
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(verifyOtpApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.post(ApiEndpoints.verifyOtp, {
+  "email": emailText,
+  "otp_code": otp
+}, isToken: false);
+      if (!ref.mounted) return;
 
-    state = state.copyWith(myStores: stores, selectedStores: selectedStores);
+      if(response != null && !(response is Map && response.containsKey('detail'))){
+        Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("otp_verified"));
+
+        state = state.copyWith(verifyOtpApiResponse: ApiResponse.completed(response['data']));
+        // Navigate to complete profile or next step
+        // AppRouter.push(CompleteProfileView());
+
+      }
+      else{
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("invalid_otp"),
+        );
+        state = state.copyWith(verifyOtpApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+      );
+      state = state.copyWith(verifyOtpApiResponse: ApiResponse.error());
+    }
   }
 
-  void removeStore(int index) {
-    final stores = List<StoreSelectDataModel>.from(state.myStores ?? []);
-    final selectedStores = List<StoreSelectDataModel>.from(
-      state.selectedStores ?? [],
-    );
+  FutureOr<void> resendOtp()async{
+    if (!ref.mounted) return;
+    try {
+      // Show full screen loader dialog
+      Helper.showFullScreenLoader(AppRouter.navKey.currentContext!, dismissible: false);
+      state = state.copyWith(resendOtpApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.post(ApiEndpoints.resendOtp, {
+  "email": emailText
+}, isToken: false);
+      // Dismiss the loader
+      Navigator.of(AppRouter.navKey.currentContext!).pop();
+      if (!ref.mounted) return;
 
-    final store = selectedStores[index];
-    stores.add(store.copyWith(isSelected: false));
-    selectedStores.removeAt(index);
+      if(response != null && !(response is Map && response.containsKey('detail'))){
+        Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("otp_resent"));
 
-    state = state.copyWith(myStores: stores, selectedStores: selectedStores);
+        state = state.copyWith(resendOtpApiResponse: ApiResponse.completed(response['data']));
+
+      }
+      else{
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_resend_otp"),
+        );
+        state = state.copyWith(resendOtpApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      // Dismiss the loader on error
+      Navigator.of(AppRouter.navKey.currentContext!).pop();
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+      );
+      state = state.copyWith(resendOtpApiResponse: ApiResponse.error());
+    }
   }
-  
 
+  FutureOr<void> completeProfile({required Map<String, dynamic> profileData})async{
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(completeProfileApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.post(ApiEndpoints.completeProfile, profileData);
+      if (!ref.mounted) return;
+
+      if(response != null && !(response is Map && response.containsKey('detail'))){
+        Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("profile_completed"));
+
+        state = state.copyWith(completeProfileApiResponse: ApiResponse.completed(response['data']));
+        final Map<String, dynamic>? user = response["user"];
+        if(user != null){
+          savedUserData(user);
+        }
+        AppRouter.pushAndRemoveUntil(NavigationView());
+
+      }
+      else{
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_complete_profile"),
+        );
+        state = state.copyWith(completeProfileApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+      );
+      state = state.copyWith(completeProfileApiResponse: ApiResponse.error());
+    }
+  }
+
+  FutureOr<void> getUser()async{
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(getUserApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.get(ApiEndpoints.getUser);
+      if (!ref.mounted) return;
+
+      if(response != null){
+        state = state.copyWith(getUserApiResponse: ApiResponse.completed(response));
+        final Map<String, dynamic>? user = response["user"];
+        if(user != null){
+          savedUserData(user);
+        }
+
+      }
+      else{
+        state = state.copyWith(getUserApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(getUserApiResponse: ApiResponse.error());
+    }
+  }
+ 
  
   void savedUserData(Map<String, dynamic> userMap) {
     String user = jsonEncode(userMap);
