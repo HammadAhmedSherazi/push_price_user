@@ -19,7 +19,7 @@ class AppRouter {
   }
   focusScope.unfocus();
 }
-  static Future<void> push(page, {Function()? fun}) async {
+  static Future<void> push(dynamic page, {Function()? fun}) async {
     await Navigator.push(
       navKey.currentContext!,
       MaterialPageRoute(builder: (context) => page),
@@ -31,7 +31,7 @@ class AppRouter {
   }
 
   static Future<void> pushReplacement(
-    page,
+    dynamic page,
   ) async {
     await Navigator.pushReplacement(
       navKey.currentContext!,
@@ -39,7 +39,7 @@ class AppRouter {
     );
   }
 
-  static Future<void> pushAndRemoveUntil(page) async {
+  static Future<void> pushAndRemoveUntil(dynamic page) async {
     await Navigator.pushAndRemoveUntil(
       navKey.currentContext!,
       MaterialPageRoute(builder: (context) => page),
@@ -89,12 +89,12 @@ class AppRouter {
 // }
 
 // Right to Left
-  static Future<void> pushAndRemoveUntilWithAnimation(page) async {
+  static Future<void> pushAndRemoveUntilWithAnimation(dynamic page) async {
     await Navigator.pushAndRemoveUntil(
       navKey.currentContext!,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 500),
-        pageBuilder: (_, __, ___) => page,
+        pageBuilder: (_, _, _) => page,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0); // Start from the right
           const end = Offset.zero;
@@ -111,12 +111,12 @@ class AppRouter {
     );
   }
 
-  static Future<void> pushWithAnimation(page) async {
+  static Future<void> pushWithAnimation(dynamic page) async {
     await Navigator.push(
       navKey.currentContext!,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 500),
-        pageBuilder: (_, __, ___) => page,
+        pageBuilder: (_, _, _) => page,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0); // Start from the right
           const end = Offset.zero;

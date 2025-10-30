@@ -57,7 +57,6 @@ class _ProfileViewState extends State<ProfileView> {
                   builder: (context, ref, child) {
 
                     final user = ref.watch(authProvider.select((e)=>e.staffInfo))!;
-                 ;
                     return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [

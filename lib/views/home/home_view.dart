@@ -90,19 +90,20 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 
                   // Address list (Radio buttons)
-                  ...List.generate(addresses.length, (index) {
-                    return RadioListTile<int>(
-                      value: index,
-                      contentPadding: EdgeInsets.zero,
-                      groupValue: selectedIndex,
-                      splashRadius: 0.0,
-                      onChanged: (value) =>
-                          setState(() => selectedIndex = value!),
-                      activeColor: AppColors.secondaryColor,
-                      
-                      title: Text(addresses[index]),
-                    );
-                  }),
+                  RadioGroup<int>(
+                    groupValue: selectedIndex,
+                    onChanged: (value) => setState(() => selectedIndex = value!),
+                    child: Column(
+                      children: List.generate(addresses.length, (index) {
+                        return Radio<int>(
+                          value: index,
+                          activeColor: AppColors.secondaryColor,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
+                        );
+                      }),
+                    ),
+                  ),
 
                   
 

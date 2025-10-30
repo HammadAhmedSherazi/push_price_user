@@ -17,8 +17,9 @@ class _CustomSwitchWidgetState extends State<CustomSwitchWidget> {
             scale: widget.scale,
             child: Switch.adaptive(
               padding: EdgeInsets.zero,
-              activeColor: AppColors.secondaryColor,
-              
+              activeThumbColor: AppColors.secondaryColor,
+              activeTrackColor: AppColors.secondaryColor.withValues(alpha: 0.5),
+
               value: widget.value , onChanged: widget.onChanged),
           );
   }

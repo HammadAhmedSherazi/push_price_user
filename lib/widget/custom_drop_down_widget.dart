@@ -122,7 +122,7 @@ class CustomDropDown<T> extends StatelessWidget {
         error: error,
       ),
       style: context.textStyle.bodyMedium,
-      value: value,
+      initialValue: value,
       onChanged: onChanged,
     );
   }

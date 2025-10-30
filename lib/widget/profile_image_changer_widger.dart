@@ -6,7 +6,7 @@ import 'package:push_price_user/utils/extension.dart';
 import '../export_all.dart';
 
 class ProfileImageChanger extends StatefulWidget {
-   String? profileUrl;
+  String? profileUrl;
   final void Function(File file)? onImageSelected;
 
   ProfileImageChanger({super.key, this.onImageSelected, this.profileUrl});

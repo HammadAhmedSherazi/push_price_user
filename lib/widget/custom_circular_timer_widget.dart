@@ -73,7 +73,7 @@ void didUpdateWidget(covariant CustomCircularCountdownTimer oldWidget) {
       height: widget.size,
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (_, __) {
+        builder: (_, _) {
           return Stack(
             alignment: Alignment.center,
             children: [

@@ -15,7 +15,7 @@ class _MyPaymentMethodViewState extends State<MyPaymentMethodView> {
     CardDataModel(cardNum: "**** **** **** 0032", cardType: "master", isPrimary: false),
   ];
 
-  void removeCard(index){
+  void removeCard(int index){
     
     setState(() {
       myCards.removeAt(index);

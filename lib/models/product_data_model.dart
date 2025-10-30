@@ -5,7 +5,7 @@ class ProductDataModel {
   final String description;
   final String image;
   final num? price;
-  final num? discounted_price;
+  final num? discountedPrice;
   final int? id;
   final int ? chainId;
   final DateTime ? createdAt;
@@ -18,7 +18,7 @@ class ProductDataModel {
     required this.description,
     required this.image,
     this.price,
-    this.discounted_price,
+    this.discountedPrice,
     this.id,
     this.category,
     this.chainId,
@@ -34,7 +34,7 @@ class ProductDataModel {
       description: json['product_description'] ?? '',
       image: json['product_image'] ?? '',
       price: (json['base_price'] as num?) ?? 0,
-      discounted_price: (json['discounted_price'] as num?) ?? 0,
+      discountedPrice: (json['discounted_price'] as num?) ?? 0,
 
       category: json['category'] != null ? CategoryDataModel.fromJson(json['category']) : null,
       chainId: json['chain_id'] ?? -1,
@@ -50,7 +50,7 @@ class ProductDataModel {
       'product_description': description,
       'product_image': image,
       'base_price': price,
-      'discounted_price': discounted_price,
+      'discounted_price': discountedPrice,
     };
   }
 
@@ -59,16 +59,16 @@ class ProductDataModel {
     String? description,
     String? image,
     num? price,
-    num? discounted_price
-    
-    
+    num? discountedPrice
+
+
   }) {
     return ProductDataModel(
       title: title ?? this.title,
       description: description ?? this.description,
       image: image ?? this.image,
       price: price ?? this.price,
-      discounted_price: discounted_price ?? this.discounted_price,
+      discountedPrice: discountedPrice ?? this.discountedPrice,
     );
   }
 }
@@ -110,7 +110,7 @@ class ProductSelectionDataModel extends ProductDataModel {
     String? image,
     num? price,
     bool? isSelect,
-    num? discounted_price
+    num? discountedPrice
   }) {
     return ProductSelectionDataModel(
       title: title ?? this.title,
@@ -118,7 +118,7 @@ class ProductSelectionDataModel extends ProductDataModel {
       image: image ?? this.image,
       price: price ?? this.price,
       isSelect: isSelect ?? this.isSelect,
-      
+
     );
   }
 }
@@ -167,7 +167,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
     num? price,
     int? quantity,
     num? discountAmount,
-    num? discounted_price
+    num? discountedPrice
   }) {
     return ProductPurchasingDataModel(
       title: title ?? this.title,

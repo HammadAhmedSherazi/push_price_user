@@ -1,7 +1,5 @@
-import '../../utils/extension.dart';
-
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class OrderDetailView extends StatefulWidget {
   final OrderStatus orderStatus;
@@ -48,24 +46,27 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   20.ph,
 
                   // Radio List
-                  ...List.generate(reasons.length, (index) {
-                    return Column(
-                      children: [
-                        RadioListTile<int>(
-                          value: index,
-                          groupValue: selectedIndex,
-                          onChanged: (value) {
-                            setState(() => selectedIndex = value!);
-                          },
-                          title: Text(reasons[index], style: context.textStyle.displayMedium,),
-                          activeColor: AppColors.secondaryColor,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        if (index != reasons.length - 1)
-                          Divider(height: 1,),
-                      ],
-                    );
-                  }),
+                  RadioGroup<int>(
+                    groupValue: selectedIndex,
+                    onChanged: (value) => setState(() => selectedIndex = value!),
+                    child: Column(
+                      children: List.generate(reasons.length, (index) {
+                        return Column(
+                          children: [
+                            Radio<int>(
+                              value: index,
+                              activeColor: AppColors.secondaryColor,
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
+                            ),
+                            Text(reasons[index], style: context.textStyle.displayMedium,),
+                            if (index != reasons.length - 1)
+                              Divider(height: 1,),
+                          ],
+                        );
+                      }),
+                    ),
+                  ),
 
                   20.ph,
 
