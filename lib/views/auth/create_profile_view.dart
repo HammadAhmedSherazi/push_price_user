@@ -1,5 +1,6 @@
-import 'package:push_price_user/utils/extension.dart';
+import 'dart:io';
 
+import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
 
@@ -12,98 +13,198 @@ class CreateProfileView extends StatefulWidget {
 }
 
 class _CreateProfileViewState extends State<CreateProfileView> {
+  File? selectProfileImage;
   late final TextEditingController nameTextController;
   late final TextEditingController employeeIdTextController;
   late final TextEditingController phoneTextController;
   late final TextEditingController emailTextController;
+  late final TextEditingController addressTextController;
 
   @override
   void initState() {
-    nameTextController = TextEditingController(text: widget.isEdit! ?"John Smith" : null);
-    employeeIdTextController = TextEditingController( text: widget.isEdit! ?"123 456 789" : null);
-    phoneTextController = TextEditingController(text: widget.isEdit! ?"00000000" : null);
-    emailTextController = TextEditingController(text: widget.isEdit! ?"Abc@gmail.com" : null);
+    nameTextController = TextEditingController(
+      text: widget.isEdit! ? "John Smith" : null,
+    );
+    employeeIdTextController = TextEditingController(
+      text: widget.isEdit! ? "123 456 789" : null,
+    );
+    phoneTextController = TextEditingController(
+      text: widget.isEdit! ? "00000000" : null,
+    );
+    emailTextController = TextEditingController(
+      text: widget.isEdit! ? "Abc@gmail.com" : null,
+    );
+    addressTextController = TextEditingController(
+      text: widget.isEdit! ? "" : null,
+    );
     super.initState();
   }
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String initialCountryCode = "US";
   @override
   Widget build(BuildContext context) {
-    return CustomScreenTemplate(
-      
-      onButtonTap: (){
-        if(widget.isEdit!){
-          AppRouter.back();
-        }
-        else{
-        AppRouter.push(SubscriptionPlanView(isPro: true,));
+    return Form(
+      key: _formKey,
+      child: CustomScreenTemplate(
+        customBottomWidget: Consumer(
+          builder: (context, ref, child) {
+            final isLoad =
+                ref.watch(
+                  authProvider.select(
+                    (e) => e.completeProfileApiResponse.status,
+                  ),
+                ) ==
+                Status.loading;
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppTheme.horizontalPadding,
+              ),
+              child: CustomButtonWidget(
+                isLoad: isLoad,
+                title: widget.isEdit!
+                    ? context.tr("save")
+                    : context.tr("continue"),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    try {
+                      final isoCode = IsoCode.values.firstWhere(
+                        (c) => c.name == initialCountryCode.toUpperCase(),
+                        orElse: () => IsoCode.US, // fallback
+                      );
 
-        }
-      },
-      title: widget.isEdit!? context.tr("edit_profile"): context.tr("create_profile"), showBottomButton: true, bottomButtonText: widget.isEdit!? context.tr("save") : context.tr("continue"), child: ListView(
-        shrinkWrap: true,
-        physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(
-        horizontal: AppTheme.horizontalPadding
+                      final parsed = PhoneNumber.parse(
+                        phoneTextController.text,
+                        destinationCountry: isoCode,
+                      );
+
+                      if (parsed.isValid()) {
+                        Map<String, dynamic> data = {
+                          "full_name": nameTextController.text,
+                          "phone_number": parsed.international,
+                          "address": addressTextController.text,
+                        };
+                        if(selectProfileImage != null){
+                          data['files'] = selectProfileImage;
+                        }
+                        // print(data);
+                        ref.read(authProvider.notifier).completeProfile(profileData:data );
+                      } else {
+                        Helper.showMessage(
+                          context,
+                          message: "Please enter a valid phone number",
+                        );
+                      }
+                    } catch (e) {
+                      Helper.showMessage(
+                        context,
+                        message: "Phone number format is invalid.",
+                      );
+                    }
+                  }
+                },
+              ),
+            );
+          },
+        ),
+        onButtonTap: () {
+          if (widget.isEdit!) {
+            AppRouter.back();
+          } else {
+            AppRouter.push(SubscriptionPlanView(isPro: true));
+          }
+        },
+        title: widget.isEdit!
+            ? context.tr("edit_profile")
+            : context.tr("create_profile"),
+        showBottomButton: true,
+        child: ListView(
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding),
+          children: [
+            Center(
+              child: ProfileImageChanger(
+                profileUrl: null,
+                onImageSelected: (file) {
+                  setState(() {
+                    selectProfileImage = file;
+                  });
+                },
+              ),
+            ),
+            20.ph,
+            TextFormField(
+              controller: nameTextController,
+              onTapOutside: (event) {
+                FocusScope.of(context).unfocus();
+              },
+              decoration: InputDecoration(
+                labelText: context.tr("name"),
+                hintText: context.tr("name"),
+              ),
+            ),
+            10.ph,
+            TextFormField(
+              readOnly: widget.isEdit ?? false,
+              onTapOutside: (event) {
+                FocusScope.of(context).unfocus();
+              },
+              controller: addressTextController,
+              decoration: InputDecoration(
+                labelText: context.tr("address"),
+                hintText: context.tr("address"),
+                // suffixIcon: Icon(
+                //   Icons.check_circle_rounded,
+                //   color: AppColors.secondaryColor,
+                // ),
+              ),
+            ),
+            10.ph,
+            CustomPhoneTextfieldWidget(
+              phoneNumberController: phoneTextController,
+              initialCountryCode: initialCountryCode,
+              onCountryChanged: (c) {
+                setState(() {
+                  initialCountryCode = c.code;
+                });
+              },
+              onPhoneNumberChanged: (phone) {
+                print(phone);
+                // Handle phone number changes here
+                // For example, update the controller or send to API
+                // phoneTextController.text += phone.phoneNumber ?? '';
+              },
+            ),
+
+            // TextFormField(
+            //           controller: phoneTextController,
+            //           onTapOutside: (event) {
+            //   FocusScope.of(context).unfocus();
+            // },
+            //           keyboardType: TextInputType.phone,
+            //           decoration: InputDecoration(
+
+            //     labelText: "Phone Number",
+            //     hintText: "Enter Phone Number"
+            //   ),
+            // ),
+            //         10.ph,
+            //         TextFormField(
+            //           onTapOutside: (event) {
+            //   FocusScope.of(context).unfocus();
+            // },
+            //           controller: emailTextController,
+            //           readOnly: widget.isEdit ?? false,
+            //           decoration: InputDecoration(
+            //             labelText: "Email Address",
+            //             hintText: "Enter Email",
+            //             suffixIcon: Icon(Icons.check_circle_rounded, color: AppColors.secondaryColor,)
+            //           ),
+            //         ),
+          ],
+        ),
       ),
-      children: [
-        Center(
-          child: ProfileImageChanger(
-            profileUrl: Assets.userImage ,
-          ),
-        ),
-        20.ph,
-        TextFormField(
-          controller: nameTextController,
-          onTapOutside: (event) {
- FocusScope.of(context).unfocus();
-},
-          decoration: InputDecoration(
-            labelText: context.tr("name"),
-            hintText: context.tr("name")
-          ),
-        ),
-        10.ph,
-       TextFormField(
-          readOnly: widget.isEdit ?? false,
-          onTapOutside: (event) {
-  FocusScope.of(context).unfocus();
-},
-          controller: emailTextController,
-          decoration: InputDecoration(
-            labelText: context.tr("email"),
-            hintText: context.tr("enter_email_address"),
-            suffixIcon: Icon(Icons.check_circle_rounded, color: AppColors.secondaryColor,)
-          ),
-        ),
-        10.ph,
-        CustomPhoneTextfieldWidget(phoneNumberController: phoneTextController, initialCountryCode: "US", onCountryChanged: (c){}),
-        // TextFormField(
-//           controller: phoneTextController,
-//           onTapOutside: (event) {
-//   FocusScope.of(context).unfocus();
-// },
-//           keyboardType: TextInputType.phone,
-//           decoration: InputDecoration(
-            
-        //     labelText: "Phone Number",
-        //     hintText: "Enter Phone Number"
-        //   ),
-        // ),
-        10.ph,
-        TextFormField(
-          onTapOutside: (event) {
-  FocusScope.of(context).unfocus();
-},
-          controller: emailTextController,
-          readOnly: widget.isEdit ?? false,
-          decoration: InputDecoration(
-            labelText: "Email Address",
-            hintText: "Enter Email",
-            suffixIcon: Icon(Icons.check_circle_rounded, color: AppColors.secondaryColor,)
-          ),
-        ),
-       
-      ],
-      
-    ),);
+    );
   }
 }

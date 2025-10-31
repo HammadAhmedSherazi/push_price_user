@@ -30,7 +30,7 @@ class AuthProvider  extends Notifier<AuthState> {
     try {
       state = state.copyWith(loginApiResponse: ApiResponse.loading());
       final response = await MyHttpClient.instance.post(ApiEndpoints.login, {
-  "username": email,
+  "email": email,
   "password": password
 }, isToken: false);
       if (!ref.mounted) return;
@@ -73,7 +73,9 @@ class AuthProvider  extends Notifier<AuthState> {
 
     try {
       // Make API call to logout
-      await MyHttpClient.instance.post(ApiEndpoints.logout, {});
+      await MyHttpClient.instance.post(ApiEndpoints.logout, {
+        "refresh_token": SharedPreferenceManager.sharedInstance.getRefreshToken() ?? ""
+      });
       // Clear local data
       SharedPreferenceManager.sharedInstance.clearAll();
 
@@ -127,6 +129,8 @@ class AuthProvider  extends Notifier<AuthState> {
   }
 
   FutureOr<void> verifyOtp({required String otp})async{
+     Helper.showFullScreenLoader(AppRouter.navKey.currentContext!, dismissible: false);
+     
     if (!ref.mounted) return;
     try {
       state = state.copyWith(verifyOtpApiResponse: ApiResponse.loading());
@@ -134,6 +138,7 @@ class AuthProvider  extends Notifier<AuthState> {
   "email": emailText,
   "otp_code": otp
 }, isToken: false);
+ Navigator.of(AppRouter.navKey.currentContext!).pop();
       if (!ref.mounted) return;
 
       if(response != null && !(response is Map && response.containsKey('detail'))){
@@ -141,7 +146,8 @@ class AuthProvider  extends Notifier<AuthState> {
 
         state = state.copyWith(verifyOtpApiResponse: ApiResponse.completed(response['data']));
         // Navigate to complete profile or next step
-        // AppRouter.push(CompleteProfileView());
+        SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
+        AppRouter.push(CreateProfileView());
 
       }
       else{
@@ -152,6 +158,7 @@ class AuthProvider  extends Notifier<AuthState> {
         state = state.copyWith(verifyOtpApiResponse: ApiResponse.error());
       }
     } catch (e) {
+       Navigator.of(AppRouter.navKey.currentContext!).pop();
       if (!ref.mounted) return;
       Helper.showMessage(
         AppRouter.navKey.currentContext!,
@@ -161,7 +168,7 @@ class AuthProvider  extends Notifier<AuthState> {
     }
   }
 
-  FutureOr<void> resendOtp()async{
+  FutureOr<void> resendOtp({required bool isSignup})async{
     if (!ref.mounted) return;
     try {
       // Show full screen loader dialog
@@ -178,6 +185,7 @@ class AuthProvider  extends Notifier<AuthState> {
         Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("otp_resent"));
 
         state = state.copyWith(resendOtpApiResponse: ApiResponse.completed(response['data']));
+        AppRouter.pushReplacement(OtpView(isSignup: isSignup,));
 
       }
       else{
@@ -203,7 +211,7 @@ class AuthProvider  extends Notifier<AuthState> {
     if (!ref.mounted) return;
     try {
       state = state.copyWith(completeProfileApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.post(ApiEndpoints.completeProfile, profileData);
+      final response = await MyHttpClient.instance.post(ApiEndpoints.completeProfile, profileData, variableName: 'profile_image', isMultipartRequest: profileData.containsKey('files'));
       if (!ref.mounted) return;
 
       if(response != null && !(response is Map && response.containsKey('detail'))){
@@ -214,6 +222,8 @@ class AuthProvider  extends Notifier<AuthState> {
         if(user != null){
           savedUserData(user);
         }
+        SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
+        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_access_token'] ?? "");
         AppRouter.pushAndRemoveUntil(NavigationView());
 
       }
@@ -243,7 +253,7 @@ class AuthProvider  extends Notifier<AuthState> {
 
       if(response != null){
         state = state.copyWith(getUserApiResponse: ApiResponse.completed(response));
-        final Map<String, dynamic>? user = response["user"];
+        final Map<String, dynamic>? user = response;
         if(user != null){
           savedUserData(user);
         }

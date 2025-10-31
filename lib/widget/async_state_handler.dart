@@ -61,7 +61,7 @@ class AsyncStateHandler<T> extends StatelessWidget {
         controller: scrollController,
         // shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
+        padding: padding ??  EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding, vertical: 10.r),
         itemBuilder: (context, index) {
           if (status == Status.loadingMore && index == dataList.length) {
             return const CustomLoadingWidget();

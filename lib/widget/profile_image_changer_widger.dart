@@ -1,13 +1,12 @@
 import 'dart:io';
 
-
 import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 
 class ProfileImageChanger extends StatefulWidget {
   String? profileUrl;
-  final void Function(File file)? onImageSelected;
+  final void Function(File? file)? onImageSelected;
 
   ProfileImageChanger({super.key, this.onImageSelected, this.profileUrl});
 
@@ -53,7 +52,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
                   title: const Text('Choose from gallery'),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
-                if(widget.profileUrl != null)...[
+                if(widget.profileUrl != null || _selectedImage != null)...[
                   ListTile(
                   
                   leading: const Icon(Icons.delete, color: Colors.red,),
@@ -63,8 +62,10 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
                   onTap: () {
                     setState(() {
                       widget.profileUrl = null;
+                      _selectedImage = null;
                     });
                     AppRouter.back();
+                    widget.onImageSelected?.call(null);
                   },
                 ),
                 ]
@@ -82,11 +83,19 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
     final picked = await picker.pickImage(source: source);
     if (picked != null) {
       final imageFile = File(picked.path);
-      setState(() {
-        _selectedImage = imageFile;
-        widget.profileUrl = null;
-      });
-      widget.onImageSelected?.call(imageFile);
+      // Compress the image
+      final compressedFile = await Helper.compressImage(imageFile);
+      if (compressedFile != null) {
+        setState(() {
+          _selectedImage = compressedFile;
+          widget.profileUrl = null;
+        });
+        widget.onImageSelected?.call(compressedFile);
+      } else {
+        // Handle compression failure, e.g., show a message
+        if(!context.mounted) return;
+        Helper.showMessage(context, message: 'Failed to compress image');
+      }
     }
   }
 

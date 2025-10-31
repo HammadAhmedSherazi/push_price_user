@@ -175,7 +175,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                   Consumer(
                     builder: (context, ref, child) {
 
-                      final user = ref.watch(authProvider.select((e)=>e.staffInfo))!;
+                      final user = ref.watch(authProvider.select((e)=>e.userData))!;
                       return Center(
                         child: Column(
                           spacing: 7,
@@ -239,6 +239,9 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
             currentIndex: selectedIndex,
             onTap: (index) {
               ref.read(navigationProvider.notifier).setIndex(index);
+              if(index == 3){
+                ref.read(authProvider.notifier).getUser();
+              }
              
             },
           );

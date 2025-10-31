@@ -34,7 +34,9 @@ class _OtpViewState extends State<OtpView> {
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      ref.read(authProvider.notifier).resendOtp();
+                      ref.read(authProvider.notifier).resendOtp(
+                        isSignup: widget.isSignup
+                      );
                       
                     },
                 ),

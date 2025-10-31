@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
@@ -116,5 +118,20 @@ static String setType(String type) {
     default:
       return "";
   }
+}
+static Future<File?> compressImage(File file) async {
+  final dir = await getTemporaryDirectory();
+  final targetPath = '${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+  final result = await FlutterImageCompress.compressAndGetFile(
+    file.path,
+    targetPath,
+    format: CompressFormat.jpeg,
+    quality: 60,
+    minWidth: 1080,
+    minHeight: 1080,
+  );
+
+  return result != null ? File(result.path) : null;
 }
 }

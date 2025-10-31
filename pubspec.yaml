@@ -56,6 +56,9 @@ dependencies:
   flutter_localization: ^0.3.3
   flutter_localizations:
     sdk: flutter
+  phone_numbers_parser: ^9.0.15
+  flutter_image_compress: ^2.4.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:

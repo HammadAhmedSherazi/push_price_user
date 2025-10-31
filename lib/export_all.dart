@@ -1,140 +1,131 @@
 //PACKAGE
-export 'package:flutter_screenutil/flutter_screenutil.dart';
-export 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
-export 'package:flutter_svg/flutter_svg.dart';
-export 'package:cached_network_image/cached_network_image.dart';
-export 'package:flutter/material.dart';
-export 'package:image_picker/image_picker.dart';
-export 'package:flutter_rating_bar/flutter_rating_bar.dart';
-export 'package:fl_chart/fl_chart.dart';
 export 'dart:math';
-export 'package:shared_preferences/shared_preferences.dart';
-export 'package:flutter_riverpod/flutter_riverpod.dart';
-export 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-export 'package:flutter_localizations/flutter_localizations.dart';
 
-//VIEWS
-export 'views/onboarding/onboarding_view.dart';
-export 'views/onboarding/select_language_view.dart';
-export 'views/onboarding/tutorial_view.dart';
-export './views/auth/login_view.dart';
-export './views/auth/signup_view.dart';
-export './views/auth/forgot_password_view.dart';
+export 'package:cached_network_image/cached_network_image.dart';
+export 'package:fl_chart/fl_chart.dart';
+export 'package:flutter/material.dart';
+export 'package:flutter_image_compress/flutter_image_compress.dart';
+export 'package:flutter_localizations/flutter_localizations.dart';
+export 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+export 'package:flutter_rating_bar/flutter_rating_bar.dart';
+export 'package:flutter_riverpod/flutter_riverpod.dart';
+export 'package:flutter_screenutil/flutter_screenutil.dart';
+export 'package:flutter_svg/flutter_svg.dart';
+export 'package:image_picker/image_picker.dart';
+export 'package:path_provider/path_provider.dart';
+export 'package:phone_numbers_parser/phone_numbers_parser.dart';
+export 'package:shared_preferences/shared_preferences.dart';
+export 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+
+//DATA
+export './data/enums/api_status.dart';
+export './data/network/api_endpoints.dart';
+export './data/network/http_client.dart';
+export './models/bottom_data_model.dart';
+export './models/calender_data_model.dart';
+//MODELS
+export './models/category_data_model.dart';
+export './models/info_data_model.dart';
+export './models/listing_data_model.dart';
+export './models/menu_data_model.dart';
+export './models/notification_data_model.dart';
+export './models/product_data_model.dart';
+export './models/staff_data_model.dart';
+export './models/store_data_model.dart';
+export './models/user_data_model.dart';
+export './models/user_rating_data_model.dart';
+//PROVIDERS
+export './providers/auth_provider/auth_provider.dart';
+export './providers/home_provider/home_provider.dart';
+export './providers/navigation_provider/navigation_provider.dart';
+//SERVICES
+export './services/base_api_services.dart';
+export './services/shared_preferences.dart';
+export './utils/assets.dart';
+//UTILS
+export './utils/colors.dart';
+export './utils/constant.dart';
+export './utils/helper.dart';
+export './utils/localization_service.dart';
+export './utils/router.dart';
+export './utils/theme.dart';
+export './views/auth/add_favourite_view.dart';
 export './views/auth/create_profile_view.dart';
-export './views/subscription/subscription_plan_view.dart';
-export './views/subscription/my_subscription_plan_view.dart';
-export 'views/home/home_view.dart';
-export 'views/explore/explore_view.dart';
-export 'views/favorites/favourite_view.dart';
-export 'views/profile/profile_view.dart';
-export './views/navigation/navigation_view.dart';
-export 'views/favorites/search_product_view.dart';
-export 'views/favorites/scan_view.dart';
+export './views/auth/forgot_password_view.dart';
+export './views/auth/login_view.dart';
+export './views/auth/new_password_view.dart';
+export './views/auth/signup_view.dart';
+export './views/cart/cart_view.dart';
+export './views/cart/voucher_apply_view.dart';
 export './views/favorites/scan_product_view.dart';
+export './views/help_feedback/help_feedback_view.dart';
+export './views/home/add_new_address_view.dart';
+export './views/home/all_category_view.dart';
+export './views/home/all_store_view.dart';
+export './views/home/category_product_view.dart';
+export './views/my_locations/my_location_view.dart';
+export './views/my_order/modify_order_view.dart';
 export './views/my_order/my_order_view.dart';
 export './views/my_order/order_detail_view.dart';
-export './views/my_order/modify_order_view.dart';
 export './views/my_order/order_success_modified_view.dart';
-export './views/my_locations/my_location_view.dart';
-export './views/voucher/voucher_view.dart';
+export './views/navigation/navigation_view.dart';
 export './views/payment/my_payment_method_view.dart';
 export './views/payment/select_payment_method_view.dart';
 export './views/payment/store_code_view.dart';
 export './views/setting/about_app_view.dart';
-export './views/setting/change_password_view.dart';
-export './views/setting/term_conditions_view.dart';
-export './views/setting/privacy_policy_view.dart';
 export './views/setting/change_language_view.dart';
-export './views/help_feedback/help_feedback_view.dart';
-export './views/store/store_view.dart';
-export './views/store/product_detail_view.dart';
-export './views/cart/cart_view.dart';
-export './views/cart/voucher_apply_view.dart';
+export './views/setting/change_password_view.dart';
 export './views/setting/notification_view.dart';
-export './views/store/store_detail_view.dart';
+export './views/setting/privacy_policy_view.dart';
 export './views/setting/setting_view.dart';
-export './views/home/all_category_view.dart';
-export './views/auth/new_password_view.dart';
-export './views/home/add_new_address_view.dart';
-export './views/home/all_store_view.dart';
-export './views/auth/add_favourite_view.dart';
-export './views/home/category_product_view.dart';
-
-
-
-
+export './views/setting/term_conditions_view.dart';
+export './views/store/product_detail_view.dart';
+export './views/store/store_detail_view.dart';
+export './views/store/store_view.dart';
+export './views/subscription/my_subscription_plan_view.dart';
+export './views/subscription/subscription_plan_view.dart';
+export './views/voucher/voucher_view.dart';
+export './widget/app_logo_widget.dart';
+export './widget/async_state_handler.dart';
 //WIDGETS
 export './widget/auth_screen_template_widget.dart';
-export './widget/app_logo_widget.dart';
-export './widget/custom_button_widget.dart';
-export './widget/custom_back_widget.dart';
-export './widget/custom_screen_template.dart';
-export './widget/custom_circular_timer_widget.dart';
-export './widget/user_profile_widget.dart';
-export './widget/profile_image_changer_widger.dart';
-export './widget/custom_search_bar_widget.dart';
-export './widget/display_network_image.dart';
 export './widget/bottom_nav_bar_widget.dart';
+export './widget/category_display_generic_widget.dart';
 export './widget/custom_app_bar_widget.dart';
-export './widget/custom_tab_bar_widget.dart';
-export './widget/custom_switch_widget.dart';
-export './widget/generic_password_textfield_widget.dart';
-export './widget/select_chip_widget.dart';
-export './widget/page_dot_widget.dart';
+export './widget/custom_back_widget.dart';
+export './widget/custom_button_widget.dart';
+export './widget/custom_circular_timer_widget.dart';
+export './widget/custom_date_select_widget.dart';
 // export './widget/product_list_title_widget.dart';
 export './widget/custom_drop_down_widget.dart';
-export './widget/custom_date_select_widget.dart';
-export 'widget/product_display_box_widget.dart';
-export './widget/product_display_widget.dart';
-export './widget/custom_phone_textfield_widget.dart';
-export './widget/quantity_selector_widget.dart';
-export './widget/async_state_handler.dart';
-export './widget/custom_loading_widget.dart';
 export './widget/custom_error_widget.dart';
+export './widget/custom_loading_widget.dart';
+export './widget/custom_phone_textfield_widget.dart';
+export './widget/custom_screen_template.dart';
+export './widget/custom_search_bar_widget.dart';
+export './widget/custom_switch_widget.dart';
+export './widget/custom_tab_bar_widget.dart';
+export './widget/display_network_image.dart';
+export './widget/generic_password_textfield_widget.dart';
+export './widget/page_dot_widget.dart';
+export './widget/product_display_widget.dart';
+export './widget/profile_image_changer_widger.dart';
+export './widget/quantity_selector_widget.dart';
+export './widget/select_chip_widget.dart';
 export './widget/show_empty_item_diaplay_widget.dart';
 export './widget/time_range_selector_widget.dart';
-export './widget/category_display_generic_widget.dart';
-
-//MODELS
-export './models/category_data_model.dart';
-export './models/bottom_data_model.dart';
-export './models/menu_data_model.dart';
-export './models/product_data_model.dart';
-export './models/notification_data_model.dart';
-export './models/user_rating_data_model.dart';
-export './models/store_data_model.dart';
-export './models/info_data_model.dart';
-export './models/user_data_model.dart';
-export './models/listing_data_model.dart';
-export './models/staff_data_model.dart';
-export './models/calender_data_model.dart';
-
-
-
-//PROVIDERS
-export './providers/auth_provider/auth_provider.dart';
-export './providers/navigation_provider/navigation_provider.dart';
-
-
-//UTILS
-export './utils/colors.dart';
-export './utils/helper.dart';
-export './utils/assets.dart';
-export './utils/constant.dart';
-export './utils/router.dart';
-export './utils/theme.dart';
-export './utils/localization_service.dart';
-
-
-//DATA
-export './data/enums/api_status.dart';
-export './data/network/http_client.dart';
-export './data/network/api_endpoints.dart';
-
-
-//SERVICES
-export './services/base_api_services.dart';
-export './services/shared_preferences.dart';
+export './widget/user_profile_widget.dart';
+export 'views/explore/explore_view.dart';
+export 'views/favorites/favourite_view.dart';
+export 'views/favorites/scan_view.dart';
+export 'views/favorites/search_product_view.dart';
+export 'views/home/home_view.dart';
+//VIEWS
+export 'views/onboarding/onboarding_view.dart';
+export 'views/onboarding/select_language_view.dart';
+export 'views/onboarding/tutorial_view.dart';
+export 'views/profile/profile_view.dart';
+export 'widget/product_display_box_widget.dart';
 
 
 

@@ -33,10 +33,10 @@ class StoreDataModel {
           ? DateTime.tryParse(json['assigned_at'])
           : null,
       chainId: json['chain_id'] ?? 0,
-      title: json['title'],
-      address: json['address'],
-      rating: json['rating']?.toDouble(),
-      icon: json['icon'],
+      title: json['store_name'] ?? '',
+      address: json['store_location'] ?? '',
+      rating: 0.0,
+      icon: json['icon'] ?? '',
     );
   }
 

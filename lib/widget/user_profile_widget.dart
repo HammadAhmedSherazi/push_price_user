@@ -2,9 +2,9 @@ import '../export_all.dart';
 
 class UserProfileWidget extends StatelessWidget {
   final double radius;
-  final String imageUrl;
+  final String? imageUrl;
   final double? borderWidth;
-  const UserProfileWidget({super.key, required this.radius , required this.imageUrl, this.borderWidth});
+  const UserProfileWidget({super.key, required this.radius , this.imageUrl, this.borderWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class UserProfileWidget extends StatelessWidget {
             color: AppColors.secondaryColor,
             
           ),
-      child: CachedNetworkImage(imageUrl: imageUrl,imageBuilder: (context, imageProvider) => CircleAvatar(
+      child: imageUrl != null && imageUrl!.isNotEmpty ? CachedNetworkImage(imageUrl: imageUrl!,imageBuilder: (context, imageProvider) => CircleAvatar(
         radius: radius,
         backgroundImage: imageProvider,
       ), placeholder: (context, url) => CircleAvatar(
@@ -27,7 +27,10 @@ class UserProfileWidget extends StatelessWidget {
       ), errorWidget: (context, url, error) => CircleAvatar(
         radius: radius,
         backgroundImage: const AssetImage(Assets.userAvatar),
-      ),),
+      ),) : CircleAvatar(
+        radius: radius,
+        backgroundImage: const AssetImage(Assets.userAvatar),
+      ),
     );
   }
 }

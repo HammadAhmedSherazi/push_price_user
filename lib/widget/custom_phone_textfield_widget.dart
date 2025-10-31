@@ -1,60 +1,98 @@
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import '../export_all.dart';
+
+import '../export_all.dart' hide PhoneNumber;
 
 class CustomPhoneTextfieldWidget extends StatefulWidget {
   final TextEditingController phoneNumberController;
   final String initialCountryCode;
   final PhoneNumber? initialValue;
   final void Function(Country country)? onCountryChanged;
+  final void Function(PhoneNumber)? onPhoneNumberChanged;
 
-  const CustomPhoneTextfieldWidget({super.key, required this.phoneNumberController, required this.initialCountryCode, required this.onCountryChanged, this.initialValue });
+  const CustomPhoneTextfieldWidget({super.key, required this.phoneNumberController, required this.initialCountryCode, required this.onCountryChanged, this.initialValue , required this.onPhoneNumberChanged});
 
   @override
   State<CustomPhoneTextfieldWidget> createState() => _CustomPhoneTextfieldWidgetState();
 }
 
 class _CustomPhoneTextfieldWidgetState extends State<CustomPhoneTextfieldWidget> {
-  
+  late String currentCountryCode;
+
+  @override
+  void initState() {
+    super.initState();
+    currentCountryCode = widget.initialCountryCode;
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomPhoneTextfieldWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialCountryCode != widget.initialCountryCode) {
+      setState(() {
+        currentCountryCode = widget.initialCountryCode;
+      });
+    }
+  }
+
+  Country getCurrentCountry() {
+    return countries.firstWhere(
+      (c) => c.code == currentCountryCode,
+      orElse: () => countries.firstWhere((c) => c.code == 'US', orElse: () => countries[0]),
+    );
+  }
 
   @override
 Widget build(BuildContext context) {
   return InternationalPhoneNumberInput(
-    
-    onInputChanged: (PhoneNumber number) {
-      // print(number.phoneNumber);
+
+    onInputChanged: (phone) {
+      widget.onPhoneNumberChanged?.call(phone);
+      // Update current country code when phone number changes
+      if (phone.isoCode != null && phone.isoCode != currentCountryCode) {
+        setState(() {
+          currentCountryCode = phone.isoCode!;
+        });
+      }
     },
+
+    
     onInputValidated: (bool value) {
       // print(value);
     },
-  
+
     selectorConfig: SelectorConfig(
+
       // selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
       useBottomSheetSafeArea: true,
       trailingSpace: false,
-      
+
       setSelectorButtonAsPrefixIcon: true, // 👈 Key line here
     ),
-    
+
     ignoreBlank: true,
-    
+
     autoValidateMode: AutovalidateMode.disabled,
     selectorTextStyle: TextStyle(color: Colors.black),
     initialValue: widget.initialValue,
+
     textFieldController: widget.phoneNumberController,
     formatInput: true,
+    // maxLength: getCurrentCountry().maxLength,
+    validator: (value) => null, // Disable built-in validation error display
     // inputDecoration: InputDecoration(
     //   label: Text("Phone")
     // ),
-   
-    
-    keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
+
+
+    keyboardType: TextInputType.phone,
     inputBorder: OutlineInputBorder(
-      
+
     ),
     onSaved: (PhoneNumber number) {
       // print('On Saved: $number');
     },
+
   );
 }
 

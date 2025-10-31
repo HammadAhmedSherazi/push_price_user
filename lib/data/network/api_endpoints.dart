@@ -1,5 +1,7 @@
 class ApiEndpoints {
-  static const String userAuth = "users/auth/";
+  
+  static const String user = "users/";
+  static const String userAuth = "${user}auth/";
   static const String login = "${userAuth}login";
   static const String logout = "${userAuth}logout";
   static const String verifyOtp = "${userAuth}verify-otp";
@@ -10,7 +12,8 @@ class ApiEndpoints {
   static const String getUser = "${userAuth}me";
 
   static const String getProducts = "admin/products/";
-  static const String getCatrgories = "${getProducts}categories";
+  static const String getCatrgories = "${user}categories";
+  static const String getStores = "${user}stores";
 
 
 

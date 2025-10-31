@@ -3,15 +3,24 @@ import 'dart:async';
 import '../../export_all.dart';
 import '../../utils/extension.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends ConsumerStatefulWidget {
   final ScrollController scrollController;
   const HomeView({super.key, required this.scrollController});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends ConsumerState<HomeView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(homeProvider.notifier).getCategories();
+      ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
+    });
+  }
+
   void showLocationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -212,58 +221,59 @@ class PopularStoresSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<StoreDataModel> stores = List.generate(
-      10,
-      (index) => StoreDataModel(
-        title: "Abc Store",
-        address: "abc street",
-        rating: 4.5,
-        icon: Assets.store,
-      ),
-    );
-    return SizedBox(
-      height: context.screenheight * 0.20,
-      child: Column(
-        spacing: 10,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer(
+      builder: (context, ref, child) {
+        final homeState = ref.watch(homeProvider.select((e) => (e.getStoresApiResponse, e.stores)));
+        final stores = homeState.$2 ?? [];
+        return SizedBox(
+          height: context.screenheight * 0.20,
+          child: Column(
+            spacing: 10,
             children: [
-              Text("Popular Stores", style: context.textStyle.displayMedium),
-              TextButton(
-                style: ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                  visualDensity: VisualDensity(
-                    vertical: -4.0,
-                    horizontal: -4.0,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Popular Stores", style: context.textStyle.displayMedium),
+                  TextButton(
+                    style: ButtonStyle(
+                      padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                      visualDensity: VisualDensity(
+                        vertical: -4.0,
+                        horizontal: -4.0,
+                      ),
+                    ),
+                    onPressed: () {
+                      AppRouter.push(AllStoreView(title: "Popular Stores"));
+                    },
+                    child: Text(
+                      "See All",
+                      style: context.textStyle.bodySmall!.copyWith(
+                        color: context.colors.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  AppRouter.push(AllStoreView(title: "Popular Stores"));
-                },
-                child: Text(
-                  "See All",
-                  style: context.textStyle.bodySmall!.copyWith(
-                    color: context.colors.primary,
-                    decoration: TextDecoration.underline,
-                  ),
+                ],
+              ),
+              Expanded(
+                child: AsyncStateHandler(
+                  status: homeState.$1.status,
+                  dataList: stores,
+                  padding: EdgeInsets.zero,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    final store = stores[index];
+                    return StoreCardWidget(data: store);
+                  },
+                  onRetry: () {
+                    ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
+                  },
                 ),
               ),
             ],
           ),
-          Expanded(
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final store = stores[index];
-                return StoreCardWidget(data: store);
-              },
-              separatorBuilder: (context, index) => 10.pw,
-              itemCount: stores.length,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -290,7 +300,7 @@ class StoreCardWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(data.icon!, width: 50.r, height: 50.r),
+            Image.asset(Assets.store, width: 50.r, height: 50.r),
             Text(data.title!, maxLines: 1, style: context.textStyle.bodySmall),
             Text(data.address!, style: context.textStyle.titleSmall, maxLines: 1),
             Row(
@@ -375,85 +385,92 @@ class NearbyStoresSection extends StatelessWidget {
 class CategoriesSection extends StatelessWidget {
   const CategoriesSection({super.key});
 
+
   @override
   Widget build(BuildContext context) {
-    final List<CategoryDataModel> categories = [
-      CategoryDataModel(title: "Fruits", icon: Assets.fruits),
-      CategoryDataModel(title: "Vegetables", icon: Assets.vegetable),
-      CategoryDataModel(title: "Meat", icon: Assets.meat),
-      CategoryDataModel(title: "Sea Food", icon: Assets.seaFood),
-      CategoryDataModel(title: "Groceries", icon: Assets.grocery),
-    ];
-    return SizedBox(
-      height: context.screenheight * 0.17,
-      child: Column(
-        spacing: 10,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    
+
+    return Consumer(
+      builder: (context, ref, child) {
+        final homeState = ref.watch(homeProvider.select((e)=>(e.getCategoriesApiResponse, e.categories)));
+        final categories = homeState.$2 ?? [];
+        return SizedBox(
+          height: context.screenheight * 0.17,
+          child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 10,
             children: [
-              Text("Categories", style: context.textStyle.displayMedium),
-              TextButton(
-                style: ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                  visualDensity: VisualDensity(
-                    vertical: -4.0,
-                    horizontal: -4.0,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Categories", style: context.textStyle.displayMedium),
+                  TextButton(
+                    style: ButtonStyle(
+                      padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                      visualDensity: VisualDensity(
+                        vertical: -4.0,
+                        horizontal: -4.0,
+                      ),
+                    ),
+                    onPressed: () {
+                      AppRouter.push(AllCategoryView());
+                    },
+                    child: Text(
+                      "See All",
+                      style: context.textStyle.bodySmall!.copyWith(
+                        color: context.colors.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  AppRouter.push(AllCategoryView());
-                },
-                child: Text(
-                  "See All",
-                  style: context.textStyle.bodySmall!.copyWith(
-                    color: context.colors.primary,
-                    decoration: TextDecoration.underline,
-                  ),
+                ],
+              ),
+              Expanded(
+                child: AsyncStateHandler(
+                  status: homeState.$1.status,
+                  dataList: categories,
+                  padding: EdgeInsets.zero,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    return SizedBox(
+                      width: context.screenwidth * 0.17,
+                      child: GestureDetector(
+                        onTap: () {
+                          AppRouter.push(CategoryProductView(title: category.title));
+                        },
+                        child: Column(
+                          spacing: 10,
+                          children: [
+                            CircleAvatar(
+                              radius: 25.r,
+                              backgroundColor: Color.fromRGBO(238, 247, 254, 1),
+                              child: Padding(
+                                padding: EdgeInsets.all(5.r),
+                                child: DisplayNetworkImage(imageUrl: category.icon), // Fallback icon
+                              ),
+                            ),
+                            Text(
+                              category.title,
+                              style: context.textStyle.bodyMedium,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  onRetry: () {
+                    ref.read(homeProvider.notifier).getCategories(chainId: null);
+                  },
                 ),
               ),
             ],
           ),
-          Expanded(
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return SizedBox(
-                  width: context.screenwidth * 0.17,
-                  child: GestureDetector(
-                    onTap: (){
-                      AppRouter.push(CategoryProductView(title: category.title));
-                    },
-                    child: Column(
-                      spacing: 10,
-                      children: [
-                        CircleAvatar(
-                          radius: 25.r,
-                          backgroundColor: Color.fromRGBO(238, 247, 254, 1),
-                          child: Padding(
-                            padding: EdgeInsets.all(5.r),
-                            child: Image.asset(category.icon),
-                          ),
-                        ),
-                        Text(
-                          category.title,
-                          style: context.textStyle.bodyMedium,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) => 5.pw,
-              itemCount: categories.length,
-            ),
-          ),
-        ],
-      ),
+        );
+      }
     );
   }
 }

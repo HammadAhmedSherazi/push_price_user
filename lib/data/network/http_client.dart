@@ -72,7 +72,7 @@ class MyHttpClient extends BaseApiServices {
 
     try {
       if (kDebugMode) {
-        print(this.headers(headers, isToken)['x-access-token']);
+        print(this.headers(headers, isToken)['Authorization']);
       }
       final response = await http
           .get(parsedUrl, headers: this.headers(headers, isToken))
@@ -183,7 +183,7 @@ class MyHttpClient extends BaseApiServices {
 
         // Add the form fields
         if (kDebugMode) {
-          print(this.headers(headers, isToken)['x-access-token']);
+          print(this.headers(headers, isToken));
         }
         // Send request and handle response
         final response = await request.send();
@@ -209,7 +209,7 @@ class MyHttpClient extends BaseApiServices {
 
         if (kDebugMode) {
           print(response);
-          print(this.headers(headers, isToken)['x-access-token']);
+          print(this.headers(headers, isToken)['Authorization']);
         }
       }
     } on SocketException {
@@ -245,7 +245,7 @@ class MyHttpClient extends BaseApiServices {
       if (isMultipartRequest) {
         final request = http.MultipartRequest('PUT', parsedUrl);
         final headersMap = this.headers(headers, isToken);
-        debugPrint(this.headers(headers, isToken)['x-access-token']);
+        debugPrint(this.headers(headers, isToken)['Authorization']);
         // Remove content-type header for multipart requests
         headersMap.remove('Content-Type');
         request.headers.addAll(headersMap);
@@ -325,7 +325,7 @@ class MyHttpClient extends BaseApiServices {
 
         responseJson = returnResponse(response);
 
-        debugPrint(this.headers(headers, isToken)['x-access-token']);
+        debugPrint(this.headers(headers, isToken)['Authorization']);
       }
     } on SocketException {
       throw _socketError();

@@ -1,43 +1,54 @@
+import '../../export_all.dart';
 import '../../utils/extension.dart';
 
-import '../../export_all.dart';
-
-class AllCategoryView extends StatelessWidget {
+class AllCategoryView extends ConsumerStatefulWidget {
   const AllCategoryView({super.key});
 
   @override
+  ConsumerState<AllCategoryView> createState() => _AllCategoryViewState();
+}
+
+class _AllCategoryViewState extends ConsumerState<AllCategoryView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(homeProvider.notifier).getCategories();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<CategoryDataModel> categories = [
-      CategoryDataModel(title: "Fruits", icon: Assets.fruits),
-      CategoryDataModel(title: "Vegtables", icon: Assets.vegetable),
-      CategoryDataModel(title: "Meat", icon: Assets.meat),
-      CategoryDataModel(title: "Sea Food", icon: Assets.seaFood),
-      CategoryDataModel(title: "Groceries", icon: Assets.grocery),
-    ];
-    return CustomScreenTemplate(title: "Categories", child: ListView.separated(
-      padding: EdgeInsets.all(AppTheme.horizontalPadding),
-      itemBuilder: (context, index) {
-      final category = categories[index];
-      return ListTile(
-        onTap: (){
-            AppRouter.push(CategoryProductView(title: category.title));
-                  
+    final homeState = ref.watch(homeProvider);
+    final categories = homeState.categories ?? [];
+    return CustomScreenTemplate(
+      title: "Categories",
+      child: AsyncStateHandler(
+        status: homeState.getCategoriesApiResponse.status,
+        dataList: categories,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return ListTile(
+            onTap: () {
+              AppRouter.push(CategoryProductView(title: category.title));
+            },
+            contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
+            leading: CircleAvatar(
+              radius: 25.r,
+              backgroundColor: Color.fromRGBO(238, 247, 254, 1),
+              child: Padding(
+                padding: EdgeInsets.all(4.r),
+                child: DisplayNetworkImage(imageUrl: category.icon),
+              ),
+            ),
+            title: Text(category.title, style: context.textStyle.displayMedium),
+            trailing: Icon(Icons.arrow_forward_ios, size: 15.r),
+          );
         },
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 0.0
+        onRetry: () {
+          ref.read(homeProvider.notifier).getCategories();
+        },
       ),
-      
-      leading: CircleAvatar(
-                        radius: 25.r,
-                        backgroundColor: Color.fromRGBO(238, 247, 254, 1),
-                        child: Padding(
-                          padding: EdgeInsets.all(4.r),
-                          child: Image.asset(category.icon),
-                        ),
-                      ),
-      title: Text(category.title, style: context.textStyle.displayMedium,),
-      trailing: Icon(Icons.arrow_forward_ios, size: 15.r,),
     );
-    }, separatorBuilder: (context, index)=> 10.ph, itemCount: categories.length));
   }
 }

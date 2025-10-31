@@ -15,7 +15,7 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body:  Consumer(builder: (context, ref, child){
-        final response = ref.watch(authProvider.select((e)=>e.getStoresApiRes));
+        final response = ref.watch(authProvider.select((e)=>e.getUserApiResponse));
         return AsyncStateHandler(status: response.status, dataList: [1], itemBuilder: null, onRetry: (){
 
         }, customSuccessWidget: SizedBox(
@@ -38,7 +38,7 @@ class _ProfileViewState extends State<ProfileView> {
                   children: [
                     Consumer(
                       builder: (context, ref, child) {
-                        final image = ref.watch(authProvider.select((e)=>e.staffInfo!.profileImage));
+                        final image = ref.watch(authProvider.select((e)=>e.userData!.profileImage));
                         return UserProfileWidget(radius: 45.r, imageUrl:image,);
                       }
                     ),
@@ -56,27 +56,31 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Consumer(
                   builder: (context, ref, child) {
 
-                    final user = ref.watch(authProvider.select((e)=>e.staffInfo))!;
+                    final user = ref.watch(authProvider.select((e)=>e.userData))!;
                     return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          Text(context.tr("personal_information"), style: context.textStyle.displayMedium,)
-                        ],
-                      ),
-                      10.ph,
+                      // Row(
+                      //   children: [
+                      //     Text(context.tr("personal_information"), style: context.textStyle.displayMedium,)
+                      //   ],
+                      // ),
+                      // 10.ph,
                         ProfileTitleWidget(
                           title: context.tr("name"),
                           value: user.fullName,
                         ),
                        ProfileTitleWidget(
-                          title: context.tr("username"),
-                          value: user.username,
+                          title: context.tr("email"),
+                          value: user.email,
                         ),
                         ProfileTitleWidget(
                           title: context.tr("phone_number"),
                           value: user.phoneNumber,
+                        ),
+                        ProfileTitleWidget(
+                          title: context.tr("address"),
+                          value: user.address,
                         ),
                         // ProfileTitleWidget(
                         //   title: 
@@ -96,13 +100,13 @@ class _ProfileViewState extends State<ProfileView> {
                   }
                 ),
               )),
-              // Positioned(
-              // top: 160.r,
-              // right: 10.r,
-              // child: IconButton(
-              //   onPressed: (){
-              //   AppRouter.push(CreateProfileView(isEdit: true,));
-              // }, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))),
+              Positioned(
+              top: 160.r,
+              right: 10.r,
+              child: IconButton(
+                onPressed: (){
+                AppRouter.push(CreateProfileView(isEdit: true,));
+              }, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))),
           ],
         ),
       ),

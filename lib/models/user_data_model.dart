@@ -1,57 +1,87 @@
 class UserDataModel {
-  final int id;
-  final String username;
+  final int userId;
   final String email;
-  final String roleType;
-  final int chainId;
+  final String fullName;
+  final String phoneNumber;
+  final String address;
+  final String? profileImage;
+  final bool isVerified;
+  final bool isActive;
+  final String createdAt;
+  final String updatedAt;
 
   const UserDataModel({
-    required this.id,
-    required this.username,
+    required this.userId,
     required this.email,
-    required this.roleType,
-    required this.chainId,
+    required this.fullName,
+    required this.phoneNumber,
+    required this.address,
+    this.profileImage,
+    required this.isVerified,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory UserDataModel.fromJson(Map<String, dynamic> json) {
     return UserDataModel(
-      id: json['id'] ?? 0,
-      username: json['username'] ?? '',
+      userId: json['user_id'] ?? 0,
       email: json['email'] ?? '',
-      roleType: json['role_type'] ?? '',
-      chainId: json['chain_id'] ?? 0,
+      fullName: json['full_name'] ?? '',
+      phoneNumber: json['phone_number'] ?? '',
+      address: json['address'] ?? '',
+      profileImage: json['profile_image'],
+      isVerified: json['is_verified'] ?? false,
+      isActive: json['is_active'] ?? false,
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'username': username,
+      'user_id': userId,
       'email': email,
-      'role_type': roleType,
-      'chain_id': chainId,
+      'full_name': fullName,
+      'phone_number': phoneNumber,
+      'address': address,
+      'profile_image': profileImage,
+      'is_verified': isVerified,
+      'is_active': isActive,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 
   UserDataModel copyWith({
-    int? id,
-    String? username,
+    int? userId,
     String? email,
-    String? roleType,
-    int? chainId,
+    String? fullName,
+    String? phoneNumber,
+    String? address,
+    String? profileImage,
+    bool? isVerified,
+    bool? isActive,
+    String? createdAt,
+    String? updatedAt,
   }) {
     return UserDataModel(
-      id: id ?? this.id,
-      username: username ?? this.username,
+      userId: userId ?? this.userId,
       email: email ?? this.email,
-      roleType: roleType ?? this.roleType,
-      chainId: chainId ?? this.chainId,
+      fullName: fullName ?? this.fullName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      address: address ?? this.address,
+      profileImage: profileImage ?? this.profileImage,
+      isVerified: isVerified ?? this.isVerified,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
   @override
   String toString() {
-    return 'UserDataModel(id: $id, username: $username, email: $email, roleType: $roleType, chainId: $chainId)';
+    return 'UserDataModel(userId: $userId, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, address: $address, profileImage: $profileImage, isVerified: $isVerified, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
   
