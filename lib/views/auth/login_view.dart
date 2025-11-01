@@ -16,19 +16,24 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void initState() {
-    final sharedPref = SharedPreferenceManager.sharedInstance;
-   
-    rememberMeCheck = sharedPref.getRemberMe() ?? false;
-    sharedPref.clearAll();
-    if(rememberMeCheck){
-      emailTextController = TextEditingController(text: sharedPref.getSavedEmail());
-      passwordTextController = TextEditingController(text: sharedPref.getSavedPassword());
-    }
-    else{
-       emailTextController = TextEditingController();
-       passwordTextController = TextEditingController();
-    }
+    // Initialize controllers synchronously
+    emailTextController = TextEditingController();
+    passwordTextController = TextEditingController();
+    _initializeLoginData();
     super.initState();
+  }
+
+  Future<void> _initializeLoginData() async {
+    final secureStorage = SecureStorageManager.sharedInstance;
+
+    rememberMeCheck = await secureStorage.getRememberMe();
+    if(rememberMeCheck){
+      final savedEmail = await secureStorage.getSavedEmail();
+      final savedPassword = await secureStorage.getSavedPassword();
+      emailTextController.text = savedEmail ?? '';
+      passwordTextController.text = savedPassword ?? '';
+    }
+    setState(() {});
   }
 
 
@@ -127,7 +132,7 @@ class _LoginViewState extends State<LoginView> {
                   value: rememberMeCheck,
                   onChanged: (value) {
                     rememberMeCheck = value;
-                    SharedPreferenceManager.sharedInstance.setRemberMe(rememberMeCheck);
+                    SecureStorageManager.sharedInstance.setRememberMe(rememberMeCheck);
                     setState(() {});
                   },
                 
@@ -153,17 +158,16 @@ class _LoginViewState extends State<LoginView> {
               final authVM = ref.watch(authProvider);
               return CustomButtonWidget(
                 isLoad: authVM.loginApiResponse.status == Status.loading,
-                title: context.tr("sign_in"), onPressed: () {
+                title: context.tr("sign_in"), onPressed: () async {
                 if(_formKey.currentState!.validate()){
-                  final prefs = SharedPreferenceManager.sharedInstance;
                   if(rememberMeCheck){
-                    
-                    prefs.storeEmail(emailTextController.text);
-                    prefs.storePass(passwordTextController.text);
+
+                    await SecureStorageManager.sharedInstance.storeEmail(emailTextController.text);
+                    await SecureStorageManager.sharedInstance.storePass(passwordTextController.text);
                   }
                   else{
-                    prefs.clearKey(prefs.email);
-                    prefs.clearKey(prefs.pass);
+                    await SecureStorageManager.sharedInstance.clearEmail();
+                    await SecureStorageManager.sharedInstance.clearPass();
                   }
                   ref.read(authProvider.notifier).login(email: emailTextController.text.trim(), password: passwordTextController.text.trim());
                 }

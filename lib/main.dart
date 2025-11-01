@@ -6,6 +6,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
   await SharedPreferenceManager.init();
+  // SecureStorageManager doesn't need initialization
    runApp(
     // Adding ProviderScope enables Riverpod for the entire project
     const ProviderScope(child: MyApp()),

@@ -40,6 +40,7 @@ export './providers/home_provider/home_provider.dart';
 export './providers/navigation_provider/navigation_provider.dart';
 //SERVICES
 export './services/base_api_services.dart';
+export './services/secure_storage.dart';
 export './services/shared_preferences.dart';
 export './utils/assets.dart';
 //UTILS

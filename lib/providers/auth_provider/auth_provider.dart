@@ -47,8 +47,8 @@ class AuthProvider  extends Notifier<AuthState> {
         if(user != null){
           savedUserData(user);
         }
-        SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
-        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
+        await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
+        await SecureStorageManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
         AppRouter.pushAndRemoveUntil(NavigationView());
 
       }
@@ -76,17 +76,18 @@ class AuthProvider  extends Notifier<AuthState> {
 
     try {
       // Make API call to logout
+      String? refreshToken = await SecureStorageManager.sharedInstance.getRefreshToken();
       await MyHttpClient.instance.post(ApiEndpoints.logout, {
-        "refresh_token": SharedPreferenceManager.sharedInstance.getRefreshToken() ?? ""
+        "refresh_token": refreshToken ?? ""
       });
       // Clear local data
-      SharedPreferenceManager.sharedInstance.clearAll();
+      await SecureStorageManager.sharedInstance.clearAll();
 
       AppRouter.pushAndRemoveUntil(LoginView());
     } catch (e) {
       if (!ref.mounted) return;
       // Even if API call fails, clear local data and logout
-      SharedPreferenceManager.sharedInstance.clearAll();
+      await SecureStorageManager.sharedInstance.clearAll();
       AppRouter.pushAndRemoveUntil(LoginView());
     }
   }
@@ -150,7 +151,7 @@ class AuthProvider  extends Notifier<AuthState> {
 
         state = state.copyWith(verifyOtpApiResponse: ApiResponse.completed(response['data']));
         // Navigate to complete profile or next step
-        SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
+        await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
         AppRouter.push(CreateProfileView());
 
       }
@@ -226,8 +227,8 @@ class AuthProvider  extends Notifier<AuthState> {
         if(user != null){
           savedUserData(user);
         }
-        SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
-        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
+        await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
+        await SecureStorageManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
         AppRouter.pushAndRemoveUntil(NavigationView());
 
       }
@@ -275,17 +276,17 @@ class AuthProvider  extends Notifier<AuthState> {
  
   void savedUserData(Map<String, dynamic> userMap) {
     String user = jsonEncode(userMap);
-    SharedPreferenceManager.sharedInstance.storeUser(user);
+    SecureStorageManager.sharedInstance.storeUser(user);
     userSet();
   }
 
-  void userSet() {
+  void userSet() async {
 
-    Map<String, dynamic> userJson =
-        jsonDecode(SharedPreferenceManager.sharedInstance.getUserData()!);
-
-   state = state.copyWith(userData: UserDataModel.fromJson(userJson));
-
+    String? userData = await SecureStorageManager.sharedInstance.getUserData();
+    if (userData != null) {
+      Map<String, dynamic> userJson = jsonDecode(userData);
+      state = state.copyWith(userData: UserDataModel.fromJson(userJson));
+    }
 
   }
 
@@ -409,18 +410,36 @@ class AuthProvider  extends Notifier<AuthState> {
     }
   }
 
-  FutureOr<void> refreshToken({required String token})async{
+  FutureOr<void> refreshToken()async{
     try {
-      final response = await MyHttpClient.instance.post(ApiEndpoints.refresh, {
-  "refresh_token": token
+      final refreshToken = await SecureStorageManager.sharedInstance.getRefreshToken() ?? ""  ;
+      if(refreshToken != ""){
+         final response = await MyHttpClient.instance.post(ApiEndpoints.refresh, {
+  "refresh_token": refreshToken
 });
+  SecureStorageManager.sharedInstance.clearRefreshToken();
       if(response != null){
-        SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
-        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
-       
+        await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
+        await SecureStorageManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
+
       }
+      }
+      else{
+        SecureStorageManager.sharedInstance.clearAll();
+
+          AppRouter.pushAndRemoveUntil(const LoginView());
+          Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("please_login_again"));
+        
+      }
+     
     } catch (e) {
+      SecureStorageManager.sharedInstance.clearAll();
+
+          AppRouter.pushAndRemoveUntil(const LoginView());
+          Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("please_login_again"));
+        
       throw Exception(e);
+      
     }
   }
   
