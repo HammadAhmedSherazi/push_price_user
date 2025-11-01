@@ -435,6 +435,7 @@ class MyHttpClient extends BaseApiServices {
       case 203:
       case 204:
       case 404:
+      case 400:
       //  if (json.decode(response.body.toString())['details'] ==
       //       "User Not Found") {
       //     SharedPreferenceManager.sharedInstance.clearAll();
@@ -445,15 +446,15 @@ class MyHttpClient extends BaseApiServices {
         var utf8Format = utf8.decode(response.bodyBytes);
         var responseJson = jsonDecode(utf8Format);
         return responseJson;
-      case 400:
-        Helper.showMessage( AppRouter.navKey.currentContext!,message: 
-          json.decode(response.body.toString())['detail']??
-              AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
-        );
-        throw BadRequestException(
-          response.statusCode,
-          response.body.toString(),
-        );
+      // case 400:
+      //   Helper.showMessage( AppRouter.navKey.currentContext!,message: 
+      //     json.decode(response.body.toString())['detail']??
+      //         AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+      //   );
+      //   throw BadRequestException(
+      //     response.statusCode,
+      //     response.body.toString(),
+      //   );
       case 401:
         String msg =
             json.decode(response.body.toString())['detail'] ??
@@ -462,8 +463,10 @@ class MyHttpClient extends BaseApiServices {
         Helper.showMessage( AppRouter.navKey.currentContext!,message: msg);
         
         if(msg == "Invalid token"){
-         if (SharedPreferenceManager.sharedInstance.getRefreshToken() != null &&
-            SharedPreferenceManager.sharedInstance.getRefreshToken() != "") {
+          String? refreshToken = SharedPreferenceManager.sharedInstance.getRefreshToken();
+         if (refreshToken != null &&
+            refreshToken != "") {
+            AuthProvider().refreshToken(token: refreshToken);
           // AuthRemoteRepo.authRemoteInstance.updateToken(input: {
           //   "refreshToken":
           //       SharedPreferenceManager.sharedInstance.getRefreshToken()!

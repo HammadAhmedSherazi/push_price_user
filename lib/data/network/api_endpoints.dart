@@ -1,7 +1,12 @@
 class ApiEndpoints {
   
   static const String user = "users/";
+  static const String admin = "admin/";
   static const String userAuth = "${user}auth/";
+
+  static const String imageUpload = "${admin}upload/upload";
+  static const String imageDelete = "${admin}upload/delete";
+
   static const String login = "${userAuth}login";
   static const String logout = "${userAuth}logout";
   static const String verifyOtp = "${userAuth}verify-otp";

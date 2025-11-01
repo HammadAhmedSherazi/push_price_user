@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
@@ -13,7 +11,7 @@ class CreateProfileView extends StatefulWidget {
 }
 
 class _CreateProfileViewState extends State<CreateProfileView> {
-  File? selectProfileImage;
+
   late final TextEditingController nameTextController;
   late final TextEditingController employeeIdTextController;
   late final TextEditingController phoneTextController;
@@ -84,8 +82,9 @@ class _CreateProfileViewState extends State<CreateProfileView> {
                           "phone_number": parsed.international,
                           "address": addressTextController.text,
                         };
-                        if(selectProfileImage != null){
-                          data['files'] = selectProfileImage;
+                        final profileImage = ref.watch(authProvider.select((e)=>e.imageUrl)) ?? "";
+                        if(profileImage != ""){
+                          data['profile_image'] = profileImage;
                         }
                         // print(data);
                         ref.read(authProvider.notifier).completeProfile(profileData:data );
@@ -124,13 +123,21 @@ class _CreateProfileViewState extends State<CreateProfileView> {
           padding: EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding),
           children: [
             Center(
-              child: ProfileImageChanger(
-                profileUrl: null,
-                onImageSelected: (file) {
-                  setState(() {
-                    selectProfileImage = file;
-                  });
-                },
+              child: Consumer(
+                builder: (context,ref, child) {
+                  final data = ref.watch(authProvider.select((e)=>(e.imageUrl, e.uploadImageApiResponse, e.removeImageApiResponse)));
+
+                  return ProfileImageChanger(
+                    profileUrl: data.$1, onRemoveImage: () {  
+                        ref.read(authProvider.notifier).removeImage(imageUrl: data.$1!);
+                    }, apiResponse: data.$2,
+                    onImageSelected: (file) {
+
+                      ref.read(authProvider.notifier).uploadImage(file: file);
+                    },
+                   
+                  );
+                }
               ),
             ),
             20.ph,

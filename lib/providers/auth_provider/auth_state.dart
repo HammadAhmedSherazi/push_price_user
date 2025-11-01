@@ -10,8 +10,10 @@ class AuthState {
   final ApiResponse getUserApiResponse;
   final ApiResponse getStoresApiRes;
   final ApiResponse getCategoriesApiResponse;
+  final ApiResponse uploadImageApiResponse;
+  final ApiResponse removeImageApiResponse;
   final UserDataModel? userData;
-
+  final String? imageUrl;
   final StaffModel? staffInfo;
   final List<CategoryDataModel>? categories;
   final int? categoriesSkip;
@@ -24,8 +26,10 @@ class AuthState {
     required this.getUserApiResponse,
     required this.getStoresApiRes,
     required this.getCategoriesApiResponse,
+    required this.uploadImageApiResponse,
+    required this.removeImageApiResponse,
     this.userData,
-
+    this.imageUrl,
     this.staffInfo,
     this.categories,
     this.categoriesSkip,
@@ -40,8 +44,10 @@ class AuthState {
     ApiResponse? getUserApiResponse,
     ApiResponse? getStoresApiRes,
     ApiResponse? getCategoriesApiResponse,
+    ApiResponse? uploadImageApiResponse,
+    ApiResponse? removeImageApiResponse,
     UserDataModel? userData,
-
+    String? imageUrl,
     StaffModel? staffInfo,
     List<CategoryDataModel>? categories,
     int? categoriesSkip,
@@ -54,9 +60,11 @@ class AuthState {
     getUserApiResponse: getUserApiResponse ?? this.getUserApiResponse,
     getStoresApiRes:  getStoresApiRes ?? this.getStoresApiRes,
     getCategoriesApiResponse: getCategoriesApiResponse ?? this.getCategoriesApiResponse,
+    uploadImageApiResponse: uploadImageApiResponse ?? this.uploadImageApiResponse,
+    removeImageApiResponse: removeImageApiResponse ?? this.removeImageApiResponse,
     userData: userData ?? this.userData,
     staffInfo: staffInfo ?? this.staffInfo,
-
+    imageUrl: imageUrl ?? this.imageUrl,
     categories: categories ?? this.categories,
     categoriesSkip: categoriesSkip ?? this.categoriesSkip,
   );

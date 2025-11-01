@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 
 class ProfileImageChanger extends StatefulWidget {
-  String? profileUrl;
-  final void Function(File? file)? onImageSelected;
+  final String? profileUrl;
+  final ApiResponse  apiResponse;
+  final void Function(File file)? onImageSelected;
+  final void Function() onRemoveImage;
 
-  ProfileImageChanger({super.key, this.onImageSelected, this.profileUrl});
+  const ProfileImageChanger({super.key, this.onImageSelected, this.profileUrl, required this.onRemoveImage, required this.apiResponse});
 
   @override
   State<ProfileImageChanger> createState() => _ProfileImageChangerState();
@@ -52,7 +55,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
                   title: const Text('Choose from gallery'),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
-                if(widget.profileUrl != null || _selectedImage != null)...[
+                if((widget.profileUrl != null  || _selectedImage != null) && widget.profileUrl != "")...[
                   ListTile(
                   
                   leading: const Icon(Icons.delete, color: Colors.red,),
@@ -61,11 +64,12 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
                   ),),
                   onTap: () {
                     setState(() {
-                      widget.profileUrl = null;
+                     
                       _selectedImage = null;
                     });
                     AppRouter.back();
-                    widget.onImageSelected?.call(null);
+                   
+                    widget.onRemoveImage();
                   },
                 ),
                 ]
@@ -88,7 +92,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
       if (compressedFile != null) {
         setState(() {
           _selectedImage = compressedFile;
-          widget.profileUrl = null;
+          
         });
         widget.onImageSelected?.call(compressedFile);
       } else {
@@ -105,9 +109,18 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
       clipBehavior: Clip.none,
       children: [
 
-      widget.profileUrl == null ?  Container(
+
+      if(widget.apiResponse.status == Status.completed)...[
+          UserProfileWidget(radius: 50.r, imageUrl: widget.profileUrl ?? ""),
+      ],
+      if(widget.apiResponse.status == Status.error || widget.apiResponse.status == Status.undertermined)...[
+        UserProfileWidget(radius: 50.r, imageUrl:  "")
+      ],
+      if(widget.apiResponse.status == Status.loading)...[
+        Container(
           height: 108.r,
           width: 108.r,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
@@ -122,8 +135,10 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
                      ,
             ) ,
           ),
+          child: CustomLoadingWidget() ,
           
-        ) : UserProfileWidget(radius: 50.r, imageUrl: widget.profileUrl ?? ""),
+        )
+      ],
         
         Positioned(
           bottom: 0,

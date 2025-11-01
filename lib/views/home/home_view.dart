@@ -290,7 +290,7 @@ class StoreCardWidget extends StatelessWidget {
       },
       child: Container(
         height: double.infinity,
-        // width: 94.w,
+        width: 94.w,
         padding: EdgeInsets.symmetric(horizontal: 20.r),
         decoration: BoxDecoration(
           color: Color.fromRGBO(243, 243, 243, 1),
@@ -301,8 +301,8 @@ class StoreCardWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(Assets.store, width: 50.r, height: 50.r),
-            Text(data.title!, maxLines: 1, style: context.textStyle.bodySmall),
-            Text(data.address!, style: context.textStyle.titleSmall, maxLines: 1),
+            Text(data.title!, maxLines: 1, style: context.textStyle.bodySmall, textAlign: TextAlign.center,),
+            Text(data.address!, style: context.textStyle.titleSmall, maxLines: 1, textAlign: TextAlign.center,),
             Row(
               
               mainAxisSize: MainAxisSize.min,

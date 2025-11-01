@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
@@ -18,6 +19,8 @@ class AuthProvider  extends Notifier<AuthState> {
       getUserApiResponse: ApiResponse.undertermined(),
       getStoresApiRes: ApiResponse.undertermined(),
       getCategoriesApiResponse: ApiResponse.undertermined(),
+      uploadImageApiResponse: ApiResponse.undertermined(),
+      removeImageApiResponse: ApiResponse.undertermined(),
 
       categories: [],
       categoriesSkip: 0,
@@ -45,7 +48,7 @@ class AuthProvider  extends Notifier<AuthState> {
           savedUserData(user);
         }
         SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
-        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_access_token'] ?? "");
+        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
         AppRouter.pushAndRemoveUntil(NavigationView());
 
       }
@@ -119,6 +122,7 @@ class AuthProvider  extends Notifier<AuthState> {
       }
     } catch (e) {
       if (!ref.mounted) return;
+      
       // Show error message for exceptions
       Helper.showMessage(
         AppRouter.navKey.currentContext!,
@@ -211,7 +215,7 @@ class AuthProvider  extends Notifier<AuthState> {
     if (!ref.mounted) return;
     try {
       state = state.copyWith(completeProfileApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.post(ApiEndpoints.completeProfile, profileData, variableName: 'profile_image', isMultipartRequest: profileData.containsKey('files'));
+      final response = await MyHttpClient.instance.post(ApiEndpoints.completeProfile, profileData,);
       if (!ref.mounted) return;
 
       if(response != null && !(response is Map && response.containsKey('detail'))){
@@ -223,7 +227,7 @@ class AuthProvider  extends Notifier<AuthState> {
           savedUserData(user);
         }
         SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
-        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_access_token'] ?? "");
+        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
         AppRouter.pushAndRemoveUntil(NavigationView());
 
       }
@@ -340,6 +344,86 @@ class AuthProvider  extends Notifier<AuthState> {
       );
     }
   }
+
+  FutureOr<void> uploadImage({required File file}) async {
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(uploadImageApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.post(ApiEndpoints.imageUpload, {"files": file, "folder" : "profile_image"}, variableName: 'file', isMultipartRequest: true);
+      if (!ref.mounted) return;
+
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+        try {
+          String imageUrl = response['url'];
+          Helper.showMessage(AppRouter.navKey.currentContext!, message: AppRouter.navKey.currentContext!.tr("image_uploaded_successfully"));
+          state = state.copyWith(uploadImageApiResponse: ApiResponse.completed(response), imageUrl: imageUrl);
+        } catch (e) {
+          Helper.showMessage(
+            AppRouter.navKey.currentContext!,
+            message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+          );
+          state = state.copyWith(uploadImageApiResponse: ApiResponse.error());
+        }
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_upload_image"),
+        );
+        state = state.copyWith(uploadImageApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(uploadImageApiResponse: ApiResponse.error());
+    }
+  }
+
+  FutureOr<void> removeImage({required String imageUrl}) async {
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(removeImageApiResponse: ApiResponse.loading(), imageUrl: "");
+      final response = await MyHttpClient.instance.delete(ApiEndpoints.imageDelete, {"url": imageUrl});
+      if (!ref.mounted) return;
+
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+        try {
+          // Assuming success response structure
+          Helper.showMessage(AppRouter.navKey.currentContext!, message: AppRouter.navKey.currentContext!.tr("image_removed_successfully"));
+          state = state.copyWith(removeImageApiResponse: ApiResponse.completed(response));
+        } catch (e) {
+          Helper.showMessage(
+            AppRouter.navKey.currentContext!,
+            message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+          );
+          state = state.copyWith(removeImageApiResponse: ApiResponse.error());
+        }
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_remove_image"),
+        );
+        state = state.copyWith(removeImageApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(removeImageApiResponse: ApiResponse.error());
+    }
+  }
+
+  FutureOr<void> refreshToken({required String token})async{
+    try {
+      final response = await MyHttpClient.instance.post(ApiEndpoints.refresh, {
+  "refresh_token": token
+});
+      if(response != null){
+        SharedPreferenceManager.sharedInstance.storeToken(response['access_token'] ?? "");
+        SharedPreferenceManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
+       
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+  
 }
 final authProvider = NotifierProvider<AuthProvider, AuthState>(
   AuthProvider.new,
