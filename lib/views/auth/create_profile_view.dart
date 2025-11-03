@@ -24,6 +24,9 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
   void initState() {
     // Future.microtask((){
     final user = ref.read(authProvider.select((e) => e.userData));
+   Future.microtask((){
+     ref.read(authProvider.notifier).imageUnset();
+   });
     if (user != null) {
       final phone = PhoneNumber.parse(user.phoneNumber);
       isoCode = phone.isoCode.name;
@@ -152,10 +155,11 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
                         e.imageUrl,
                         e.uploadImageApiResponse,
                         e.removeImageApiResponse,
+                        e.userData!.profileImage
                       ),
                     ),
                   );
-                  profileImage = widget.isEdit! ? profileImage : data.$1 ?? "";
+                  profileImage =  data.$1 != "" ? data.$1 ?? '': data.$4 ?? "";
                   return ProfileImageChanger(
                     profileUrl: profileImage,
                     onRemoveImage: () {

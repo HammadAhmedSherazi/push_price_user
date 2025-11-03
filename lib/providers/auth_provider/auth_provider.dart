@@ -135,7 +135,7 @@ class AuthProvider  extends Notifier<AuthState> {
   }
 
   FutureOr<void> verifyOtp({required String otp})async{
-    state = state.copyWith(imageUrl:  "");
+    imageUnset();
      Helper.showFullScreenLoader(AppRouter.navKey.currentContext!, dismissible: false);
      
     if (!ref.mounted) return;
@@ -408,8 +408,11 @@ class AuthProvider  extends Notifier<AuthState> {
       if (response != null && !(response is Map && response.containsKey('detail'))) {
         try {
           // Assuming success response structure
+          
           Helper.showMessage(AppRouter.navKey.currentContext!, message: AppRouter.navKey.currentContext!.tr("image_removed_successfully"));
-          state = state.copyWith(removeImageApiResponse: ApiResponse.completed(response));
+          state = state.copyWith(removeImageApiResponse: ApiResponse.completed(response,), userData: state.userData!.profileImage != ""? state.userData!.copyWith(
+            profileImage: ""
+          ) : null);
         } catch (e) {
           Helper.showMessage(
             AppRouter.navKey.currentContext!,
@@ -482,7 +485,10 @@ class AuthProvider  extends Notifier<AuthState> {
   void toggleTravelMode(bool chk){
     state = state.copyWith(userData:state.userData!.copyWith(isTravelMode: chk));
   }
-
+  
+  void imageUnset(){
+    state = state.copyWith(imageUrl: "");
+  }
 
 
 }
