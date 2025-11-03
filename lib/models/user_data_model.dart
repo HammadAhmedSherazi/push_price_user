@@ -7,8 +7,10 @@ class UserDataModel {
   final String? profileImage;
   final bool isVerified;
   final bool isActive;
+  final bool isTravelMode;
   final String createdAt;
   final String updatedAt;
+  final num latitude, longitude;
 
   const UserDataModel({
     required this.userId,
@@ -21,6 +23,9 @@ class UserDataModel {
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
+    required this.isTravelMode,
+    required this.latitude,
+    required this.longitude,
   });
 
   factory UserDataModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +40,9 @@ class UserDataModel {
       isActive: json['is_active'] ?? false,
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
+      isTravelMode: json['is_travel_enabled'] ?? false,
+      longitude: json['longitude'] ?? 0,
+      latitude: json['latitude'] ?? 0
     );
   }
 
@@ -50,6 +58,9 @@ class UserDataModel {
       'is_active': isActive,
       'created_at': createdAt,
       'updated_at': updatedAt,
+      'is_travel_enabled' : isTravelMode,
+      'longitude' : longitude,
+      'latitude' : latitude
     };
   }
 
@@ -64,6 +75,8 @@ class UserDataModel {
     bool? isActive,
     String? createdAt,
     String? updatedAt,
+    num? latitude, longitude,
+    bool? isTravelMode,
   }) {
     return UserDataModel(
       userId: userId ?? this.userId,
@@ -76,6 +89,9 @@ class UserDataModel {
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isTravelMode: isTravelMode ?? this.isTravelMode,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude
     );
   }
 

@@ -1,45 +1,49 @@
+import 'package:intl_phone_number_input/intl_phone_number_input.dart' as ph ;
 import 'package:push_price_user/utils/extension.dart';
 
-import '../../export_all.dart';
+import '../../export_all.dart' ;
 
-class CreateProfileView extends StatefulWidget {
+class CreateProfileView extends ConsumerStatefulWidget {
   final bool? isEdit;
   const CreateProfileView({super.key, this.isEdit = false});
 
   @override
-  State<CreateProfileView> createState() => _CreateProfileViewState();
+  ConsumerState<CreateProfileView> createState() => _CreateProfileViewState();
 }
 
-class _CreateProfileViewState extends State<CreateProfileView> {
-
-  late final TextEditingController nameTextController;
-  late final TextEditingController employeeIdTextController;
-  late final TextEditingController phoneTextController;
-  late final TextEditingController emailTextController;
-  late final TextEditingController addressTextController;
+class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
+  final TextEditingController nameTextController = TextEditingController();
+  final TextEditingController employeeIdTextController =
+      TextEditingController();
+  final TextEditingController phoneTextController = TextEditingController();
+  final TextEditingController emailTextController = TextEditingController();
+  final TextEditingController addressTextController = TextEditingController();
+  String profileImage = "", initialCountryCode = "US", isoCode = "", dialCode = "";
 
   @override
   void initState() {
-    nameTextController = TextEditingController(
-      text: widget.isEdit! ? "John Smith" : null,
-    );
-    employeeIdTextController = TextEditingController(
-      text: widget.isEdit! ? "123 456 789" : null,
-    );
-    phoneTextController = TextEditingController(
-      text: widget.isEdit! ? "00000000" : null,
-    );
-    emailTextController = TextEditingController(
-      text: widget.isEdit! ? "Abc@gmail.com" : null,
-    );
-    addressTextController = TextEditingController(
-      text: widget.isEdit! ? "" : null,
-    );
+    // Future.microtask((){
+    final user = ref.read(authProvider.select((e) => e.userData));
+    if (user != null) {
+      final phone = PhoneNumber.parse(user.phoneNumber);
+      isoCode = phone.isoCode.name;
+      dialCode = phone.countryCode;
+      nameTextController.text = widget.isEdit! ? user.fullName : "";
+      employeeIdTextController.text = widget.isEdit! ? "123456789" : "";
+      phoneTextController.text = widget.isEdit! ? phone.nsn : "";
+      emailTextController.text = widget.isEdit! ? user.email : "";
+      addressTextController.text = widget.isEdit! ? user.address : "";
+      profileImage = user.profileImage ?? "";
+    }
+    // }
+    // );
+
     super.initState();
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String initialCountryCode = "US";
+ 
+  
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -47,13 +51,14 @@ class _CreateProfileViewState extends State<CreateProfileView> {
       child: CustomScreenTemplate(
         customBottomWidget: Consumer(
           builder: (context, ref, child) {
-            final isLoad =
-                ref.watch(
+            final response = ref.watch(
                   authProvider.select(
-                    (e) => e.completeProfileApiResponse.status,
+                    (e) => (e.completeProfileApiResponse.status, e.updateProfileApiResponse.status),
                   ),
-                ) ==
-                Status.loading;
+                );
+            final isLoad =
+                 response.$1 ==
+                Status.loading || response.$2 == Status.loading;
             return Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: AppTheme.horizontalPadding,
@@ -77,17 +82,33 @@ class _CreateProfileViewState extends State<CreateProfileView> {
                       );
 
                       if (parsed.isValid()) {
-                        Map<String, dynamic> data = {
+                        if(widget.isEdit!){
+                          UserDataModel userData = ref.watch(authProvider.select((e)=>e.userData!));
+                          ref.read(authProvider.notifier).updateProfile(userDataModel: userData.copyWith(
+                            fullName: nameTextController.text,
+                            address: addressTextController.text,
+                            phoneNumber: parsed.international,
+                            profileImage: profileImage
+                          ));
+                        }
+                        else{
+                          Map<String, dynamic> data = {
                           "full_name": nameTextController.text,
                           "phone_number": parsed.international,
                           "address": addressTextController.text,
                         };
-                        final profileImage = ref.watch(authProvider.select((e)=>e.imageUrl)) ?? "";
-                        if(profileImage != ""){
+                        profileImage =
+                            ref.watch(authProvider.select((e) => e.imageUrl)) ??
+                            "";
+                        if (profileImage != "") {
                           data['profile_image'] = profileImage;
                         }
                         // print(data);
-                        ref.read(authProvider.notifier).completeProfile(profileData:data );
+                        ref
+                            .read(authProvider.notifier)
+                            .completeProfile(profileData: data);
+                        }
+                        
                       } else {
                         Helper.showMessage(
                           context,
@@ -124,20 +145,30 @@ class _CreateProfileViewState extends State<CreateProfileView> {
           children: [
             Center(
               child: Consumer(
-                builder: (context,ref, child) {
-                  final data = ref.watch(authProvider.select((e)=>(e.imageUrl, e.uploadImageApiResponse, e.removeImageApiResponse)));
-
+                builder: (context, ref, child) {
+                  final data = ref.watch(
+                    authProvider.select(
+                      (e) => (
+                        e.imageUrl,
+                        e.uploadImageApiResponse,
+                        e.removeImageApiResponse,
+                      ),
+                    ),
+                  );
+                  profileImage = widget.isEdit! ? profileImage : data.$1 ?? "";
                   return ProfileImageChanger(
-                    profileUrl: data.$1, onRemoveImage: () {  
-                        ref.read(authProvider.notifier).removeImage(imageUrl: data.$1!);
-                    }, apiResponse: data.$2,
+                    profileUrl: profileImage,
+                    onRemoveImage: () {
+                      ref
+                          .read(authProvider.notifier)
+                          .removeImage(imageUrl: profileImage);
+                    },
+                    apiResponse: data.$2,
                     onImageSelected: (file) {
-
                       ref.read(authProvider.notifier).uploadImage(file: file);
                     },
-                   
                   );
-                }
+                },
               ),
             ),
             20.ph,
@@ -171,6 +202,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
             CustomPhoneTextfieldWidget(
               phoneNumberController: phoneTextController,
               initialCountryCode: initialCountryCode,
+              initialValue: ph.PhoneNumber(phoneNumber: phoneTextController.text, isoCode: isoCode, dialCode: dialCode),
               onCountryChanged: (c) {
                 setState(() {
                   initialCountryCode = c.code;
@@ -178,6 +210,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
               },
               onPhoneNumberChanged: (phone) {
                 print(phone);
+                initialCountryCode = phone.isoCode!;
                 // Handle phone number changes here
                 // For example, update the controller or send to API
                 // phoneTextController.text += phone.phoneNumber ?? '';

@@ -35,12 +35,12 @@ class _CustomPhoneTextfieldWidgetState extends State<CustomPhoneTextfieldWidget>
     }
   }
 
-  Country getCurrentCountry() {
-    return countries.firstWhere(
-      (c) => c.code == currentCountryCode,
-      orElse: () => countries.firstWhere((c) => c.code == 'US', orElse: () => countries[0]),
-    );
-  }
+  // Country getCurrentCountry() {
+  //   return countries.firstWhere(
+  //     (c) => c.code == currentCountryCode,
+  //     orElse: () => countries.firstWhere((c) => c.code == 'US', orElse: () => countries[0]),
+  //   );
+  // }
 
   @override
 Widget build(BuildContext context) {

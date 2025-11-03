@@ -11,14 +11,33 @@ class HomeView extends ConsumerStatefulWidget {
   ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends ConsumerState<HomeView> {
+class _HomeViewState extends ConsumerState<HomeView> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     Future.microtask(() {
       ref.read(homeProvider.notifier).getCategories();
       ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
+      ref.read(geolocatorProvider.notifier).getCurrentLocation();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App came back to foreground
+      final isMode = ref.watch(authProvider.select((e)=>e.userData!.isTravelMode));
+      if (isMode) {
+        ref.read(geolocatorProvider.notifier).getCurrentLocation();
+      }
+    }
   }
 
   void showLocationBottomSheet(BuildContext context) {
@@ -94,7 +113,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     contentPadding: EdgeInsets.zero,
                     title: Text('Use My Current Location'),
                     onTap: () {
-                      // Handle location logic
+                     ref.read(geolocatorProvider.notifier).getCurrentLocation();
                     },
                   ),
                 
@@ -143,7 +162,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     );
   }
 
-  bool travelMode = false;
+  // bool travelMode = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,34 +182,46 @@ class _HomeViewState extends ConsumerState<HomeView> {
               SvgPicture.asset(Assets.locationIcon),
               10.pw,
 
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    showLocationBottomSheet(context);
-                  },
-                  child: Column(
-                    spacing: 5,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Home", style: context.textStyle.headlineMedium),
-                      Text(
-                        "ABC, Street Lorem Ipsum",
-                        style: context.textStyle.titleSmall,
+              Consumer(
+                builder: (context, ref, child) {
+                  final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.address ?? ""));
+               
+                  return Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        showLocationBottomSheet(context);
+                      },
+                      child: Column(
+                        spacing: 5,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Home", style: context.textStyle.headlineMedium),
+                          Text(
+                            address,
+                            style: context.textStyle.titleSmall,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                }
               ),
 
               Text("Travel Mode", style: context.textStyle.displayMedium),
               10.pw,
-              CustomSwitchWidget(
-               scale: 1.0,
-                value: travelMode,
-                onChanged: (val) {
-                  travelMode = val;
-                  setState(() {});
-                },
+              Consumer(
+                builder: (context,ref, child) {
+                     final bool isTravelMode = ref.watch(authProvider.select((e)=>e.userData?.isTravelMode ?? false));
+                  return CustomSwitchWidget(
+                   scale: 1.0,
+                    value: isTravelMode ,
+                    onChanged: (val) {
+                      
+                      ref.read(geolocatorProvider.notifier).toggleTravelMode(val);
+                      
+                    },
+                  );
+                }
               ),
             ],
           ),

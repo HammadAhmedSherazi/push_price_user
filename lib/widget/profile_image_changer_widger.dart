@@ -110,12 +110,12 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
       children: [
 
 
-      if(widget.apiResponse.status == Status.completed)...[
+      if(widget.apiResponse.status == Status.completed || widget.apiResponse.status == Status.error || widget.apiResponse.status == Status.undertermined)...[
           UserProfileWidget(radius: 50.r, imageUrl: widget.profileUrl ?? ""),
       ],
-      if(widget.apiResponse.status == Status.error || widget.apiResponse.status == Status.undertermined)...[
-        UserProfileWidget(radius: 50.r, imageUrl:  "")
-      ],
+      // if()...[
+      //   UserProfileWidget(radius: 50.r, imageUrl:  widget.profileUrl ?? "")
+      // ],
       if(widget.apiResponse.status == Status.loading)...[
         Container(
           height: 108.r,

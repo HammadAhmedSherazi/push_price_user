@@ -27,6 +27,7 @@ export './models/calender_data_model.dart';
 export './models/category_data_model.dart';
 export './models/info_data_model.dart';
 export './models/listing_data_model.dart';
+export './models/location_data_model.dart';
 export './models/menu_data_model.dart';
 export './models/notification_data_model.dart';
 export './models/product_data_model.dart';
@@ -36,10 +37,12 @@ export './models/user_data_model.dart';
 export './models/user_rating_data_model.dart';
 //PROVIDERS
 export './providers/auth_provider/auth_provider.dart';
+export 'providers/geolocator_provider/geolocator_provider.dart';
 export './providers/home_provider/home_provider.dart';
 export './providers/navigation_provider/navigation_provider.dart';
 //SERVICES
 export './services/base_api_services.dart';
+export './services/geolocator_service.dart';
 export './services/secure_storage.dart';
 export './services/shared_preferences.dart';
 export './utils/assets.dart';

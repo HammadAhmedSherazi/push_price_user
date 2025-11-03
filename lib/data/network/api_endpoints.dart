@@ -15,6 +15,7 @@ class ApiEndpoints {
   static const String refresh = "${userAuth}refresh";
   static const String register = "${userAuth}register";
   static const String getUser = "${userAuth}me";
+  static const String updateProfile = "${userAuth}update-profile";
 
   static const String getProducts = "admin/products/";
   static const String getCatrgories = "${user}categories";

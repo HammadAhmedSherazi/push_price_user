@@ -12,6 +12,8 @@ class AuthState {
   final ApiResponse getCategoriesApiResponse;
   final ApiResponse uploadImageApiResponse;
   final ApiResponse removeImageApiResponse;
+  final ApiResponse updateProfileApiResponse;
+
   final UserDataModel? userData;
   final String? imageUrl;
   final StaffModel? staffInfo;
@@ -28,6 +30,7 @@ class AuthState {
     required this.getCategoriesApiResponse,
     required this.uploadImageApiResponse,
     required this.removeImageApiResponse,
+    required this.updateProfileApiResponse,
     this.userData,
     this.imageUrl,
     this.staffInfo,
@@ -46,6 +49,7 @@ class AuthState {
     ApiResponse? getCategoriesApiResponse,
     ApiResponse? uploadImageApiResponse,
     ApiResponse? removeImageApiResponse,
+    ApiResponse? updateProfileApiResponse,
     UserDataModel? userData,
     String? imageUrl,
     StaffModel? staffInfo,
@@ -62,6 +66,7 @@ class AuthState {
     getCategoriesApiResponse: getCategoriesApiResponse ?? this.getCategoriesApiResponse,
     uploadImageApiResponse: uploadImageApiResponse ?? this.uploadImageApiResponse,
     removeImageApiResponse: removeImageApiResponse ?? this.removeImageApiResponse,
+    updateProfileApiResponse: updateProfileApiResponse ?? this.updateProfileApiResponse,
     userData: userData ?? this.userData,
     staffInfo: staffInfo ?? this.staffInfo,
     imageUrl: imageUrl ?? this.imageUrl,

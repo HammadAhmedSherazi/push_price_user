@@ -21,6 +21,7 @@ class AuthProvider  extends Notifier<AuthState> {
       getCategoriesApiResponse: ApiResponse.undertermined(),
       uploadImageApiResponse: ApiResponse.undertermined(),
       removeImageApiResponse: ApiResponse.undertermined(),
+      updateProfileApiResponse: ApiResponse.undertermined(),
 
       categories: [],
       categoriesSkip: 0,
@@ -134,6 +135,7 @@ class AuthProvider  extends Notifier<AuthState> {
   }
 
   FutureOr<void> verifyOtp({required String otp})async{
+    state = state.copyWith(imageUrl:  "");
      Helper.showFullScreenLoader(AppRouter.navKey.currentContext!, dismissible: false);
      
     if (!ref.mounted) return;
@@ -213,6 +215,7 @@ class AuthProvider  extends Notifier<AuthState> {
   }
 
   FutureOr<void> completeProfile({required Map<String, dynamic> profileData})async{
+    
     if (!ref.mounted) return;
     try {
       state = state.copyWith(completeProfileApiResponse: ApiResponse.loading());
@@ -272,24 +275,41 @@ class AuthProvider  extends Notifier<AuthState> {
       state = state.copyWith(getUserApiResponse: ApiResponse.error());
     }
   }
- 
- 
-  void savedUserData(Map<String, dynamic> userMap) {
-    String user = jsonEncode(userMap);
-    SecureStorageManager.sharedInstance.storeUser(user);
-    userSet();
-  }
 
-  void userSet() async {
+  FutureOr<void> updateProfile({required UserDataModel userDataModel})async{
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(updateProfileApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.put(ApiEndpoints.updateProfile, userDataModel.toJson());
+      if (!ref.mounted) return;
 
-    String? userData = await SecureStorageManager.sharedInstance.getUserData();
-    if (userData != null) {
-      Map<String, dynamic> userJson = jsonDecode(userData);
-      state = state.copyWith(userData: UserDataModel.fromJson(userJson));
+      if(response != null && !(response is Map && response.containsKey('detail'))){
+        Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("profile_updated_successfully"));
+
+        state = state.copyWith(updateProfileApiResponse: ApiResponse.completed(response));
+        final Map<String, dynamic>? user = response['user'];
+        if(user != null){
+          savedUserData(user);
+        }
+
+      }
+      else{
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_update_profile"),
+        );
+        state = state.copyWith(updateProfileApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+      );
+      state = state.copyWith(updateProfileApiResponse: ApiResponse.error());
     }
-
   }
-
+ 
   FutureOr<void> getCategories({
     required int limit,
     required int skip,
@@ -443,6 +463,28 @@ class AuthProvider  extends Notifier<AuthState> {
     }
   }
   
+   
+  Future<void> savedUserData(Map<String, dynamic> userMap) async {
+    String user = jsonEncode(userMap);
+    await SecureStorageManager.sharedInstance.storeUser(user);
+    await userSet();
+  }
+
+  Future<void> userSet() async {
+
+    String? userData = await SecureStorageManager.sharedInstance.getUserData();
+    if (userData != null) {
+      Map<String, dynamic> userJson = jsonDecode(userData);
+      state = state.copyWith(userData: UserDataModel.fromJson(userJson));
+    }
+
+  }
+  void toggleTravelMode(bool chk){
+    state = state.copyWith(userData:state.userData!.copyWith(isTravelMode: chk));
+  }
+
+
+
 }
 final authProvider = NotifierProvider<AuthProvider, AuthState>(
   AuthProvider.new,
