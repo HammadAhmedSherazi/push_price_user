@@ -29,16 +29,16 @@ class _HomeViewState extends ConsumerState<HomeView> with WidgetsBindingObserver
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // App came back to foreground
-      final isMode = ref.watch(authProvider.select((e)=>e.userData!.isTravelMode));
-      if (isMode) {
-        ref.read(geolocatorProvider.notifier).getCurrentLocation();
-      }
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.detached) {
+  //     // App came back to foreground
+  //     final isMode = ref.watch(authProvider.select((e)=>e.userData!.isTravelMode));
+  //     if (isMode) {
+  //       ref.read(geolocatorProvider.notifier).getCurrentLocation();
+  //     }
+  //   }
+  // }
 
   void showLocationBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -167,7 +167,7 @@ class _HomeViewState extends ConsumerState<HomeView> with WidgetsBindingObserver
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBarWidget(
-        height: context.screenheight * 0.2,
+        height: context.screenheight * 0.21,
         title: "Home",
         children: [
           CustomSearchBarWidget(

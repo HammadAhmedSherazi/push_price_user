@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "444879899393",
+    "project_id": "pushprice-378f3",
+    "storage_bucket": "pushprice-378f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444879899393:android:6f1414d79019071cb3a900",
+        "android_client_info": {
+          "package_name": "com.app.push_price"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASb0uYaLbKkUkiXd0f64sEwD7U26-Cbew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

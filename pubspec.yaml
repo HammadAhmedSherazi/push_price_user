@@ -51,7 +51,7 @@ dependencies:
   # intl_phone_number_input: ^0.7.4
   intl: any
 
-  http: any
+  http: ^1.5.0
   http_parser: any
   flutter_localization: ^0.3.3
   flutter_localizations:
@@ -60,8 +60,14 @@ dependencies:
   flutter_image_compress: ^2.4.0
   path_provider: ^2.1.5
   flutter_secure_storage: ^9.2.2
-  geolocator: ^12.0.0
+  geolocator: ^14.0.2
   geocoding: ^3.0.0
+  # flutter_background_service: ^5.1.0
+  # flutter_background_service_android: ^6.3.1
+  firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
+  flutter_local_notifications: ^19.5.0
+  flutter_background_service: ^5.1.0
 
 dev_dependencies:
   flutter_test:
