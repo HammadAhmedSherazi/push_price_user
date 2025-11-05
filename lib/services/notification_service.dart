@@ -83,13 +83,7 @@ class NotificationService{
       provisional: true,
       sound: true,
     );
-    FirebaseMessaging.onMessage.listen((noti) {
-      if(noti.data['type'] != "chat_message"){
-        handleBackgroundMessage(noti);
-      }
-      
-      // ref.read(notificationAlertProvider.notifier).toggleNotification(true); 
-    });
+
 
    
   }

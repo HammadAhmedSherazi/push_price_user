@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -21,11 +22,11 @@ void main() async {
     ScreenUtil.ensureScreenSize(),
     SharedPreferenceManager.init(),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    // initializeService(),
+    initializeService(),
   ]);
 
   // Initialize Firebase Messaging
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FirebaseService.firebaseTokenInitial();
   // SecureStorageManager doesn't need initialization
    runApp(
@@ -69,30 +70,31 @@ void onStart(ServiceInstance service) async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Ensure permission - only check, do not request in background
-  // LocationPermission permission = await Geolocator.checkPermission();
-  // if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-  //   // Cannot request permission in background, skip
-  //   return;
-  // }
+  // Note: Permissions should be requested in the foreground UI before starting the background service
+  // Do not check permissions here as Geolocator.checkPermission() may return denied in background context
 
   // Periodic location fetch
-  Timer.periodic(const Duration(seconds: 20), (timer) async {
-    // final position = await Geolocator.getCurrentPosition(
-    //   locationSettings: const LocationSettings(
-    //     accuracy: LocationAccuracy.high,
-    //   ),
-    // );
+  final user = await SecureStorageManager.sharedInstance.getUserData();
+  if(user != null){
+    final userData = UserDataModel.fromJson(jsonDecode(user));
+  if(userData.isTravelMode){
+    Timer.periodic(const Duration(seconds: 20), (timer) async {
+    final position = await GeolocatorService.geolocatorInstance.getCurrentLocation(skipPermissions: true);
 
     // debugPrint(
     //     '📍 Background Location: ${position.latitude}, ${position.longitude}');
 
     // Show notification with location update
-    await NotificationService.showNotification(
-      title: 'Location Updated',
-      body: 'Current location: Run Notification',
-    );
+    if(userData.latitude != position.latitude || userData.longitude != position.longitude){
+    AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: position.latitude, longitude: position.longitude ));
+
+    }
   });
+  
+  }
+  
+  }
+  
 }
 
 class MyApp extends ConsumerWidget {
@@ -150,7 +152,15 @@ class MyApp extends ConsumerWidget {
         );
       },
       useInheritedMediaQuery: true,
-      child: prefs.getStartedCheck()?LoginView() :OnboardingView(),
+      child: prefs.getStartedCheck() ? FutureBuilder<bool>(
+        future: SecureStorageManager.sharedInstance.hasToken(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          return snapshot.data == true ? NavigationView() : LoginView();
+        },
+      ) : OnboardingView(),
     );
   }
 }

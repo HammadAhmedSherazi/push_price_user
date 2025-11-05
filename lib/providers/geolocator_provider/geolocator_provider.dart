@@ -6,7 +6,7 @@ import 'package:push_price_user/export_all.dart';
 import 'geolocator_state.dart';
 
 class GeolocatorProvider extends Notifier<GeolocatorState> {
-  final GeolocatorService _geolocatorService = GeolocatorService();
+  final GeolocatorService _geolocatorService = GeolocatorService.geolocatorInstance;
   Timer? _travelModeTimer;
 
   @override
@@ -26,13 +26,16 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
         getLocationApiResponse: ApiResponse.completed(locationData),
         locationData: locationData,
       );
-      final user = ref.watch(authProvider.select((e)=>e.userData))!;
-      if(user.latitude != locationData.latitude || user.longitude != locationData.longitude){
+      final user = ref.watch(authProvider.select((e)=>e.userData));
+      if(user != null){
+        if(user.latitude != locationData.latitude || user.longitude != locationData.longitude){
          ref.read(authProvider.notifier).updateProfile(userDataModel: user.copyWith(
         latitude: locationData.latitude,
         longitude: locationData.longitude
       ));
       }
+      }
+      
      
     } catch (e) {
       if (!ref.mounted) return;
@@ -44,9 +47,19 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
     }
   }
 
-  void toggleTravelMode(bool enabled) {
+  void toggleTravelMode(bool enabled) async {
     if (enabled) {
-      startTravelMode();
+      // Check and request permissions in foreground before starting travel mode
+      try {
+        await _geolocatorService.getCurrentLocation(enableBackgroundMode: true);
+        startTravelMode();
+      } catch (e) {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: e.toString(),
+        );
+        return; // Don't enable if permissions failed
+      }
     } else {
       stopTravelMode();
     }
@@ -59,7 +72,7 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
   void startTravelMode() {
     // Start periodic location updates every 15 seconds
     _travelModeTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      _geolocatorService.getCurrentLocation(enableBackgroundMode: true);
+      _geolocatorService.getCurrentLocation(enableBackgroundMode: true, skipPermissions: true);
     });
   }
 

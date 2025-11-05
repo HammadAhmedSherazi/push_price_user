@@ -3,29 +3,39 @@ import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/models/location_data_model.dart';
 
 class GeolocatorService {
-  Future<LocationDataModel> getCurrentLocation({bool enableBackgroundMode = false}) async {
-    // Check permissions
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
+  GeolocatorService._();
+
+  static final GeolocatorService _singleton = GeolocatorService._();
+
+  static GeolocatorService get geolocatorInstance => _singleton;
+
+  Future<LocationDataModel> getCurrentLocation({bool enableBackgroundMode = false, bool skipPermissions = false}) async {
+    // Check permissions unless skipped (for background calls)
+    if (!skipPermissions) {
+      LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied');
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('Location permissions are denied');
+        }
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied');
-    }
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception('Location permissions are permanently denied');
+      }
 
-    // Enable background mode if requested
-    if (enableBackgroundMode) {
-      await Geolocator.requestPermission();
-      // Note: Background location requires additional setup in AndroidManifest.xml and Info.plist
+      // Enable background mode if requested
+      if (enableBackgroundMode) {
+        await Geolocator.requestPermission();
+        // Note: Background location requires additional setup in AndroidManifest.xml and Info.plist
+      }
     }
 
     // Get current position
     Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
     );
 
     // Reverse geocode to get address details

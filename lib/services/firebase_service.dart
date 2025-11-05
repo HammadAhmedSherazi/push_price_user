@@ -1,5 +1,4 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 
 import '../export_all.dart';
 
@@ -17,8 +16,8 @@ class FirebaseService {
   static final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   static Future<void> firebaseTokenInitial() async {
-    
-    fcmToken = await firebaseMessaging.getToken();
+      try {
+        fcmToken = await firebaseMessaging.getToken() ?? "";
     debugPrint("Fcm Token - $fcmToken");
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
@@ -39,8 +38,8 @@ class FirebaseService {
 
     // fetch the FCM token for this device
 
-    firebaseMessaging.getInitialMessage();
-    firebaseMessaging.getNotificationSettings();
+    // firebaseMessaging.getInitialMessage();
+    // firebaseMessaging.getNotificationSettings();
     // await FirebaseMessaging.instance.setAutoInitEnabled(true);
 
     //Message Listen from Firebase
@@ -49,6 +48,17 @@ class FirebaseService {
 
       // NotificationServices.showNotitfication(noti);
     });
+
+    // Handle when app is opened from notification
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    //   // debugPrint('A new onMessageOpenedApp event was published!');
+    //   // Handle navigation or other actions here
+    //   NotificationService.showNotification(title: message.notification?.title ?? "", body: message.notification?.body ?? "");
+    // });
+      } catch (e) {
+        throw Exception(e); 
+      }
+    
   }
 
 

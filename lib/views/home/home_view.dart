@@ -17,9 +17,11 @@ class _HomeViewState extends ConsumerState<HomeView> with WidgetsBindingObserver
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     Future.microtask(() {
+      ref.read(authProvider.notifier).getUser();
       ref.read(homeProvider.notifier).getCategories();
       ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
       ref.read(geolocatorProvider.notifier).getCurrentLocation();
+      
     });
   }
 

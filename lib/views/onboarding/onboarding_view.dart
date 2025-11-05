@@ -18,6 +18,8 @@ class _OnboardingViewState extends State<OnboardingView> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+  
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
