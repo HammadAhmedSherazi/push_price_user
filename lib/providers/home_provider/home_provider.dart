@@ -17,6 +17,9 @@ class HomeProvider extends Notifier<HomeState> {
       getStoresApiResponse: ApiResponse.undertermined(),
       stores: [],
       storesSkip: 0,
+      getNearbyStoresApiResponse: ApiResponse.undertermined(),
+      nearbyStores: [],
+      nearbyStoresSkip: 0,
     );
   }
 
@@ -114,6 +117,58 @@ class HomeProvider extends Notifier<HomeState> {
       if (!ref.mounted) return;
       state = state.copyWith(
         getStoresApiResponse: skip == 0
+            ? ApiResponse.error()
+            : ApiResponse.undertermined(),
+      );
+    }
+  }
+
+  FutureOr<void> getNearbyStores({
+    required int limit,
+    required int skip,
+  }) async {
+    if (!ref.mounted) return;
+    if (skip == 0 && state.nearbyStores!.isNotEmpty) {
+      state = state.copyWith(nearbyStores: [], nearbyStoresSkip: 0);
+    }
+    Map<String, dynamic> params = {'limit': limit, 'skip': skip};
+
+    try {
+      state = state.copyWith(
+        getNearbyStoresApiResponse: skip == 0
+            ? ApiResponse.loading()
+            : ApiResponse.loadingMore(),
+      );
+      final response = await MyHttpClient.instance.get(
+        ApiEndpoints.getNearbyStores,
+        params: params,
+      );
+
+      if (!ref.mounted) return;
+
+      if (response != null) {
+        List temp = response['stores'] ?? [];
+        final List<StoreDataModel> list = List.from(
+          temp.map((e) => StoreDataModel.fromJson(e)),
+        );
+        state = state.copyWith(
+          getNearbyStoresApiResponse: ApiResponse.completed(response),
+          nearbyStores: skip == 0 && state.nearbyStores!.isEmpty
+              ? list
+              : [...state.nearbyStores!, ...list],
+          nearbyStoresSkip: list.length >= limit ? skip + limit : 0,
+        );
+      } else {
+        state = state.copyWith(
+          getNearbyStoresApiResponse: skip == 0
+              ? ApiResponse.error()
+              : ApiResponse.undertermined(),
+        );
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        getNearbyStoresApiResponse: skip == 0
             ? ApiResponse.error()
             : ApiResponse.undertermined(),
       );

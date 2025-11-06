@@ -20,13 +20,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Future.wait([
     ScreenUtil.ensureScreenSize(),
     SharedPreferenceManager.init(),
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    // await _firebaseMessaging.requestPermission();
+    
+    NotificationService.initNotifications(),
+    
     initializeService(),
   ]);
-
+  
+  // await Future.delayed(Duration(seconds: 5));
   // Initialize Firebase Messaging
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FirebaseService.firebaseTokenInitial();
@@ -52,7 +57,7 @@ Future<void> initializeService() async {
     ),
     iosConfiguration: IosConfiguration(
       onForeground: onStart,
-      onBackground: onIosBackgroundWrapper,
+      onBackground: onIosBackground,
     ),
   );
 
@@ -70,62 +75,19 @@ Future<bool> onIosBackgroundWrapper(ServiceInstance service) async {
 Future<bool> onIosBackground(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize notification service for iOS background context
-  const DarwinInitializationSettings darwinInitialization =
-      DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: true,
-  );
-  
-  const InitializationSettings initializationSettings = InitializationSettings(
-    iOS: darwinInitialization,
-  );
-  
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  
-  // Request notification permissions explicitly for iOS
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>()
-      ?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-  
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (payload) {},
-  );
-  
-  // Send a test notification to verify service is running
-  const DarwinNotificationDetails testNotificationDetails =
-      DarwinNotificationDetails(
-    presentAlert: true,
-    presentBadge: true,
-    presentSound: true,
-    interruptionLevel: InterruptionLevel.active,
-  );
-  
-  await flutterLocalNotificationsPlugin.show(
-    999999,
-    'Background Service Started',
-    'Location tracking is now active',
-    const NotificationDetails(iOS: testNotificationDetails),
-  );
+ 
   
   // Start location tracking for iOS background
   // Note: iOS has strict limitations - background location may not work when app is completely killed
   Timer.periodic(const Duration(seconds: 5), (timer) async {
     try {
       // Re-check travel mode status on each iteration
+      final hasToken = await SecureStorageManager.sharedInstance.hasToken();
       final user = await SecureStorageManager.sharedInstance.getUserData();
       if (user != null) {
         final userData = UserDataModel.fromJson(jsonDecode(user));
         
-        if (userData.isTravelMode) {
+        if (hasToken && userData.isTravelMode) {
           // Fetch current location with retry logic for iOS
           LocationDataModel? locationData;
           try {
@@ -149,56 +111,21 @@ Future<bool> onIosBackground(ServiceInstance service) async {
             }
           }
 
-          // Format location string for notification
-          final locationString =
-              'Lat: ${locationData.latitude.toStringAsFixed(6)}, Long: ${locationData.longitude.toStringAsFixed(6)}';
 
-          // Show notification with location for testing
-          const DarwinNotificationDetails darwinNotificationDetails =
-              DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-            interruptionLevel: InterruptionLevel.active,
-          );
-
-          const NotificationDetails notificationDetails =
-              NotificationDetails(iOS: darwinNotificationDetails);
-
-          await flutterLocalNotificationsPlugin.show(
-            DateTime.now().millisecondsSinceEpoch.remainder(100000),
-            'Location Update',
-            locationString,
-            notificationDetails,
-          );
+         
 
           // Update profile if location changed
           if (userData.latitude != locationData.latitude ||
               userData.longitude != locationData.longitude) {
-            // API call will be added here when ready
+                AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: locationData.latitude, longitude: locationData.longitude));
           }
         }
       }
     } catch (e) {
       // Show error notification with more details
-      const DarwinNotificationDetails darwinNotificationDetails =
-          DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-        interruptionLevel: InterruptionLevel.active,
-      );
-
-      const NotificationDetails notificationDetails =
-          NotificationDetails(iOS: darwinNotificationDetails);
-
-      await flutterLocalNotificationsPlugin.show(
-        DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        'Location Error',
-        'Error: ${e.toString()}',
-        notificationDetails,
-      );
+     
     }
+    // NotificationService.showNotification(title: "Test Notification", body:"sgdhsgd");
   });
   
   return true;
@@ -211,54 +138,7 @@ void onStart(ServiceInstance service) async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize notification service for background context
-  const AndroidInitializationSettings androidInitialization =
-      AndroidInitializationSettings("@mipmap/ic_launcher");
-  const DarwinInitializationSettings darwinInitialization =
-      DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: true,
-  );
-
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: androidInitialization,
-    iOS: darwinInitialization,
-  );
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  // Request notification permissions explicitly for iOS (important for release builds)
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>()
-      ?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (payload) {},
-  );
-
-  // Send a test notification to verify service is running (for debugging)
-  const DarwinNotificationDetails testNotificationDetails =
-      DarwinNotificationDetails(
-    presentAlert: true,
-    presentBadge: true,
-    presentSound: true,
-    interruptionLevel: InterruptionLevel.active,
-  );
   
-  await flutterLocalNotificationsPlugin.show(
-    999998,
-    'Service Running',
-    'Location tracking active',
-    const NotificationDetails(iOS: testNotificationDetails),
-  );
 
   // Note: Permissions should be requested in the foreground UI before starting the background service
   // Do not check permissions here as Geolocator.checkPermission() may return denied in background context
@@ -301,53 +181,16 @@ void onStart(ServiceInstance service) async {
             }
 
             // Show notification with location for testing (works on both iOS and Android)
-            const AndroidNotificationDetails androidNotificationDetails =
-                AndroidNotificationDetails(
-              'location_channel',
-              'Location Updates',
-              channelDescription: 'Notifications for location updates',
-              importance: Importance.low,
-              priority: Priority.low,
-              ticker: 'ticker',
-              icon: '@mipmap/ic_launcher',
-            );
-
-            const DarwinNotificationDetails darwinNotificationDetails =
-                DarwinNotificationDetails(
-              presentAlert: true,
-              presentBadge: true,
-              presentSound: true,
-            );
-
-            const NotificationDetails notificationDetails =
-                NotificationDetails(
-              android: androidNotificationDetails,
-              iOS: darwinNotificationDetails,
-            );
-
-            await flutterLocalNotificationsPlugin.show(
-              DateTime.now().millisecondsSinceEpoch.remainder(100000),
-              'Location Update',
-              locationString,
-              notificationDetails,
-            );
+           
 
             // Update profile if location changed
             // TODO: Replace this with direct API call when ready
             // AuthProvider won't work in background isolate (needs Riverpod context)
             // Use MyHttpClient.instance.put(ApiEndpoints.updateProfile, {...}) directly
-            if (userData.latitude != position.latitude ||
-                userData.longitude != position.longitude) {
-              // API call will be added here
-              // Example:
-              // await MyHttpClient.instance.put(
-              //   ApiEndpoints.updateProfile,
-              //   userData.copyWith(
-              //     latitude: position.latitude,
-              //     longitude: position.longitude,
-              //   ).toJson(),
-              // );
-            }
+             if (userData.latitude != position.latitude ||
+              userData.longitude != position.longitude) {
+                AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: position.latitude, longitude: position.longitude), onBackground: true);
+          }
           } else {
             // Travel mode is off, update notification (Android only)
             if (service is AndroidServiceInstance) {
@@ -369,37 +212,10 @@ void onStart(ServiceInstance service) async {
       }
       
       // Show error notification for testing (works on both iOS and Android)
-      const AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails(
-        'location_channel',
-        'Location Updates',
-        channelDescription: 'Notifications for location updates',
-        importance: Importance.low,
-        priority: Priority.low,
-        ticker: 'ticker',
-        icon: '@mipmap/ic_launcher',
-      );
-
-      const DarwinNotificationDetails darwinNotificationDetails =
-          DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      );
-
-      const NotificationDetails notificationDetails =
-          NotificationDetails(
-        android: androidNotificationDetails,
-        iOS: darwinNotificationDetails,
-      );
-
-      await flutterLocalNotificationsPlugin.show(
-        DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        'Location Error',
-        'Error: ${e.toString()}',
-        notificationDetails,
-      );
+      
     }
+    NotificationService.showNotification(title: "Test Notification 2", body:"sgdhsgd");
+
   });
 }
 

@@ -6,69 +6,40 @@ import 'package:http/http.dart' as http;
 
 import '../export_all.dart';
 
-class NotificationService{
-   NotificationService._();
-  static final  NotificationService _singleton =  NotificationService._();
+class NotificationService {
+  NotificationService._();
+  static final NotificationService _singleton = NotificationService._();
   static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  static  NotificationService get notificationInstance => _singleton;
- static  Future<void> initLocalNotification(
-       RemoteMessage message) async {
-    AndroidInitializationSettings androidInitialization =
-        const AndroidInitializationSettings("@mipmap/ic_launcher");
-    DarwinInitializationSettings darwinInitialization =
-        const DarwinInitializationSettings();
+  static NotificationService get notificationInstance => _singleton;
 
-    InitializationSettings initializationSettings = InitializationSettings(
+  // Initialize both Firebase and local notifications for iOS and Android
+  static Future<void> initNotifications() async {
+    // Initialize local notifications
+    const AndroidInitializationSettings androidInitialization =
+        AndroidInitializationSettings("@mipmap/ic_launcher");
+    const DarwinInitializationSettings darwinInitialization =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
+    const InitializationSettings initializationSettings = InitializationSettings(
       android: androidInitialization,
       iOS: darwinInitialization,
     );
-   
-    showNotitfication(message);
 
-    
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (payload) {},
-    );
-  }
-
- static Future<void> showNotitfication(RemoteMessage message) async {
-    AndroidNotificationChannel channel = AndroidNotificationChannel(
-      Random.secure().nextInt(100000).toString(),
-      "High Importance Notification",
-      importance: Importance.max,
+      onDidReceiveNotificationResponse: (payload) {
+        // Handle notification tap
+      },
     );
 
-    AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(channel.id, channel.name,
-            importance: Importance.high,
-            channelDescription: "My channel description",
-            priority: Priority.high,
-            ticker: "ticker");
-    DarwinNotificationDetails darwinNotificationDetails =
-        const DarwinNotificationDetails(
-            presentAlert: true, presentBadge: true, presentSound: true);
-    NotificationDetails notificationDetails = NotificationDetails(
-        iOS: darwinNotificationDetails, android: androidNotificationDetails);
-    Future.delayed(
-        Duration.zero,
-        () => _flutterLocalNotificationsPlugin.show(
-          
-            0,
-            message.notification?.title.toString(),
-            message.notification?.body.toString(),
-            notificationDetails));
-  }
-    //FUNCTION TO INITIALIZE NOTIFICATION
-  static Future<void> initNotifications(WidgetRef ref) async {
-
-    
-    
-    //reuest permission from user (will prompt user)
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    // Request permissions for Firebase Messaging
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -84,47 +55,67 @@ class NotificationService{
       sound: true,
     );
 
-
-   
+    // Set up background message handler
+    FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
   }
-  // ✅ Download and Save Image Locally
-  static Future<String?> _downloadAndSaveImage(String url, String fileName) async {
-    try {
-      final Directory directory = await  getTemporaryDirectory();
-      final String filePath = '${directory.path}/$fileName';
 
-      final http.Response response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final File file = File(filePath);
-        await file.writeAsBytes(response.bodyBytes);
-        return filePath;
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
-    return null;
-  }
+  // Handle background messages
   static Future<void> handleBackgroundMessage(RemoteMessage message) async {
-    NotificationService.initLocalNotification(message);
-    }
+    await showNotification(
+      title: message.notification?.title ?? 'Notification',
+      body: message.notification?.body ?? '',
+    );
+  }
+
+  // Unified method to show notifications
   static Future<void> showNotification({
     required String title,
     required String body,
     String? payload,
+    String? imageUrl,
   }) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-      'location_channel',
-      'Location Updates',
-      channelDescription: 'Notifications for location updates',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
-      icon: '@mipmap/ic_launcher', // Specify the icon explicitly
+    AndroidNotificationDetails androidNotificationDetails;
+    DarwinNotificationDetails darwinNotificationDetails = const DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
     );
 
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
+    if (imageUrl != null) {
+      final String? filePath = await _downloadAndSaveImage(imageUrl, "notification_image.jpg");
+      BigPictureStyleInformation? bigPictureStyle;
+
+      if (filePath != null) {
+        bigPictureStyle = BigPictureStyleInformation(
+          FilePathAndroidBitmap(filePath),
+          largeIcon: FilePathAndroidBitmap(filePath),
+        );
+      }
+
+      androidNotificationDetails = AndroidNotificationDetails(
+        "high_importance_channel",
+        "High Importance Notifications",
+        importance: Importance.high,
+        priority: Priority.high,
+        styleInformation: bigPictureStyle,
+        ticker: "New Notification",
+      );
+    } else {
+      androidNotificationDetails = const AndroidNotificationDetails(
+        'default_channel',
+        'Default Notifications',
+        channelDescription: 'General notifications',
+        importance: Importance.high,
+        priority: Priority.high,
+        ticker: 'ticker',
+        icon: '@mipmap/ic_launcher',
+      );
+    }
+
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: darwinNotificationDetails,
+    );
 
     await _flutterLocalNotificationsPlugin.show(
       0,
@@ -135,40 +126,21 @@ class NotificationService{
     );
   }
 
-  static Future<void> showNotificationWithImage(String imageUrl, RemoteMessage message) async {
-    final String? filePath = await _downloadAndSaveImage(imageUrl, "notification_image.jpg");
+  // Download and save image locally
+  static Future<String?> _downloadAndSaveImage(String url, String fileName) async {
+    try {
+      final Directory directory = await getTemporaryDirectory();
+      final String filePath = '${directory.path}/$fileName';
 
-    BigPictureStyleInformation? bigPictureStyle;
-    AndroidNotificationDetails androidNotificationDetails;
-
-    if (filePath != null) {
-      bigPictureStyle = BigPictureStyleInformation(
-        FilePathAndroidBitmap(filePath), // Large Image in Notification
-        largeIcon: FilePathAndroidBitmap(filePath), // Small Thumbnail
-      );
+      final http.Response response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+        return filePath;
+      }
+    } catch (e) {
+      // Handle error silently or log
     }
-
-    androidNotificationDetails = AndroidNotificationDetails(
-      "high_importance_channel",
-      "High Importance Notifications",
-      importance: Importance.high,
-      priority: Priority.high,
-      styleInformation: bigPictureStyle, // Attach Image Style
-      ticker: "New Photo Received",
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
-    );
-
-    await _flutterLocalNotificationsPlugin.show(
-            0,
-            message.notification?.title.toString(),
-             "Tap to view the image",
-            notificationDetails);
+    return null;
   }
-
-
-  
-   
 }

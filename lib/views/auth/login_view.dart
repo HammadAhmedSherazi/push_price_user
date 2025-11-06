@@ -19,7 +19,9 @@ class _LoginViewState extends State<LoginView> {
     // Initialize controllers synchronously
     emailTextController = TextEditingController();
     passwordTextController = TextEditingController();
-    _initializeLoginData();
+    Future.microtask((){
+      _initializeLoginData();
+    });
     super.initState();
   }
 

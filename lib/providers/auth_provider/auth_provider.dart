@@ -276,15 +276,20 @@ class AuthProvider  extends Notifier<AuthState> {
     }
   }
 
-  FutureOr<void> updateProfile({required UserDataModel userDataModel})async{
-    if (!ref.mounted) return;
-    try {
+  FutureOr<void> updateProfile({required UserDataModel userDataModel, bool? onBackground = false, bool? showMessage = false})async{
+   
+    if(!onBackground!){
+      if (!ref.mounted) return;
+       try {
       state = state.copyWith(updateProfileApiResponse: ApiResponse.loading());
       final response = await MyHttpClient.instance.put(ApiEndpoints.updateProfile, userDataModel.toJson());
-      if (!ref.mounted) return;
+
 
       if(response != null && !(response is Map && response.containsKey('detail'))){
+        if(showMessage!){
         Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("profile_updated_successfully"));
+
+        }
 
         state = state.copyWith(updateProfileApiResponse: ApiResponse.completed(response));
         final Map<String, dynamic>? user = response['user'];
@@ -308,6 +313,22 @@ class AuthProvider  extends Notifier<AuthState> {
       );
       state = state.copyWith(updateProfileApiResponse: ApiResponse.error());
     }
+    }
+    else{
+      
+       try {
+        final response = await MyHttpClient.instance.put(ApiEndpoints.updateProfile, userDataModel.toJson());
+      if(response != null && (response is Map && response.containsKey('user'))){
+         final Map<String, dynamic>? user = response['user'];
+        if(user != null){
+          savedUserData(user,isSet: false);
+        }
+      }
+    } catch (e) {
+      throw Exception(e);
+       }
+    }
+   
   }
  
   FutureOr<void> getCategories({
@@ -467,10 +488,13 @@ class AuthProvider  extends Notifier<AuthState> {
   }
   
    
-  Future<void> savedUserData(Map<String, dynamic> userMap) async {
+  Future<void> savedUserData(Map<String, dynamic> userMap, {bool? isSet = true}) async {
     String user = jsonEncode(userMap);
     await SecureStorageManager.sharedInstance.storeUser(user);
+    if(isSet!){
     await userSet();
+
+    }
   }
 
   Future<void> userSet() async {

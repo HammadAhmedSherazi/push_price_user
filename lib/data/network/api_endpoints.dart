@@ -20,6 +20,7 @@ class ApiEndpoints {
   static const String getProducts = "admin/products/";
   static const String getCatrgories = "${user}categories";
   static const String getStores = "${user}stores";
+  static const String getNearbyStores = "${user}nearby-stores";
 
 
 

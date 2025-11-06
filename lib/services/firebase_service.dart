@@ -65,7 +65,7 @@ class FirebaseService {
   static Future<void> handleBackgroundMessage(RemoteMessage message) async {
     NotificationService.handleBackgroundMessage(message);
   }
-  Future<void> showNotificationWithImage(String imageUrl,RemoteMessage message) async {
-    NotificationService.showNotificationWithImage(imageUrl, message);
-  }
+  // Future<void> showNotificationWithImage(String imageUrl,RemoteMessage message) async {
+  //   NotificationService.showNotificationWithImage(imageUrl, message);
+  // }
 }

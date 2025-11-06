@@ -87,7 +87,10 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
                       if (parsed.isValid()) {
                         if(widget.isEdit!){
                           UserDataModel userData = ref.watch(authProvider.select((e)=>e.userData!));
-                          ref.read(authProvider.notifier).updateProfile(userDataModel: userData.copyWith(
+                          ref.read(authProvider.notifier).updateProfile(
+                            showMessage: true,
+                            userDataModel: userData.copyWith(
+
                             fullName: nameTextController.text,
                             address: addressTextController.text,
                             phoneNumber: parsed.international,

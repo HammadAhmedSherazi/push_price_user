@@ -11,36 +11,23 @@ class HomeView extends ConsumerStatefulWidget {
   ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends ConsumerState<HomeView> with WidgetsBindingObserver {
+class _HomeViewState extends ConsumerState<HomeView>  {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+
     Future.microtask(() {
       ref.read(authProvider.notifier).getUser();
       ref.read(homeProvider.notifier).getCategories();
       ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
+      ref.read(homeProvider.notifier).getNearbyStores(limit: 10, skip: 0);
       ref.read(geolocatorProvider.notifier).getCurrentLocation();
-      
+
     });
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.detached) {
-  //     // App came back to foreground
-  //     final isMode = ref.watch(authProvider.select((e)=>e.userData!.isTravelMode));
-  //     if (isMode) {
-  //       ref.read(geolocatorProvider.notifier).getCurrentLocation();
-  //     }
-  //   }
-  // }
+
 
   void showLocationBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -358,59 +345,59 @@ class NearbyStoresSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<StoreDataModel> stores = List.generate(
-      10,
-      (index) => StoreDataModel(
-        title: "Abc Store",
-        address: "abc street",
-        rating: 4.5,
-        icon: Assets.store,
-      ),
-    );
-    return SizedBox(
-      height: context.screenheight * 0.20,
-      child: Column(
-        spacing: 10,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer(
+      builder: (context, ref, child) {
+        final homeState = ref.watch(homeProvider.select((e) => (e.getNearbyStoresApiResponse, e.nearbyStores)));
+        final stores = homeState.$2 ?? [];
+        return SizedBox(
+          height: context.screenheight * 0.20,
+          child: Column(
+            spacing: 10,
             children: [
-              Text("Nearby Stores", style: context.textStyle.displayMedium),
-              TextButton(
-                style: ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                  visualDensity: VisualDensity(
-                    vertical: -4.0,
-                    horizontal: -4.0,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Nearby Stores", style: context.textStyle.displayMedium),
+                  TextButton(
+                    style: ButtonStyle(
+                      padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                      visualDensity: VisualDensity(
+                        vertical: -4.0,
+                        horizontal: -4.0,
+                      ),
+                    ),
+                    onPressed: () {
+                      AppRouter.push(AllStoreView(title: "Nearby Stores"));
+                    },
+                    child: Text(
+                      "See All",
+                      style: context.textStyle.bodySmall!.copyWith(
+                        color: context.colors.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  AppRouter.push(AllStoreView(title: "Nearby Stores"));
-                },
-                child: Text(
-                  "See All",
-                  style: context.textStyle.bodySmall!.copyWith(
-                    color: context.colors.primary,
-                    decoration: TextDecoration.underline,
-                  ),
+                ],
+              ),
+              Expanded(
+                child: AsyncStateHandler(
+                  status: homeState.$1.status,
+                  dataList: stores,
+                  padding: EdgeInsets.zero,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    final store = stores[index];
+                    return StoreCardWidget(data: store);
+                  },
+                  onRetry: () {
+                    ref.read(homeProvider.notifier).getNearbyStores(limit: 10, skip: 0);
+                  },
                 ),
               ),
             ],
           ),
-          Expanded(
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final store = stores[index];
-                return StoreCardWidget(data: store);
-              },
-              separatorBuilder: (context, index) => 10.pw,
-              itemCount: stores.length,
-            ),
-          ),
-        
-        ],
-      ),
+        );
+      },
     );
   }
 }
