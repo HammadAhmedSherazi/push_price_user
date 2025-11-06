@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/models/location_data_model.dart';
@@ -31,26 +33,60 @@ class GeolocatorService {
       }
     }
 
-    // Get current position
-    Position position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-      ),
-    );
+    // Get current position with timeout and background-friendly settings
+    // In background (skipPermissions=true), use more lenient settings
+    Position position;
+    try {
+      position = await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(
+          accuracy: skipPermissions ? LocationAccuracy.medium : LocationAccuracy.high,
+          timeLimit: skipPermissions ? const Duration(seconds: 20) : const Duration(seconds: 10),
+          distanceFilter: skipPermissions ? 10 : 0, // Filter small movements in background
+        ),
+      ).timeout(
+        skipPermissions ? const Duration(seconds: 20) : const Duration(seconds: 10),
+      );
+    } catch (e) {
+      // If getCurrentPosition fails (common in background), try to get last known position
+      Position? lastKnownPosition = await Geolocator.getLastKnownPosition();
+      if (lastKnownPosition != null) {
+        // Use last known position if available (better than nothing)
+        position = lastKnownPosition;
+      } else {
+        // If we can't get any position, throw the original error
+        throw Exception('Failed to get location: ${e.toString()}');
+      }
+    }
 
-    // Reverse geocode to get address details
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-      position.latitude,
-      position.longitude,
-    );
+    // Try to reverse geocode, but don't fail if it doesn't work (common in background)
+    String address = '';
+    String city = '';
+    String state = '';
+    String country = '';
+    
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      ).timeout(const Duration(seconds: 5));
 
-    Placemark place = placemarks[0];
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        address = place.street ?? '';
+        city = place.locality ?? '';
+        state = place.administrativeArea ?? '';
+        country = place.country ?? '';
+      }
+    } catch (e) {
+      // Geocoding failed (common in background), continue with empty address fields
+      // We still have lat/long which is what we need
+    }
 
     return LocationDataModel(
-      address: place.street,
-      city: place.locality,
-      state: place.administrativeArea,
-      country: place.country,
+      address: address,
+      city: city,
+      state: state,
+      country: country,
       latitude: position.latitude,
       longitude: position.longitude,
     );
