@@ -35,6 +35,7 @@ class _LoginViewState extends State<LoginView> {
       emailTextController.text = savedEmail ?? '';
       passwordTextController.text = savedPassword ?? '';
     }
+    if(!mounted) return;
     setState(() {});
   }
 

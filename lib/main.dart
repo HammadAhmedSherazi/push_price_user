@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/firebase_options.dart';
 
@@ -214,7 +213,7 @@ void onStart(ServiceInstance service) async {
       // Show error notification for testing (works on both iOS and Android)
       
     }
-    NotificationService.showNotification(title: "Test Notification 2", body:"sgdhsgd");
+    // NotificationService.showNotification(title: "Test Notification 2", body:"sgdhsgd");
 
   });
 }

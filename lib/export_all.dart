@@ -68,6 +68,7 @@ export './views/home/add_new_address_view.dart';
 export './views/home/all_category_view.dart';
 export './views/home/all_store_view.dart';
 export './views/home/category_product_view.dart';
+export './views/home/nearby_store_view.dart';
 export './views/my_locations/my_location_view.dart';
 export './views/my_order/modify_order_view.dart';
 export './views/my_order/my_order_view.dart';

@@ -367,7 +367,7 @@ class NearbyStoresSection extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      AppRouter.push(AllStoreView(title: "Nearby Stores"));
+                      AppRouter.push(NearbyStoreView(title: "Nearby Stores"));
                     },
                     child: Text(
                       "See All",
