@@ -21,6 +21,7 @@ export 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 export './data/enums/api_status.dart';
 export './data/network/api_endpoints.dart';
 export './data/network/http_client.dart';
+export './models/address_data_model.dart';
 export './models/bottom_data_model.dart';
 export './models/calender_data_model.dart';
 //MODELS

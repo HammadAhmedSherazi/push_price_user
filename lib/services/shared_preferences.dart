@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../export_all.dart';
 
 class SharedPreferenceManager {
@@ -8,7 +10,8 @@ class SharedPreferenceManager {
   final String languageIndex = 'selected_Language_index';
   final String langCode = 'lang_code';
   final String getStarted = 'get_started';
-  
+  final String cartListKey = 'cart_list';
+
 
 
 
@@ -65,5 +68,17 @@ class SharedPreferenceManager {
 
   Future<bool> clearPref() => instance.clear();
 
+  // Cart list methods
+  Future<bool> storeCartList(List<ProductPurchasingDataModel> cartList) async {
+    final cartJson = cartList.map((e) => e.toJson()).toList();
+    return instance.setStringList(cartListKey, cartJson.map((e) => jsonEncode(e)).toList());
+  }
+
+  List<ProductPurchasingDataModel> getCartList() {
+    final cartJson = instance.getStringList(cartListKey) ?? [];
+    return cartJson.map((e) => ProductPurchasingDataModel.fromJson(jsonDecode(e))).toList();
+  }
+
+  Future<bool> clearCartList() => instance.remove(cartListKey);
 
 }

@@ -19,15 +19,16 @@ class _CategoryProductViewState extends State<CategoryProductView> {
       description: "ABC Category",
       image: Assets.groceryBag,
       quantity: 0,
-      discountAmount: 80.00,
+      discount: 80.00,
       price: 99.99,
+      
     ),
     ProductPurchasingDataModel(
       title: "ABC Product",
       description: "ABC Category",
       image: Assets.groceryBag,
       quantity: 0,
-      discountAmount: 80.00,
+      discount: 80.00,
       price: 99.99,
     ),
   ];
@@ -37,21 +38,21 @@ class _CategoryProductViewState extends State<CategoryProductView> {
     final product = products[index];
     setState(() {
       
-      products[index] = product.copyWith(quantity: product.quantity + 1);
+      products[index] = product.copyWith(quantity: product.selectQuantity + 1);
       // cartList[index] = products[index];
-      price += product.discountAmount;
+      price += product.discountedPrice!;
       count++;
 
     });
   }
   void removeQuantity(int index){
     final product = products[index];
-    if(product.quantity >0){
+    if(product.selectQuantity >0){
        setState(() {
       
-      products[index] = product.copyWith(quantity: product.quantity - 1);
+      products[index] = product.copyWith(quantity: product.selectQuantity - 1);
       // cartList[index] = products[index];
-      price -= product.discountAmount;
+      price -= product.discountedPrice!;
       count--;
     });
     }
@@ -60,7 +61,7 @@ class _CategoryProductViewState extends State<CategoryProductView> {
         cartList.removeAt(index);
         if(count >0){
           count--;
-          price -= product.discountAmount;
+          price -= product.discountedPrice!;
         }        
       });
     }
@@ -111,7 +112,7 @@ class _CategoryProductViewState extends State<CategoryProductView> {
                 return GestureDetector(
                   onTap: (){
                     AppRouter.push(ProductDetailView(
-                      quatity: product.quantity,
+                      quatity: product.selectQuantity,
                     ));
                   },
                   child: Container(
@@ -125,7 +126,7 @@ class _CategoryProductViewState extends State<CategoryProductView> {
                         Positioned(
                           right: 0,
                           bottom: 0,
-                          child: product.quantity > 0? Container(
+                          child: product.selectQuantity > 0? Container(
                         // height: 30.h,
                         padding: EdgeInsets.all(5.r),
                         decoration: BoxDecoration(
@@ -216,7 +217,7 @@ class _CategoryProductViewState extends State<CategoryProductView> {
                                     TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: "\$${product.discountAmount} ",
+                                          text: "\$${product.discountedPrice} ",
                                           style: context.textStyle.displayMedium!
                                               .copyWith(
                                                 color: AppColors.secondaryColor,

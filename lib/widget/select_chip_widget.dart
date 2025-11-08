@@ -29,7 +29,7 @@ class SelectChipWidget extends StatelessWidget {
         final bool isSelected = index == selectedIndex;
         return ChoiceChip(
             label: Text(
-              items[index],
+              context.tr(items[index]),
               style: context.textStyle.displayMedium!.copyWith(
                 color: isSelected ? Colors.white : Color(0xff5B5B5B)
               ),

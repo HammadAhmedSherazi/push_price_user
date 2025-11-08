@@ -19,7 +19,7 @@ class _SearchProductViewState extends State<SearchProductView> {
       
     });
    }
-   List<ProductSelectionDataModel> products = List.generate(5, (index)=> ProductSelectionDataModel(title: "ABC Product", description: "ABC Category", image: Assets.groceryBag, isSelect: false)); 
+   List<ProductSelectionDataModel> products = List.generate(5, (index)=> ProductSelectionDataModel(title: "ABC Product", description: "ABC Category", image: Assets.groceryBag, isSelect: false, discountedPrice: 0.0)); 
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(

@@ -39,10 +39,10 @@ class _HomeViewState extends ConsumerState<HomeView>  {
       backgroundColor: Color.fromRGBO(242, 248, 254, 1),
       builder: (context) {
         int selectedIndex = 0;
-        List<String> addresses = List.generate(
-          4,
-          (index) => 'Lorem Ipsum Street',
-        );
+        // Fetch addresses when opening the bottom sheet
+        Future.microtask(() {
+          ref.read(geolocatorProvider.notifier).getAddresses();
+        });
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -107,19 +107,43 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                   ),
                 
                   // Address list (Radio buttons)
-                  RadioGroup<int>(
-                    groupValue: selectedIndex,
-                    onChanged: (value) => setState(() => selectedIndex = value!),
-                    child: Column(
-                      children: List.generate(addresses.length, (index) {
-                        return Radio<int>(
-                          value: index,
-                          activeColor: AppColors.secondaryColor,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
-                        );
-                      }),
-                    ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final addressesState = ref.watch(geolocatorProvider.select((e) => (e.addresses, e.activateAddressApiResponse)));
+                      final addressesList = addressesState.$1 ?? [];
+                      final activateState = addressesState.$2;
+
+                      return RadioGroup<int>(
+                        groupValue: selectedIndex,
+                        onChanged: (value) {
+                          setState(() => selectedIndex = value!);
+                          if (addressesList.isNotEmpty && value! < addressesList.length) {
+                            final addressId = addressesList[value!].addressId;
+                            ref.read(geolocatorProvider.notifier).activateAddress(addressId);
+                          }
+                        },
+                        child: Column(
+                          children: List.generate(addressesList.length, (index) {
+                            final address = addressesList[index];
+                            return ListTile(
+                              leading: Radio<int>(
+                                value: index,
+                                groupValue: selectedIndex,
+                                activeColor: AppColors.secondaryColor,
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
+                              ),
+                              title: Text(address.label),
+                              subtitle: Text('${address.addressLine1}${address.addressLine2 != null ? ', ${address.addressLine2}' : ''}, ${address.city}, ${address.state}, ${address.postalCode}, ${address.country}'),
+                              onTap: () {
+                                setState(() => selectedIndex = index);
+                                ref.read(geolocatorProvider.notifier).activateAddress(address.addressId);
+                              },
+                            );
+                          }),
+                        ),
+                      );
+                    },
                   ),
 
                   
@@ -306,7 +330,9 @@ class StoreCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        AppRouter.push(StoreView());
+        AppRouter.push(StoreView(
+          storeData: data,
+        ));
       },
       child: Container(
         height: double.infinity,

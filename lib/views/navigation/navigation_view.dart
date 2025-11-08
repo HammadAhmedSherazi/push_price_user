@@ -70,7 +70,9 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                     Expanded(
                       child: Consumer(
                         builder: (context, ref, child) {
+                          final isLoad = ref.watch(authProvider.select((e)=>e.logoutApiResponse.status)) == Status.loading;
                           return CustomButtonWidget(
+                            isLoad: isLoad,
                             title: context.tr("logout"),
                             onPressed: () {
                               ref.read(authProvider.notifier).logout();

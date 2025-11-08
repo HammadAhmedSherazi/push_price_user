@@ -1,54 +1,23 @@
+import '../../export_all.dart';
 import '../../utils/extension.dart';
 
-import '../../export_all.dart';
-
-class CartView extends StatefulWidget {
+class CartView extends ConsumerStatefulWidget {
   final int? count;
   const CartView({super.key, this.count});
 
   @override
-  State<CartView> createState() => _CartViewState();
+  ConsumerState<CartView> createState() => _CartViewState();
 }
 
-class _CartViewState extends State<CartView> {
-  void addQuantity(int index) {
-    setState(() {
-      myCartItem[index].quantity = myCartItem[index].quantity + 1;
-    });
+class _CartViewState extends ConsumerState<CartView> {
+  void addQuantity(ProductPurchasingDataModel product) {
+    ref.read(homeProvider.notifier).addQuantity(product);
   }
 
-  void removeQuantity(int index) {
-    if (myCartItem[index].quantity > 1) {
-      setState(() {
-        myCartItem[index].quantity = myCartItem[index].quantity - 1;
-      });
-    }
-    if(myCartItem[index].quantity == 1){
-      setState(() {
-        myCartItem.removeAt(index);
-      });
-    }
+  void removeQuantity(ProductPurchasingDataModel product) {
+    ref.read(homeProvider.notifier).removeQuantity(product);
   }
 
-  // ProductPurchasingDataModel product = ProductPurchasingDataModel(
-  //   title: "ABC Product",
-  //   description: "ABC Category",
-  //   image: Assets.groceryBag,
-  //   quantity: 1,
-  //   discountAmount: 80.00,
-  //   price: 99.99,
-  // );
-
-  List<ProductPurchasingDataModel> myCartItem = [
-    ProductPurchasingDataModel(
-      title: "ABC Product",
-      description: "ABC Category",
-      image: Assets.groceryBag,
-      quantity: 1,
-      discountAmount: 80.00,
-      price: 99.99,
-    ),
-  ];
   List<ProductPurchasingDataModel> promotionalProducts = List.generate(
     5,
     (index) => ProductPurchasingDataModel(
@@ -56,13 +25,14 @@ class _CartViewState extends State<CartView> {
       description: "ABC Category",
       image: Assets.groceryBag,
       quantity: 1,
-      discountAmount: 80.00,
+      discount: 80.00,
       price: 99.99,
     ),
   );
   @override
   Widget build(BuildContext context) {
-    final total = myCartItem.fold(0.0, (sum, item) => sum + item.discountAmount * item.quantity);
+    final cartList = ref.watch(homeProvider.select((e) => e.cartList));
+    final total = cartList.fold(0.0, (sum, item) => sum + item.discountedPrice! * item.selectQuantity);
     return CustomScreenTemplate(
       showBottomButton: total > 0.0,
       onButtonTap: () {
@@ -86,7 +56,7 @@ class _CartViewState extends State<CartView> {
                   padding: EdgeInsets.zero,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final product = myCartItem[index];
+                    final product = cartList[index];
                     return Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: 10.r,
@@ -114,7 +84,7 @@ class _CartViewState extends State<CartView> {
                                         style: context.textStyle.displayMedium,
                                       ),
                                       TextSpan(
-                                        text: " 20% Off",
+                                        text: " ${product.discount}% Off",
                                         style: context.textStyle.titleSmall!
                                             .copyWith(
                                               color: AppColors.secondaryColor,
@@ -129,7 +99,7 @@ class _CartViewState extends State<CartView> {
                                   TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: "\$${product.discountAmount} ",
+                                        text: "\$${product.discountedPrice} ",
                                         style: context.textStyle.displayMedium!
                                             .copyWith(
                                               color: AppColors.secondaryColor,
@@ -154,7 +124,9 @@ class _CartViewState extends State<CartView> {
                                 ),
                                 8.ph,
                                 Text(
-                                  "Best By: April 25, 2025",
+                                   Helper.getTypeTitle(product.type!)== "Best By Products"
+                                            ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
+                                            : product.description,
                                   style: context.textStyle.bodySmall!.copyWith(
                                     color: AppColors.primaryTextColor
                                         .withValues(alpha: 0.7),
@@ -183,19 +155,19 @@ class _CartViewState extends State<CartView> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    removeQuantity(index);
+                                    removeQuantity(product);
                                   },
                                   child: SvgPicture.asset(
                                  product.quantity == 1 ? Assets.deleteIcon :   Assets.minusSquareIcon,
                                   ),
                                 ),
                                 Text(
-                                  "${product.quantity}",
+                                  "${product.selectQuantity}",
                                   style: context.textStyle.displayMedium,
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    addQuantity(index);
+                                    addQuantity(product);
                                   },
                                   child: SvgPicture.asset(
                                     Assets.plusSquareIcon,
@@ -209,7 +181,7 @@ class _CartViewState extends State<CartView> {
                     );
                   },
                   separatorBuilder: (context, index) => 10.ph,
-                  itemCount: myCartItem.length,
+                  itemCount: cartList.length,
                 ),
                 10.ph,
                 if (promotionalProducts.isNotEmpty) ...[
@@ -245,8 +217,8 @@ class _CartViewState extends State<CartView> {
                                   ),
                                   padding: EdgeInsets.zero,
                                   onPressed: () {
+                                    addQuantity(product);
                                     setState(() {
-                                      myCartItem.add(product);
                                       promotionalProducts.removeAt(index);
                                     });
                                   },
@@ -358,9 +330,9 @@ class _CartViewState extends State<CartView> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      "\$${myCartItem.fold(
+                      "\$${cartList.fold(
   0.0,
-  (sum, item) => sum + item.price! * item.quantity,
+  (sum, item) => sum + item.price! * item.selectQuantity,
 ).toStringAsFixed(2)}",
                       style: context.textStyle.displaySmall!.copyWith(
                         decoration: TextDecoration.lineThrough,

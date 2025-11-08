@@ -1,4 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart';
+import 'package:push_price_user/export_all.dart';
 
 class SecureStorageManager {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -9,6 +11,7 @@ class SecureStorageManager {
   final String email = 'email';
   final String pass = 'pass';
   final String rememberMe = 'rememberMe';
+  final String cartListKey = 'cart_list';
 
   SecureStorageManager._();
 
@@ -45,11 +48,14 @@ class SecureStorageManager {
   Future<void> clearEmail() => _storage.delete(key: email);
   Future<void> clearPass() => _storage.delete(key: pass);
   Future<void> clearRememberMe() => _storage.delete(key: rememberMe);
+  Future<void> clearCartList()=>_storage.delete(key: cartListKey);
 
   Future<void> clearAll() async {
     await clearRefreshToken();
     await clearToken();
     await clearUser();
+    await clearCartList();
+    await SharedPreferenceManager.sharedInstance.clearCartList();
     // await clearEmail();
     // await clearPass();
     // await clearRememberMe();

@@ -470,7 +470,9 @@ class MyHttpClient extends BaseApiServices {
           // Note: Since this is in a synchronous context, we can't await.
           // For now, we'll skip refresh token logic and clear all.
           // Ideally, make this async
+         
           AuthProvider().refreshToken();
+           return null;
            }
         else {
           SecureStorageManager.sharedInstance.clearAll();

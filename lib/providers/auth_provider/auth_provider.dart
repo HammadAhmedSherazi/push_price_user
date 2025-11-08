@@ -22,6 +22,7 @@ class AuthProvider  extends Notifier<AuthState> {
       uploadImageApiResponse: ApiResponse.undertermined(),
       removeImageApiResponse: ApiResponse.undertermined(),
       updateProfileApiResponse: ApiResponse.undertermined(),
+      logoutApiResponse: ApiResponse.undertermined(),
 
       categories: [],
       categoriesSkip: 0,
@@ -77,16 +78,31 @@ class AuthProvider  extends Notifier<AuthState> {
 
     try {
       // Make API call to logout
+      state = state.copyWith(logoutApiResponse:  ApiResponse.loading());
       String? refreshToken = await SecureStorageManager.sharedInstance.getRefreshToken();
-      await MyHttpClient.instance.post(ApiEndpoints.logout, {
+      final response = await MyHttpClient.instance.post(ApiEndpoints.logout, {
         "refresh_token": refreshToken ?? ""
       });
+      AppRouter.back();
+      if(response != null &&  !(response is Map && response.containsKey('detail'))){
+           state = state.copyWith(logoutApiResponse:  ApiResponse.completed(response));
       // Clear local data
       await SecureStorageManager.sharedInstance.clearAll();
-
       AppRouter.pushAndRemoveUntil(LoginView());
+      }
+      else{
+         Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+        );
+        state = state.copyWith(logoutApiResponse: ApiResponse.error());
+      }
+    
+
+      
     } catch (e) {
       if (!ref.mounted) return;
+      state = state.copyWith(logoutApiResponse:  ApiResponse.error());
       // Even if API call fails, clear local data and logout
       await SecureStorageManager.sharedInstance.clearAll();
       AppRouter.pushAndRemoveUntil(LoginView());

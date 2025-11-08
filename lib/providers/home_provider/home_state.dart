@@ -8,9 +8,15 @@ class HomeState {
   final ApiResponse getStoresApiResponse;
   final List<StoreDataModel>? stores;
   final int storesSkip;
+  final ApiResponse getStoreProductsApiResponse;
+  final List<ProductPurchasingDataModel>? products;
+  final int productsSkip;
+  final ApiResponse getProductDetailApiResponse;
+  final ProductDataModel? productDetail;
   final ApiResponse getNearbyStoresApiResponse;
   final List<StoreDataModel>? nearbyStores;
   final int nearbyStoresSkip;
+  final List<ProductPurchasingDataModel> cartList;
 
   HomeState({
     required this.getCategoriesApiResponse,
@@ -19,9 +25,15 @@ class HomeState {
     required this.getStoresApiResponse,
     this.stores,
     this.storesSkip = 0,
+    required this.getStoreProductsApiResponse,
+    this.products,
+    this.productsSkip = 0,
+    required this.getProductDetailApiResponse,
+    this.productDetail,
     required this.getNearbyStoresApiResponse,
     this.nearbyStores,
     this.nearbyStoresSkip = 0,
+    this.cartList = const [],
   });
 
   HomeState copyWith({
@@ -31,9 +43,15 @@ class HomeState {
     ApiResponse? getStoresApiResponse,
     List<StoreDataModel>? stores,
     int? storesSkip,
+    ApiResponse? getStoreProductsApiResponse,
+    List<ProductPurchasingDataModel>? products,
+    int? productsSkip,
+    ApiResponse? getProductDetailApiResponse,
+    ProductDataModel? productDetail,
     ApiResponse? getNearbyStoresApiResponse,
     List<StoreDataModel>? nearbyStores,
     int? nearbyStoresSkip,
+    List<ProductPurchasingDataModel>? cartList,
   }) => HomeState(
     getCategoriesApiResponse: getCategoriesApiResponse ?? this.getCategoriesApiResponse,
     categories: categories ?? this.categories,
@@ -41,8 +59,14 @@ class HomeState {
     getStoresApiResponse: getStoresApiResponse ?? this.getStoresApiResponse,
     stores: stores ?? this.stores,
     storesSkip: storesSkip ?? this.storesSkip,
+    getStoreProductsApiResponse: getStoreProductsApiResponse ?? this.getStoreProductsApiResponse,
+    products: products ?? this.products,
+    productsSkip: productsSkip ?? this.productsSkip,
+    getProductDetailApiResponse: getProductDetailApiResponse ?? this.getProductDetailApiResponse,
+    productDetail: productDetail ?? this.productDetail,
     getNearbyStoresApiResponse: getNearbyStoresApiResponse ?? this.getNearbyStoresApiResponse,
     nearbyStores: nearbyStores ?? this.nearbyStores,
     nearbyStoresSkip: nearbyStoresSkip ?? this.nearbyStoresSkip,
+    cartList: cartList ?? this.cartList,
   );
 }

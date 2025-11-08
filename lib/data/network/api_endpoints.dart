@@ -20,8 +20,10 @@ class ApiEndpoints {
   static const String getProducts = "admin/products/";
   static const String getCatrgories = "${user}categories";
   static const String getStores = "${user}stores";
+  static String getStoreProducts(int id)=> "$getStores/$id/products";
+  static String getProductDetail(int productId)=> "${user}products/$productId";
   static const String getNearbyStores = "${user}nearby-stores";
-
-
+  static const String getAddresses = "${user}addresses";
+  static String activateAddress(int addressId) => "${getAddresses}/$addressId/activate";
 
 }

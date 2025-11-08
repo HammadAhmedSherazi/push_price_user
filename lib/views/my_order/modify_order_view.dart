@@ -30,7 +30,7 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
     description: "ABC Category",
     image: Assets.groceryBag,
     quantity: 1,
-    discountAmount: 80.00,
+    discount: 80.00,
     price: 99.99,
   );
   @override
@@ -85,7 +85,7 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
                         TextSpan(
                           children: [
                             TextSpan(
-                              text: "\$${product.discountAmount} ",
+                              text: "\$${product.discountedPrice} ",
                               style: context.textStyle.displayMedium!.copyWith(
                                 color: AppColors.secondaryColor,
                               ),
@@ -154,12 +154,12 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
           Divider(),
           OrderDetailTitleWidget(
             title: "Item Total",
-            value: "\$${product.discountAmount * quantity}",
+            value: "\$${product.discountedPrice! * quantity}",
           ),
           10.ph,
           OrderDetailTitleWidget(
             title: "Total",
-            value: "\$${product.discountAmount * quantity}",
+            value: "\$${product.discountedPrice! * quantity}",
           ),
         ],
       ),

@@ -1,82 +1,67 @@
+import '../../export_all.dart';
 import '../../utils/extension.dart';
 
-import '../../export_all.dart';
-
-class StoreView extends StatefulWidget {
-  const StoreView({super.key});
+class StoreView extends ConsumerStatefulWidget {
+  final StoreDataModel storeData;
+  const StoreView({super.key, required this.storeData});
 
   @override
-  State<StoreView> createState() => _StoreViewState();
+  ConsumerState<StoreView> createState() => _StoreViewState();
 }
 
-class _StoreViewState extends State<StoreView> {
-  int selectIndex = 0;
+class _StoreViewState extends ConsumerState<StoreView> {
+  int selectIndex = -1;
   int count = 0;
   num price = 0;
   final List<String> listType = [
-    "Best by Products",
-    "Instant Sales",
-    "Weighted Items",
-    "Promotional Products",
+    "best_by_products",
+    "instant_sales",
+    "weighted_items",
+    "promotional_products",
   ];
-  final List<ProductPurchasingDataModel> products = [
-    ProductPurchasingDataModel(
-      title: "ABC Product",
-      description: "ABC Category",
-      image: Assets.groceryBag,
-      quantity: 0,
-      discountAmount: 80.00,
-      price: 99.99,
-    ),
-    ProductPurchasingDataModel(
-      title: "ABC Product",
-      description: "ABC Category",
-      image: Assets.groceryBag,
-      quantity: 0,
-      discountAmount: 80.00,
-      price: 99.99,
-    ),
-  ];
-  List<ProductPurchasingDataModel> cartList = [];
 
-  void addQuantity(int index) {
-    final product = products[index];
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      fetchProducts(0);
+      loadCartData();
+    });
+  }
+
+  void loadCartData() {
+    final List<ProductPurchasingDataModel> cartList = ref.read(homeProvider.select((e) => e.cartList));
     setState(() {
-      
-      products[index] = product.copyWith(quantity: product.quantity + 1);
-      // cartList[index] = products[index];
-      price += product.discountAmount;
-      count++;
-
+      count = cartList.fold(0, (sum, item) => sum + item.selectQuantity);
+      price = cartList.fold(0.0, (sum, item) => sum + (item.discountedPrice! * item.selectQuantity));
     });
   }
-  void removeQuantity(int index){
-    final product = products[index];
-    if(product.quantity >0){
-       setState(() {
-      
-      products[index] = product.copyWith(quantity: product.quantity - 1);
-      // cartList[index] = products[index];
-      price -= product.discountAmount;
-      count--;
-    });
-    }
-    else{
-      setState(() {
-        cartList.removeAt(index);
-        if(count >0){
-          count--;
-          price -= product.discountAmount;
-        }        
-      });
-    }
+
+  void fetchProducts(int skip) {
+    ref.read(homeProvider.notifier).getStoreProducts(
+      storeId: widget.storeData.storeId,
+      skip: skip,
+      limit: 10,
+      type: selectIndex == -1? null : Helper.setType(listType[selectIndex])
+    );
   }
 
+  void addQuantity(ProductPurchasingDataModel product, int index) {
+    ref.read(homeProvider.notifier).addQuantity(product, index);
+    loadCartData();
+  }
+
+  void removeQuantity(ProductPurchasingDataModel product) {
+    ref.read(homeProvider.notifier).removeQuantity(product);
+    loadCartData();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomSheet: count >0? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "", onPressed: (){
-        AppRouter.push(CartView());
+        AppRouter.push(CartView(), fun: (){
+          loadCartData();
+        });
       }, child: Padding(
         padding: const EdgeInsets.all(8.0),
         
@@ -143,30 +128,41 @@ class _StoreViewState extends State<StoreView> {
                 onTap: (){
                   AppRouter.push(StoreDetailView());
                 },
-                child: Text("Abc Store", style: context.textStyle.displayMedium)),
+                child: Text(widget.storeData.storeName, style: context.textStyle.displayMedium)),
               actions: [
-                UserProfileWidget(
-                  radius: 18.r,
-                  imageUrl: Assets.userImage,
-                  borderWidth: 2,
+                Consumer(
+                  builder: (context, ref, child) {
+                    final String profileImage = ref.watch(authProvider.select((e)=>e.userData?.profileImage ?? ""));
+                    return UserProfileWidget(
+                      radius: 18.r,
+                      imageUrl: profileImage,
+                      borderWidth: 2,
+                    );
+                  }
                 ),
                 20.pw,
               ],
               bottom: PreferredSize(
                 preferredSize: Size.fromHeight(context.screenheight),
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 20.r),
-                  child: Row(
-                    spacing: 10,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(Assets.locationIcon),
-                      Text(
-                        'ABC, Street Lorem Ipsum, NY City',
-                        style: context.textStyle.bodyMedium,
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.address ?? ""));
+                    return address != ""? Padding(
+                      padding: EdgeInsets.only(bottom: 20.r),
+                      child: Row(
+                        spacing: 10,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(Assets.locationIcon),
+                          Text(
+                            address,
+                            style: context.textStyle.bodyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ) : SizedBox.shrink();
+                  }
                 ),
               ),
             ),
@@ -179,180 +175,189 @@ class _StoreViewState extends State<StoreView> {
             selectedIndex: selectIndex,
             onSelected: (index) {
               setState(() {
-                selectIndex = index;
+
+                selectIndex = selectIndex==index? -1: index ;
               });
+              fetchProducts(0);
+
             },
           ),
-          5.ph,
+          if(selectIndex > -1)...[
+            5.ph,
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: AppTheme.horizontalPadding,
             ),
             child: Text(
-              listType[selectIndex],
+              context.tr(listType[selectIndex]),
               style: context.textStyle.displayMedium,
             ),
           ),
+          ],
+          
           Expanded(
-            child: ListView.separated(
-              padding: EdgeInsets.all(AppTheme.horizontalPadding),
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return GestureDetector(
-                  onTap: (){
-                    AppRouter.push(ProductDetailView(
-                      quatity: product.quantity,
-                    ));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 10.r,
-                      horizontal: 20.r,
-                    ),
-                    decoration: AppTheme.productBoxDecoration,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: product.quantity > 0? Container(
-                        // height: 30.h,
-                        padding: EdgeInsets.all(5.r),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.horizontal(
-                            left: Radius.circular(30.r),
-                            right: Radius.circular(30.r)
-                          ),
-                          border: Border.all(
-                            width: 1,
-                            color: AppColors.borderColor
-                          )
+            child: Consumer(
+              builder: (context, ref, child) {
+                final homeState = ref.watch(homeProvider.select((e) => (e.getStoreProductsApiResponse, e.products)));
+                final products = homeState.$2 ?? [];
+                return AsyncStateHandler(
+                  status: homeState.$1.status,
+                  dataList: products,
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return GestureDetector(
+                      onTap: () {
+                        AppRouter.push(ProductDetailView(
+                          quatity: product.selectQuantity,
+                        ));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.r,
+                          horizontal: 20.r,
                         ),
-                        child: Row(
-                          spacing: 10,
+                        decoration: AppTheme.productBoxDecoration,
+                        child: Stack(
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                removeQuantity(index);
-                              },
-                              child: product.quantity == 1? SvgPicture.asset(Assets.deleteIcon) : Container(
-                                width: 17.r,
-                                height: 17.r,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: AppColors.secondaryColor
-                                  )
-
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: product.selectQuantity > 0
+                                  ? Container(
+                                      padding: EdgeInsets.all(5.r),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.horizontal(
+                                          left: Radius.circular(30.r),
+                                          right: Radius.circular(30.r),
+                                        ),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: AppColors.borderColor,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        spacing: 10,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              removeQuantity(product);
+                                            },
+                                            child: product.selectQuantity == 1
+                                                ? SvgPicture.asset(Assets.deleteIcon)
+                                                : Container(
+                                                    width: 17.r,
+                                                    height: 17.r,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: Colors.white,
+                                                      border: Border.all(
+                                                        color: AppColors.secondaryColor,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      "-",
+                                                      style: TextStyle(
+                                                        color: AppColors.secondaryColor,
+                                                        fontSize: 12.sp,
+                                                        height: 1.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                          ),
+                                          Text("${product.selectQuantity}", style: context.textStyle.displayMedium),
+                                          GestureDetector(
+                                            onTap: () {
+                                              addQuantity(product, index);
+                                            },
+                                            child: SvgPicture.asset(Assets.addCircleIcon),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : IconButton(
+                                      padding: EdgeInsets.zero,
+                                      visualDensity: VisualDensity(
+                                        horizontal: -4.0,
+                                        vertical: -4.0,
+                                      ),
+                                      onPressed: () {
+                                        addQuantity(product, index);
+                                      },
+                                      icon: SvgPicture.asset(Assets.addCircleIcon),
+                                    ),
+                            ),
+                            Row(
+                              spacing: 10,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Image.asset(Assets.groceryBag, width: 57.w),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: "${product.title} ",
+                                              style: context.textStyle.displayMedium,
+                                            ),
+                                            TextSpan(
+                                              text: " ${product.discount}% Off",
+                                              style: context.textStyle.titleSmall!.copyWith(
+                                                color: AppColors.secondaryColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      8.ph,
+                                      Text.rich(
+                                        textAlign: TextAlign.end,
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: "\$${product.discountedPrice} ",
+                                              style: context.textStyle.displayMedium!.copyWith(
+                                                color: AppColors.secondaryColor,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: "\$${product.price}",
+                                              style: context.textStyle.displayMedium!.copyWith(
+                                                decoration: TextDecoration.lineThrough,
+                                                color: Color.fromRGBO(91, 91, 91, 1),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      8.ph,
+                                      Text(
+                                        Helper.getTypeTitle(product.type!)== "Best By Products"
+                                            ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
+                                            : product.description,
+                                        style: context.textStyle.bodySmall!.copyWith(
+                                          color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                child: Text("-", style: TextStyle(
-                                  color: AppColors.secondaryColor,
-                                  fontSize: 12.sp,
-                                  height: 1.0
-                                ),),
-                              )),
-                            Text("${product.quantity}", style: context.textStyle.displayMedium,),
-                            GestureDetector(
-                              onTap: (){
-                                addQuantity(index);
-                              },
-                              child: SvgPicture.asset(Assets.addCircleIcon,)),
-                          ],
-                        ),
-                      ): IconButton(
-                            padding: EdgeInsets.zero,
-                            visualDensity: VisualDensity(
-                              horizontal: -4.0,
-                              vertical: -4.0,
-                            ),
-                            onPressed: () {
-                              addQuantity(index);
-                            },
-                            icon: SvgPicture.asset(Assets.addCircleIcon),
-                          ),
-                        ),
-                        Row(
-                          spacing: 10,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Image.asset(Assets.groceryBag, width: 57.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text.rich(
-                                    TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: "${product.title} ",
-                                          style: context.textStyle.displayMedium,
-                                        ),
-                                        TextSpan(
-                                          text: " 20% Off",
-                                          style: context.textStyle.titleSmall!
-                                              .copyWith(
-                                                color: AppColors.secondaryColor,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  8.ph,
-                                  Text.rich(
-                                    textAlign: TextAlign.end,
-                                    TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: "\$${product.discountAmount} ",
-                                          style: context.textStyle.displayMedium!
-                                              .copyWith(
-                                                color: AppColors.secondaryColor,
-                                              ),
-                                        ),
-                                        TextSpan(
-                                          text: "\$${product.price}",
-                                          style: context.textStyle.displayMedium!
-                                              .copyWith(
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                color: Color.fromRGBO(
-                                                  91,
-                                                  91,
-                                                  91,
-                                                  1,
-                                                ),
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  8.ph,
-                                  Text(
-                                    listType[selectIndex] == "Best by Products"
-                                        ? "Best By: April 25, 2025"
-                                        : product.description,
-                                    style: context.textStyle.bodySmall!.copyWith(
-                                      color: AppColors.primaryTextColor
-                                          .withValues(alpha: 0.7),
-                                    ),
-                                  ),
-                  
-                                  // 2.ph,
-                                ],
-                              ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
+                  onRetry: () {
+                    fetchProducts(0);
+                  },
                 );
               },
-              separatorBuilder: (context, index) => 10.ph,
-              itemCount: products.length,
             ),
           ),
         ],

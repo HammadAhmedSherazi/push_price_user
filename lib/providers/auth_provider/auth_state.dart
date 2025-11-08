@@ -3,6 +3,7 @@ import 'package:push_price_user/export_all.dart';
 
 class AuthState {
   final ApiResponse loginApiResponse;
+  final ApiResponse logoutApiResponse;
   final ApiResponse registrationApiResponse;
   final ApiResponse verifyOtpApiResponse;
   final ApiResponse resendOtpApiResponse;
@@ -31,6 +32,7 @@ class AuthState {
     required this.uploadImageApiResponse,
     required this.removeImageApiResponse,
     required this.updateProfileApiResponse,
+    required this.logoutApiResponse,
     this.userData,
     this.imageUrl,
     this.staffInfo,
@@ -50,12 +52,14 @@ class AuthState {
     ApiResponse? uploadImageApiResponse,
     ApiResponse? removeImageApiResponse,
     ApiResponse? updateProfileApiResponse,
+    ApiResponse? logoutApiResponse,
     UserDataModel? userData,
     String? imageUrl,
     StaffModel? staffInfo,
     List<CategoryDataModel>? categories,
     int? categoriesSkip,
   }) => AuthState(
+    logoutApiResponse: logoutApiResponse ?? this.logoutApiResponse,
     loginApiResponse: loginApiResponse ?? this.loginApiResponse,
     registrationApiResponse: registrationApiResponse ?? this.registrationApiResponse,
     verifyOtpApiResponse: verifyOtpApiResponse ?? this.verifyOtpApiResponse,
