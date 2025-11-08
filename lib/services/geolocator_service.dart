@@ -91,4 +91,45 @@ class GeolocatorService {
       longitude: position.longitude,
     );
   }
+
+  Future<List<LocationDataModel>> searchLocations(String query) async {
+    try {
+      List<Location> locations = await locationFromAddress(query);
+      List<LocationDataModel> results = [];
+
+      for (Location location in locations) {
+        // Reverse geocode to get address details
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          location.latitude,
+          location.longitude,
+        );
+
+        String address = '';
+        String city = '';
+        String state = '';
+        String country = '';
+
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          address = place.street ?? '';
+          city = place.locality ?? '';
+          state = place.administrativeArea ?? '';
+          country = place.country ?? '';
+        }
+
+        results.add(LocationDataModel(
+          address: address,
+          city: city,
+          state: state,
+          country: country,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        ));
+      }
+
+      return results;
+    } catch (e) {
+      throw Exception('Failed to search locations: ${e.toString()}');
+    }
+  }
 }

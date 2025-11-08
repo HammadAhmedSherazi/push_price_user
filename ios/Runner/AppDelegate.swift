@@ -1,6 +1,8 @@
 import Flutter
 import UIKit
 import CoreLocation
+import GoogleMaps
+
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, CLLocationManagerDelegate {
@@ -11,6 +13,7 @@ import CoreLocation
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
+    GMSServices.provideAPIKey("AIzaSyBTalnRBkhFW6a81Wn17xDZZI8dDjcDJzA");
     
     // Configure CLLocationManager for background location updates (required for release builds)
     locationManager = CLLocationManager()

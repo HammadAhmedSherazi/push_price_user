@@ -126,8 +126,9 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                           children: List.generate(addressesList.length, (index) {
                             final address = addressesList[index];
                             return ListTile(
-                              leading: Radio<int>(
+                              leading: Radio(
                                 value: index,
+                                
                                 groupValue: selectedIndex,
                                 activeColor: AppColors.secondaryColor,
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

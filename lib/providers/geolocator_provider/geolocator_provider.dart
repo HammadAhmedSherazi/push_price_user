@@ -18,6 +18,7 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       getAddressesApiResponse: ApiResponse.undertermined(),
       addAddressApiResponse: ApiResponse.undertermined(),
       activateAddressApiResponse: ApiResponse.undertermined(),
+      searchLocationsApiResponse: ApiResponse.undertermined(),
     );
   }
 
@@ -43,8 +44,8 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       ));
       }
       }
-      
-     
+
+
     } catch (e) {
       if (!ref.mounted) return;
       Helper.showMessage(
@@ -161,6 +162,29 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       state = state.copyWith(
         activateAddressApiResponse: ApiResponse.error(),
       );
+    }
+  }
+
+  Future<void> searchLocations(String query) async {
+    if (!ref.mounted) return;
+
+    try {
+      state = state.copyWith(searchLocationsApiResponse: ApiResponse.loading());
+      final results = await _geolocatorService.searchLocations(query);
+
+      if (!ref.mounted) return;
+
+      state = state.copyWith(
+        searchLocationsApiResponse: ApiResponse.completed(results),
+        searchResults: results,
+      );
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: e.toString(),
+      );
+      state = state.copyWith(searchLocationsApiResponse: ApiResponse.error());
     }
   }
 

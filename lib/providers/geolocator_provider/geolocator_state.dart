@@ -8,6 +8,8 @@ class GeolocatorState {
   final List<AddressDataModel>? addresses;
   final ApiResponse addAddressApiResponse;
   final ApiResponse activateAddressApiResponse;
+  final ApiResponse searchLocationsApiResponse;
+  final List<LocationDataModel>? searchResults;
 
   GeolocatorState({
     required this.getLocationApiResponse,
@@ -16,6 +18,8 @@ class GeolocatorState {
     this.addresses,
     required this.addAddressApiResponse,
     required this.activateAddressApiResponse,
+    required this.searchLocationsApiResponse,
+    this.searchResults,
   });
 
   GeolocatorState copyWith({
@@ -25,6 +29,8 @@ class GeolocatorState {
     List<AddressDataModel>? addresses,
     ApiResponse? addAddressApiResponse,
     ApiResponse? activateAddressApiResponse,
+    ApiResponse? searchLocationsApiResponse,
+    List<LocationDataModel>? searchResults,
   }) => GeolocatorState(
     getLocationApiResponse: getLocationApiResponse ?? this.getLocationApiResponse,
     locationData: locationData ?? this.locationData,
@@ -32,5 +38,7 @@ class GeolocatorState {
     addresses: addresses ?? this.addresses,
     addAddressApiResponse: addAddressApiResponse ?? this.addAddressApiResponse,
     activateAddressApiResponse: activateAddressApiResponse ?? this.activateAddressApiResponse,
+    searchLocationsApiResponse: searchLocationsApiResponse ?? this.searchLocationsApiResponse,
+    searchResults: searchResults ?? this.searchResults,
   );
 }
