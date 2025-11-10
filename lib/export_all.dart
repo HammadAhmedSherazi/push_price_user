@@ -21,7 +21,6 @@ export 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 export './data/enums/api_status.dart';
 export './data/network/api_endpoints.dart';
 export './data/network/http_client.dart';
-export './models/address_data_model.dart';
 export './models/bottom_data_model.dart';
 export './models/calender_data_model.dart';
 //MODELS
@@ -36,6 +35,7 @@ export './models/staff_data_model.dart';
 export './models/store_data_model.dart';
 export './models/user_data_model.dart';
 export './models/user_rating_data_model.dart';
+
 //PROVIDERS
 export './providers/auth_provider/auth_provider.dart';
 export './providers/home_provider/home_provider.dart';
@@ -47,6 +47,7 @@ export './services/geolocator_service.dart';
 export './services/notification_service.dart';
 export './services/secure_storage.dart';
 export './services/shared_preferences.dart';
+export './services/google_map_services.dart';
 export './utils/assets.dart';
 //UTILS
 export './utils/colors.dart';

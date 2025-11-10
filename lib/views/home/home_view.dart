@@ -90,42 +90,32 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                   16.ph,
 
                   // Use My Current Location
-                  ListTile(
-                    leading: Transform.rotate(
-                      angle: 45,
-                      child: Icon(Icons.navigation, color: Colors.teal),
-                    ),
-                    visualDensity: VisualDensity(
-                      horizontal: -4.0,
-                      vertical: -4.0
-                    ),
-                    contentPadding: EdgeInsets.zero,
-                    title: Text('Use My Current Location'),
-                    onTap: () {
-                     ref.read(geolocatorProvider.notifier).getCurrentLocation();
-                    },
-                  ),
+                  
                 
                   // Address list (Radio buttons)
                   Consumer(
                     builder: (context, ref, child) {
-                      final addressesState = ref.watch(geolocatorProvider.select((e) => (e.addresses, e.activateAddressApiResponse)));
+                      final addressesState = ref.watch(geolocatorProvider.select((e) => (e.addresses, e.getAddressesApiResponse)));
                       final addressesList = addressesState.$1 ?? [];
                       final activateState = addressesState.$2;
 
-                      return RadioGroup<int>(
+                      return AsyncStateHandler(status: activateState.status, dataList: [0], itemBuilder: null, onRetry: (){
+                        ref.read(geolocatorProvider.notifier).getAddresses();
+                      }, customSuccessWidget: RadioGroup<int>(
                         groupValue: selectedIndex,
                         onChanged: (value) {
                           setState(() => selectedIndex = value!);
                           if (addressesList.isNotEmpty && value! < addressesList.length) {
-                            final addressId = addressesList[value!].addressId;
-                            ref.read(geolocatorProvider.notifier).activateAddress(addressId);
+                            final addressId = addressesList[value].addressId;
+                            ref.read(geolocatorProvider.notifier).activateAddress(addressId!);
                           }
                         },
                         child: Column(
                           children: List.generate(addressesList.length, (index) {
                             final address = addressesList[index];
                             return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              minLeadingWidth: 5,
                               leading: Radio(
                                 value: index,
                                 
@@ -134,17 +124,17 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
                               ),
-                              title: Text(address.label),
-                              subtitle: Text('${address.addressLine1}${address.addressLine2 != null ? ', ${address.addressLine2}' : ''}, ${address.city}, ${address.state}, ${address.postalCode}, ${address.country}'),
+                              title: Text(address.label!, maxLines: 1, ),
+                              // subtitle: Text('${address.addressLine1}${address.addressLine2 != null ? ', ${address.addressLine2}' : ''}, ${address.city}, ${address.state}, ${address.postalCode}, ${address.country}', maxLines: 1,),
                               onTap: () {
                                 setState(() => selectedIndex = index);
-                                ref.read(geolocatorProvider.notifier).activateAddress(address.addressId);
+                                ref.read(geolocatorProvider.notifier).activateAddress(address.addressId!);
                               },
                             );
                           }),
                         ),
-                      );
-                    },
+                      )
+                   ,); },
                   ),
 
                   
@@ -198,7 +188,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
 
               Consumer(
                 builder: (context, ref, child) {
-                  final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.address ?? ""));
+                  final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.label ?? e.locationData?.addressLine1 ?? ""));
                
                   return Expanded(
                     child: InkWell(
@@ -213,6 +203,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                           Text(
                             address,
                             style: context.textStyle.titleSmall,
+                            maxLines: 2,
                           ),
                         ],
                       ),

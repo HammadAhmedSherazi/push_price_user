@@ -23,10 +23,7 @@ void main() async {
   await Future.wait([
     ScreenUtil.ensureScreenSize(),
     SharedPreferenceManager.init(),
-    // await _firebaseMessaging.requestPermission();
-    
     NotificationService.initNotifications(),
-    
     initializeService(),
   ]);
   
@@ -100,7 +97,7 @@ Future<bool> onIosBackground(ServiceInstance service) async {
               locationData = LocationDataModel(
                 latitude: lastPosition.latitude,
                 longitude: lastPosition.longitude,
-                address: '',
+                addressLine1: '',
                 city: '',
                 state: '',
                 country: '',
@@ -273,15 +270,7 @@ class MyApp extends ConsumerWidget {
         );
       },
       useInheritedMediaQuery: true,
-      child: prefs.getStartedCheck() ? FutureBuilder<bool>(
-        future: SecureStorageManager.sharedInstance.hasToken(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          return snapshot.data == true ? NavigationView() : LoginView();
-        },
-      ) : OnboardingView(),
+      child: prefs.getStartedCheck() ? LoginView() : OnboardingView(),
     );
   }
 }

@@ -146,7 +146,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                 preferredSize: Size.fromHeight(context.screenheight),
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.address ?? ""));
+                    final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.addressLine1 ?? ""));
                     return address != ""? Padding(
                       padding: EdgeInsets.only(bottom: 20.r),
                       child: Row(
@@ -154,10 +154,16 @@ class _StoreViewState extends ConsumerState<StoreView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SvgPicture.asset(Assets.locationIcon),
-                          Text(
-                            address,
-                            style: context.textStyle.bodyMedium,
-                            textAlign: TextAlign.center,
+                          Container(
+                            constraints: BoxConstraints(
+                              maxWidth: context.screenwidth * 0.65
+                            ),
+                            child: Text(
+                              address,
+                              style: context.textStyle.bodyMedium,
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ],
                       ),

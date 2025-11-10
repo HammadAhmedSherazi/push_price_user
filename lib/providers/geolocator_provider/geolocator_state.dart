@@ -5,7 +5,7 @@ class GeolocatorState {
   final ApiResponse getLocationApiResponse;
   final LocationDataModel? locationData;
   final ApiResponse getAddressesApiResponse;
-  final List<AddressDataModel>? addresses;
+  final List<LocationDataModel>? addresses;
   final ApiResponse addAddressApiResponse;
   final ApiResponse activateAddressApiResponse;
   final ApiResponse searchLocationsApiResponse;
@@ -26,7 +26,7 @@ class GeolocatorState {
     ApiResponse? getLocationApiResponse,
     LocationDataModel? locationData,
     ApiResponse? getAddressesApiResponse,
-    List<AddressDataModel>? addresses,
+    List<LocationDataModel>? addresses,
     ApiResponse? addAddressApiResponse,
     ApiResponse? activateAddressApiResponse,
     ApiResponse? searchLocationsApiResponse,

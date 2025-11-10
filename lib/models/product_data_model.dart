@@ -17,6 +17,7 @@ class ProductDataModel {
   final DateTime? bestByDate;
   final DateTime? goLiveDate;
   final List<double>? weightedItemsPrices;
+  final int? listingId;
 
   const ProductDataModel({
     required this.title,
@@ -34,12 +35,14 @@ class ProductDataModel {
     this.type,
     this.bestByDate,
     this.goLiveDate,
-    this.weightedItemsPrices
+    this.weightedItemsPrices,
+    this.listingId
   });
 
   factory ProductDataModel.fromJson(Map<String, dynamic> json) {
     return ProductDataModel(
       id: json['product_id'] ?? -1,
+      listingId: json['listing_id'] ?? -1,
       quantity : json['quantity'] ?? 0,
       title: json['product_name'] ?? '',
       description: json['product_description'] ?? '',
@@ -180,6 +183,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
     super.price,
     super.bestByDate,
     super.goLiveDate,
+    super.listingId,
    this.selectQuantity = 0,
     required this.discount,
     super.discountedPrice,
@@ -202,7 +206,8 @@ class ProductPurchasingDataModel extends ProductDataModel {
       discountedPrice: base.discountedPrice,
       type: base.type,
       bestByDate: base.bestByDate,
-      goLiveDate: base.goLiveDate
+      goLiveDate: base.goLiveDate,
+      listingId: base.listingId
       
     );
   }
@@ -229,7 +234,8 @@ class ProductPurchasingDataModel extends ProductDataModel {
     num? discountedPrice,
     String? type,
     DateTime? bestByDate,
-    DateTime? goLiveDate
+    DateTime? goLiveDate,
+    int? listingId
   }) {
     return ProductPurchasingDataModel(
       title: title ?? this.title,
@@ -242,7 +248,8 @@ class ProductPurchasingDataModel extends ProductDataModel {
       type: type ?? this.type,
       bestByDate: bestByDate ?? this.bestByDate,
       goLiveDate: goLiveDate ?? this.goLiveDate,
-      selectQuantity: selectQuantity ?? this.selectQuantity
+      selectQuantity: selectQuantity ?? this.selectQuantity,
+      listingId: listingId ?? this.listingId
     );
   }
 }

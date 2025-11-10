@@ -89,8 +89,8 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
 
       if (response != null) {
         List temp = response ?? [];
-        final List<AddressDataModel> list = List.from(
-          temp.map((e) => AddressDataModel.fromJson(e)),
+        final List<LocationDataModel> list = List.from(
+          temp.map((e) => LocationDataModel.fromJson(e)),
         );
         state = state.copyWith(
           getAddressesApiResponse: ApiResponse.completed(response),
@@ -119,17 +119,22 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       if (!ref.mounted) return;
 
       if (response != null) {
+        final LocationDataModel loc = LocationDataModel.fromJson(response);
         state = state.copyWith(
           addAddressApiResponse: ApiResponse.completed(response),
+          locationData: loc.isActive!? loc : null
         );
+        AppRouter.customback(times: 2);
         // Optionally refresh addresses after adding
         await getAddresses();
       } else {
+        AppRouter.back();
         state = state.copyWith(
           addAddressApiResponse: ApiResponse.error(),
         );
       }
     } catch (e) {
+      AppRouter.back();
       if (!ref.mounted) return;
       state = state.copyWith(
         addAddressApiResponse: ApiResponse.error(),
@@ -142,16 +147,18 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
 
     try {
       state = state.copyWith(activateAddressApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.put(ApiEndpoints.activateAddress(addressId), {});
+      final response = await MyHttpClient.instance.put(ApiEndpoints.activateAddress(addressId), null, isJsonEncode: false);
 
       if (!ref.mounted) return;
-
+      
       if (response != null) {
+        final LocationDataModel locationDataModel = LocationDataModel.fromJson(response);
         state = state.copyWith(
-          activateAddressApiResponse: ApiResponse.completed(response),
+          activateAddressApiResponse: ApiResponse.completed(response, ),
+          locationData: locationDataModel
         );
         // Refresh addresses after activation
-        await getAddresses();
+        // await getAddresses();
       } else {
         state = state.copyWith(
           activateAddressApiResponse: ApiResponse.error(),

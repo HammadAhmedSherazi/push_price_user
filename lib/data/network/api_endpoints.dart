@@ -24,6 +24,7 @@ class ApiEndpoints {
   static String getProductDetail(int productId)=> "${user}products/$productId";
   static const String getNearbyStores = "${user}nearby-stores";
   static const String getAddresses = "${user}addresses";
-  static String activateAddress(int addressId) => "${getAddresses}/$addressId/activate";
+  static String activateAddress(int addressId) => "$getAddresses/$addressId/activate";
+  static const String googleMapApi = "https://maps.googleapis.com/maps/api/";
 
 }

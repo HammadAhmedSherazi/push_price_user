@@ -19,6 +19,7 @@ class _LoginViewState extends State<LoginView> {
     // Initialize controllers synchronously
     emailTextController = TextEditingController();
     passwordTextController = TextEditingController();
+
     Future.microtask((){
       _initializeLoginData();
     });
@@ -26,9 +27,14 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> _initializeLoginData() async {
+    
     final secureStorage = SecureStorageManager.sharedInstance;
-
-    rememberMeCheck = await secureStorage.getRememberMe();
+    final token = await secureStorage.getToken();
+    if(token != null && token != ""){
+      AppRouter.pushAndRemoveUntil(NavigationView());
+    }
+    else{
+      rememberMeCheck = await secureStorage.getRememberMe();
     if(rememberMeCheck){
       final savedEmail = await secureStorage.getSavedEmail();
       final savedPassword = await secureStorage.getSavedPassword();
@@ -37,6 +43,9 @@ class _LoginViewState extends State<LoginView> {
     }
     if(!mounted) return;
     setState(() {});
+    }
+
+    
   }
 
 

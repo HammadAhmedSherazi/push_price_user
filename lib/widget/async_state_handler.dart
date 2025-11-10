@@ -8,6 +8,7 @@ import '../../../export_all.dart';
 class AsyncStateHandler<T> extends StatelessWidget {
   final Status status;
   final List<T> dataList;
+  final int? length;
   final Widget Function(BuildContext, int)? itemBuilder;
   final VoidCallback onRetry;
   final String? emptyMessage;
@@ -31,6 +32,7 @@ class AsyncStateHandler<T> extends StatelessWidget {
     this.loadingWidget,
     this.data,
     this.customSuccessWidget,
+    this.length
   });
 
   @override
@@ -70,7 +72,7 @@ class AsyncStateHandler<T> extends StatelessWidget {
           }
         },
         separatorBuilder: (context, index) =>scrollDirection == Axis.vertical ? const SizedBox(height: 16): 10.pw,
-        itemCount: status == Status.loadingMore ? dataList.length + 1 : dataList.length,
+        itemCount: status == Status.loadingMore ? dataList.length + 1 : length ?? dataList.length,
       );
     }
 

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:push_price_user/models/location_data_model.dart';
+import 'package:push_price_user/export_all.dart';
+import 'package:push_price_user/models/place_detail_model.dart';
+import 'package:push_price_user/models/place_listing_model.dart';
 
 class GeolocatorService {
   GeolocatorService._();
@@ -83,7 +85,9 @@ class GeolocatorService {
     }
 
     return LocationDataModel(
-      address: address,
+      label: address,
+      addressLine1: address,
+      addressLine2: address,
       city: city,
       state: state,
       country: country,
@@ -94,37 +98,50 @@ class GeolocatorService {
 
   Future<List<LocationDataModel>> searchLocations(String query) async {
     try {
-      List<Location> locations = await locationFromAddress(query);
+      final PlaceListingModel? data = await GoogleMapServices.googleMapServiceInstance.getPlaceListing(query);
+      if (data == null || data.predictions == null) {
+        return [];
+      }
+
       List<LocationDataModel> results = [];
 
-      for (Location location in locations) {
-        // Reverse geocode to get address details
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-          location.latitude,
-          location.longitude,
-        );
+      for (Prediction prediction in data.predictions!) {
+        // Get place details to get lat/lng
+        final PlaceDetailModel? detail = await GoogleMapServices.googleMapServiceInstance.getPlaceDetails(prediction.placeId!);
+        if (detail != null && detail.result != null && detail.result!.geometry != null && detail.result!.geometry!.location != null) {
+          final loc = detail.result!.geometry!.location!;
 
-        String address = '';
-        String city = '';
-        String state = '';
-        String country = '';
+          // Reverse geocode to get city, state, country
+          String city = '';
+          String state = '';
+          String country = '';
+          try {
+            List<Placemark> placemarks = await placemarkFromCoordinates(
+              loc.lat ?? 0.0,
+              loc.lng ?? 0.0,
+            ).timeout(const Duration(seconds: 5));
 
-        if (placemarks.isNotEmpty) {
-          Placemark place = placemarks[0];
-          address = place.street ?? '';
-          city = place.locality ?? '';
-          state = place.administrativeArea ?? '';
-          country = place.country ?? '';
+            if (placemarks.isNotEmpty) {
+              Placemark place = placemarks[0];
+              city = place.locality ?? '';
+              state = place.administrativeArea ?? '';
+              country = place.country ?? '';
+            }
+          } catch (e) {
+            // Geocoding failed, continue with empty fields
+          }
+
+          results.add(LocationDataModel(
+            label: prediction.description ?? '',
+            addressLine1: prediction.description ?? '',
+            addressLine2: prediction.description ?? "",
+            city: city,
+            state: state,
+            country: country,
+            latitude: loc.lat ?? 0.0,
+            longitude: loc.lng ?? 0.0,
+          ));
         }
-
-        results.add(LocationDataModel(
-          address: address,
-          city: city,
-          state: state,
-          country: country,
-          latitude: location.latitude,
-          longitude: location.longitude,
-        ));
       }
 
       return results;
@@ -132,4 +149,8 @@ class GeolocatorService {
       throw Exception('Failed to search locations: ${e.toString()}');
     }
   }
+
+  
+  
+ 
 }
