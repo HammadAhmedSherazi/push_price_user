@@ -164,7 +164,9 @@ class _HomeViewState extends ConsumerState<HomeView>  {
           },
         );
       },
-    );
+    ).then((v){
+      ref.read(homeProvider.notifier).getNearbyStores(limit: 10, skip: 0);
+    });
   }
 
   // bool travelMode = false;

@@ -28,15 +28,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
     super.initState();
     // Initialize with edit data if provided
     if (widget.addressToEdit != null) {
-      _selectedLocationData = widget.addressToEdit;
-      _selectedLocation = LatLng(widget.addressToEdit!.latitude, widget.addressToEdit!.longitude);
-      searchTextController.text = widget.addressToEdit!.addressLine1 ?? "";
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('selected_location'),
-          position: _selectedLocation!,
-        ),
-      );
+     _selectSearchResult(widget.addressToEdit!);
     }
   }
 
@@ -188,7 +180,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
       title: widget.addressToEdit != null ? "Edit Address" : "Add New Address",
       child: Consumer(
         builder: (context, ref, child) {
-          final locationData = ref.watch(
+          final locationData = widget.addressToEdit ?? ref.watch(
             geolocatorProvider.select((e) => e.locationData),
           );
           final searchState = ref.watch(
@@ -208,7 +200,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
             37.7749,
             -122.4194,
           ); // Default to San Francisco
-          if (locationData != null) {
+          if (locationData  != null) {
             initialPosition = LatLng(
               locationData.latitude,
               locationData.longitude,
