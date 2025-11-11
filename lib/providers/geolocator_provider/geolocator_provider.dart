@@ -87,16 +87,27 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+        LocationDataModel ? loc;
         List temp = response ?? [];
         final List<LocationDataModel> list = List.from(
-          temp.map((e) => LocationDataModel.fromJson(e)),
+          temp.map((e) {
+            if(e['is_active']){
+              loc = LocationDataModel.fromJson(e);
+            }
+            return LocationDataModel.fromJson(e);
+          }),
         );
         state = state.copyWith(
           getAddressesApiResponse: ApiResponse.completed(response),
           addresses: list,
+          locationData: loc
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_addresses"),
+        );
         state = state.copyWith(
           getAddressesApiResponse: ApiResponse.error(),
         );
@@ -118,7 +129,7 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         final LocationDataModel loc = LocationDataModel.fromJson(response);
         state = state.copyWith(
           addAddressApiResponse: ApiResponse.completed(response),
@@ -128,6 +139,10 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
         // Optionally refresh addresses after adding
         await getAddresses();
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_add_address"),
+        );
         AppRouter.back();
         state = state.copyWith(
           addAddressApiResponse: ApiResponse.error(),
@@ -150,8 +165,8 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       final response = await MyHttpClient.instance.put(ApiEndpoints.activateAddress(addressId), null, isJsonEncode: false);
 
       if (!ref.mounted) return;
-      
-      if (response != null) {
+
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         final LocationDataModel locationDataModel = LocationDataModel.fromJson(response);
         state = state.copyWith(
           activateAddressApiResponse: ApiResponse.completed(response, ),
@@ -160,6 +175,10 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
         // Refresh addresses after activation
         // await getAddresses();
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_activate_address"),
+        );
         state = state.copyWith(
           activateAddressApiResponse: ApiResponse.error(),
         );

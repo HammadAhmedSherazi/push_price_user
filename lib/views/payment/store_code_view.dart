@@ -1,6 +1,5 @@
-import '../../utils/extension.dart';
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class StoreCodeView extends StatelessWidget {
   const StoreCodeView({super.key});
@@ -21,7 +20,7 @@ class StoreCodeView extends StatelessWidget {
         ),
         30.ph,
         CustomButtonWidget(title: "pay now", onPressed: (){ 
-          AppRouter.push(OrderDetailView(orderStatus: OrderStatus.completed, afterPayment: true,));
+          AppRouter.push(OrderDetailView(orderId: 1, afterPayment: true,));
         })
         
       ],

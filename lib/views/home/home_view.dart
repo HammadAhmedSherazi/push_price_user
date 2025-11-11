@@ -21,7 +21,8 @@ class _HomeViewState extends ConsumerState<HomeView>  {
       ref.read(homeProvider.notifier).getCategories();
       ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
       ref.read(homeProvider.notifier).getNearbyStores(limit: 10, skip: 0);
-      ref.read(geolocatorProvider.notifier).getCurrentLocation();
+      // ref.read(geolocatorProvider.notifier).getCurrentLocation();
+      ref.read(geolocatorProvider.notifier).getAddresses();
 
     });
   }
@@ -169,6 +170,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
   // bool travelMode = false;
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: CustomAppBarWidget(
         height: context.screenheight * 0.21,
@@ -188,7 +190,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
 
               Consumer(
                 builder: (context, ref, child) {
-                  final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.label ?? e.locationData?.addressLine1 ?? ""));
+                  final LocationDataModel? location = ref.watch(geolocatorProvider.select((e)=>e.locationData));
                
                   return Expanded(
                     child: InkWell(
@@ -199,19 +201,23 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                         spacing: 5,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Home", style: context.textStyle.headlineMedium),
-                          Text(
-                            address,
+                          Text(location== null ? "Select Location" :location.addressLine1 ?? "" , style: context.textStyle.headlineMedium, maxLines: 1,),
+                          if(location != null)...[
+                            Text(
+                            location.addressLine1 ?? "",
                             style: context.textStyle.titleSmall,
-                            maxLines: 2,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
+                          ]
+                          
                         ],
                       ),
                     ),
                   );
                 }
               ),
-
+              30.pw,
               Text("Travel Mode", style: context.textStyle.displayMedium),
               10.pw,
               Consumer(
@@ -539,6 +545,7 @@ class SpecialOfferBannerSection extends StatelessWidget {
     );
   }
 }
+
 class AdSliderWidget extends StatefulWidget {
   final List<String> images;
   const AdSliderWidget({super.key, required this.images});

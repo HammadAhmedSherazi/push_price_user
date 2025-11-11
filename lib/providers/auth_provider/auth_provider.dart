@@ -477,7 +477,7 @@ class AuthProvider  extends Notifier<AuthState> {
          final response = await MyHttpClient.instance.post(ApiEndpoints.refresh, {
   "refresh_token": refreshToken
 });
-  SecureStorageManager.sharedInstance.clearRefreshToken();
+ await SecureStorageManager.sharedInstance.clearRefreshToken();
       if(response != null){
         await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
         await SecureStorageManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");

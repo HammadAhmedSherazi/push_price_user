@@ -11,6 +11,9 @@ class HomeState {
   final ApiResponse getStoreProductsApiResponse;
   final List<ProductPurchasingDataModel>? products;
   final int productsSkip;
+  final ApiResponse getPromotionalProductsApiResponse;
+  final List<ProductPurchasingDataModel>? promotionalProducts;
+  final int promotionalProductsSkip;
   final ApiResponse getProductDetailApiResponse;
   final ProductDataModel? productDetail;
   final ApiResponse getNearbyStoresApiResponse;
@@ -28,6 +31,9 @@ class HomeState {
     required this.getStoreProductsApiResponse,
     this.products,
     this.productsSkip = 0,
+    required this.getPromotionalProductsApiResponse,
+    this.promotionalProducts,
+    this.promotionalProductsSkip = 0,
     required this.getProductDetailApiResponse,
     this.productDetail,
     required this.getNearbyStoresApiResponse,
@@ -46,6 +52,9 @@ class HomeState {
     ApiResponse? getStoreProductsApiResponse,
     List<ProductPurchasingDataModel>? products,
     int? productsSkip,
+    ApiResponse? getPromotionalProductsApiResponse,
+    List<ProductPurchasingDataModel>? promotionalProducts,
+    int? promotionalProductsSkip,
     ApiResponse? getProductDetailApiResponse,
     ProductDataModel? productDetail,
     ApiResponse? getNearbyStoresApiResponse,
@@ -62,6 +71,9 @@ class HomeState {
     getStoreProductsApiResponse: getStoreProductsApiResponse ?? this.getStoreProductsApiResponse,
     products: products ?? this.products,
     productsSkip: productsSkip ?? this.productsSkip,
+    getPromotionalProductsApiResponse: getPromotionalProductsApiResponse ?? this.getPromotionalProductsApiResponse,
+    promotionalProducts: promotionalProducts ?? this.promotionalProducts,
+    promotionalProductsSkip: promotionalProductsSkip ?? this.promotionalProductsSkip,
     getProductDetailApiResponse: getProductDetailApiResponse ?? this.getProductDetailApiResponse,
     productDetail: productDetail ?? this.productDetail,
     getNearbyStoresApiResponse: getNearbyStoresApiResponse ?? this.getNearbyStoresApiResponse,

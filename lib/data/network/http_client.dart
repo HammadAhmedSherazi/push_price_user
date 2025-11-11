@@ -471,6 +471,7 @@ class MyHttpClient extends BaseApiServices {
           // For now, we'll skip refresh token logic and clear all.
           // Ideally, make this async
          
+         
           AuthProvider().refreshToken();
            return null;
            }
@@ -536,7 +537,7 @@ class MyHttpClient extends BaseApiServices {
       case 500:
         Helper.showMessage(
           AppRouter.navKey.currentContext!,message: 
-          json.decode( response.body.toString())['detail'] ??
+          
               AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
         );
         throw ServerException(response.statusCode, "Server Error");

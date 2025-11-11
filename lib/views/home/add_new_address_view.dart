@@ -6,14 +6,15 @@ import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
 
-class AddNewAddressView extends StatefulWidget {
-  const AddNewAddressView({super.key});
+class AddNewAddressView extends ConsumerStatefulWidget {
+  final LocationDataModel? addressToEdit;
+  const AddNewAddressView({super.key, this.addressToEdit});
 
   @override
-  State<AddNewAddressView> createState() => _AddNewAddressViewState();
+  ConsumerState<AddNewAddressView> createState() => _AddNewAddressViewState();
 }
 
-class _AddNewAddressViewState extends State<AddNewAddressView> {
+class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
   final TextEditingController searchTextController = TextEditingController();
 
   GoogleMapController? _mapController;
@@ -25,10 +26,18 @@ class _AddNewAddressViewState extends State<AddNewAddressView> {
   @override
   void initState() {
     super.initState();
-    // Get current location when view opens
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Will be handled in build method with ref
-    });
+    // Initialize with edit data if provided
+    if (widget.addressToEdit != null) {
+      _selectedLocationData = widget.addressToEdit;
+      _selectedLocation = LatLng(widget.addressToEdit!.latitude, widget.addressToEdit!.longitude);
+      searchTextController.text = widget.addressToEdit!.addressLine1 ?? "";
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('selected_location'),
+          position: _selectedLocation!,
+        ),
+      );
+    }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -113,7 +122,7 @@ class _AddNewAddressViewState extends State<AddNewAddressView> {
                           isScrollControlled: true,
                           backgroundColor: Colors.white,
                           builder: (bottomSheetContext) {
-                            final TextEditingController labelController = TextEditingController();
+                            final TextEditingController labelController =  TextEditingController(text: widget.addressToEdit!= null?  widget.addressToEdit?.label ??  "" : null);
                             final GlobalKey<FormState> formKey = GlobalKey<FormState>();
                             return Padding(
                               padding: EdgeInsets.all(AppTheme.horizontalPadding).copyWith(
@@ -160,7 +169,7 @@ class _AddNewAddressViewState extends State<AddNewAddressView> {
                                               );
                                             }
                                           },
-                                          title: "Done",
+                                          title: widget.addressToEdit != null ? "Update Address" : "Done",
                                         );
                                       },
                                     ),
@@ -176,7 +185,7 @@ class _AddNewAddressViewState extends State<AddNewAddressView> {
           }
         ),
       ),
-      title: "Add New Address",
+      title: widget.addressToEdit != null ? "Edit Address" : "Add New Address",
       child: Consumer(
         builder: (context, ref, child) {
           final locationData = ref.watch(

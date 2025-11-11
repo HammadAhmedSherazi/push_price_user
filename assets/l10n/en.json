@@ -278,5 +278,9 @@
   "password_must_contain_at_least_one_number": "Password must contain at least one number",
   "profile_updated_successfully": "Profile updated successfully",
   "image_uploaded_successfully": "Image uploaded successfully",
-  "image_removed_successfully": "Image removed successfully"
+  "image_removed_successfully": "Image removed successfully",
+  "get_percent_off_your_next_order": "Get %s%% off your next order!",
+  "get_flat_off_your_next_order": "Get $%s off your next order!",
+  "minimum_spend": "Minimum spend $%s",
+  "expires_on": "Expires on %s"
 }

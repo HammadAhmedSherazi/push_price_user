@@ -73,6 +73,7 @@ class _CategoryProductViewState extends State<CategoryProductView> {
       showBottomButton: count >0,
       customBottomWidget: count >0? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "", onPressed: (){
         AppRouter.push(CartView(
+          storeId: 1,
           count: 3,
         ));
       }, child: Padding(
@@ -113,6 +114,9 @@ class _CategoryProductViewState extends State<CategoryProductView> {
                   onTap: (){
                     AppRouter.push(ProductDetailView(
                       quatity: product.selectQuantity,
+                      product: product,
+                      discount: product.discount,
+                      storeId: 1,
                     ));
                   },
                   child: Container(

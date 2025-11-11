@@ -26,10 +26,12 @@ class _StoreViewState extends ConsumerState<StoreView> {
     Future.microtask(() {
       fetchProducts(0);
       loadCartData();
+      
     });
   }
 
   void loadCartData() {
+    ref.read(orderProvider.notifier).voucherApiUnset();
     final List<ProductPurchasingDataModel> cartList = ref.read(homeProvider.select((e) => e.cartList));
     setState(() {
       count = cartList.fold(0, (sum, item) => sum + item.selectQuantity);
@@ -59,7 +61,9 @@ class _StoreViewState extends ConsumerState<StoreView> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomSheet: count >0? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "", onPressed: (){
-        AppRouter.push(CartView(), fun: (){
+        AppRouter.push(CartView(
+          storeId: widget.storeData.storeId,
+        ), fun: (){
           loadCartData();
         });
       }, child: Padding(
@@ -111,8 +115,9 @@ class _StoreViewState extends ConsumerState<StoreView> {
                 ),
               ),
               backgroundColor: AppColors.primaryAppBarColor,
-              leadingWidth: context.screenwidth * 0.35,
+              leadingWidth: context.screenwidth * 0.38,
               leading: Row(
+                
                 children: [
                   Padding(
                     padding: EdgeInsets.symmetric(
@@ -161,8 +166,9 @@ class _StoreViewState extends ConsumerState<StoreView> {
                             child: Text(
                               address,
                               style: context.textStyle.bodyMedium,
-                              maxLines: 2,
+                              maxLines: 1,
                               textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -215,6 +221,9 @@ class _StoreViewState extends ConsumerState<StoreView> {
                       onTap: () {
                         AppRouter.push(ProductDetailView(
                           quatity: product.selectQuantity,
+                          product: product,
+                          discount: product.discount,
+                          storeId: widget.storeData.storeId,
                         ));
                       },
                       child: Container(

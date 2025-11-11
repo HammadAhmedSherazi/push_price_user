@@ -3,13 +3,15 @@ import '../../utils/extension.dart';
 
 class CartView extends ConsumerStatefulWidget {
   final int? count;
-  const CartView({super.key, this.count});
+  final int storeId;
+  const CartView({super.key, this.count, required this.storeId});
 
   @override
   ConsumerState<CartView> createState() => _CartViewState();
 }
 
 class _CartViewState extends ConsumerState<CartView> {
+
   void addQuantity(ProductPurchasingDataModel product) {
     ref.read(homeProvider.notifier).addQuantity(product);
   }
@@ -18,30 +20,65 @@ class _CartViewState extends ConsumerState<CartView> {
     ref.read(homeProvider.notifier).removeQuantity(product);
   }
 
-  List<ProductPurchasingDataModel> promotionalProducts = List.generate(
-    5,
-    (index) => ProductPurchasingDataModel(
-      title: "ABC Product",
-      description: "ABC Category",
-      image: Assets.groceryBag,
-      quantity: 1,
-      discount: 80.00,
-      price: 99.99,
-    ),
-  );
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask((){
+      });
+  }
+  void fetchProducts(){
+    ref.read(homeProvider.notifier).getPromotionalProducts(storeId: widget.storeId, skip: 0, limit: 10);
+    
+  }
   @override
   Widget build(BuildContext context) {
     final cartList = ref.watch(homeProvider.select((e) => e.cartList));
-    final total = cartList.fold(0.0, (sum, item) => sum + item.discountedPrice! * item.selectQuantity);
+    final voucherRes = ref.watch(orderProvider.select((e)=>e.validateVoucherApiResponse));
+
+    final itemTotal = cartList.fold(
+      0.0,
+      (sum, item) => sum + item.discountedPrice! * item.selectQuantity,
+    );
+    final total = voucherRes.status == Status.completed && voucherRes.data != null ? voucherRes.data!.finalAmount : itemTotal ;
     return CustomScreenTemplate(
       showBottomButton: total > 0.0,
+      customBottomWidget: Consumer(
+        builder: (context, ref, child) {
+          final isLoad =
+              ref.watch(
+                orderProvider.select((e) => e.placeOrderApiResponse.status),
+              ) ==
+              Status.loading;
+          
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppTheme.horizontalPadding,
+            ),
+            child: CustomButtonWidget(
+              isLoad: isLoad,
+              title: "place order",
+              onPressed: () {
+                
+                final cartItems = ref.read(homeProvider.select((e)=>e.cartList));
+        
+                   Map<String, dynamic> data = {
+                  "items": List.generate(cartItems.length, (index)=>{"listing_id": cartItems[index].listingId, "quantity": cartItems[index].selectQuantity}),
+                
+                };
+                if(voucherRes.data != null ){
+                  data["voucher_code"] = voucherRes.data!.code;
+                }
+                ref.read(orderProvider.notifier).placeOrder(data, widget.count);
+                
+               
+              },
+            ),
+          );
+        },
+      ),
       onButtonTap: () {
-        AppRouter.pushReplacement(
-          OrderSuccessModifiedView(
-            count:widget.count,
-            message: "Your Order Has Been Placed Successfully!",
-          ),
-        );
+        
       },
       bottomButtonText: "place order",
       title: "Cart",
@@ -124,9 +161,10 @@ class _CartViewState extends ConsumerState<CartView> {
                                 ),
                                 8.ph,
                                 Text(
-                                   Helper.getTypeTitle(product.type!)== "Best By Products"
-                                            ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
-                                            : product.description,
+                                  Helper.getTypeTitle(product.type!) ==
+                                          "Best By Products"
+                                      ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
+                                      : product.description,
                                   style: context.textStyle.bodySmall!.copyWith(
                                     color: AppColors.primaryTextColor
                                         .withValues(alpha: 0.7),
@@ -158,7 +196,9 @@ class _CartViewState extends ConsumerState<CartView> {
                                     removeQuantity(product);
                                   },
                                   child: SvgPicture.asset(
-                                 product.quantity == 1 ? Assets.deleteIcon :   Assets.minusSquareIcon,
+                                    product.quantity == 1
+                                        ? Assets.deleteIcon
+                                        : Assets.minusSquareIcon,
                                   ),
                                 ),
                                 Text(
@@ -184,92 +224,101 @@ class _CartViewState extends ConsumerState<CartView> {
                   itemCount: cartList.length,
                 ),
                 10.ph,
-                if (promotionalProducts.isNotEmpty) ...[
+                
                   Text(
                     "Promotional Products",
                     style: context.textStyle.headlineMedium,
                   ),
                   10.ph,
                   SizedBox(
-                    height: 125.h,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        final ProductPurchasingDataModel product =
-                            promotionalProducts[index];
-                        return Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10.r,
-                            vertical: 15.r,
+          height: 125.h,
+           child: Consumer(
+              builder: (context, ref, child) {
+                final promotionalState = ref.watch(
+                  homeProvider.select(
+                    (e) => (
+                      e.getPromotionalProductsApiResponse,
+                      e.promotionalProducts,
+                    ),
+                  ),
+                );
+                final promotionalProducts = promotionalState.$2 ?? [];
+                return AsyncStateHandler(
+                  status: promotionalState.$1.status,
+                  dataList: promotionalProducts,
+               
+                  itemBuilder: (context, index) {
+                    final product = promotionalProducts[index];
+                    return Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.r,
+                        vertical: 15.r,
+                      ),
+                      height: double.infinity,
+                      width: context.screenwidth * 0.35,
+                      decoration: AppTheme.productBoxDecoration,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Positioned(
+                            right: 0,
+                            bottom: -13.r,
+                            child: IconButton(
+                              visualDensity: VisualDensity(horizontal: -4.0),
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                // TODO: Add to cart logic
+                              },
+                              icon: SvgPicture.asset(Assets.addCircleIcon),
+                            ),
                           ),
-                          height: double.infinity,
-                          width: context.screenwidth * 0.35,
-                          decoration: AppTheme.productBoxDecoration,
-                          child: Stack(
-                            clipBehavior: Clip.none,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            spacing: 3,
                             children: [
-                              Positioned(
-                                right: 0,
-                                bottom: -13.r,
-                                child: IconButton(
-                                  visualDensity: VisualDensity(
-                                    horizontal: -4.0,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                  onPressed: () {
-                                    addQuantity(product);
-                                    setState(() {
-                                      promotionalProducts.removeAt(index);
-                                    });
-                                  },
-                                  icon: SvgPicture.asset(Assets.addCircleIcon),
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                spacing: 3,
+                              Image.asset(Assets.groceryBag, width: 40.r),
+                              5.ph,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Image.asset(Assets.groceryBag, width: 40.r),
-                                  5.ph,
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        product.title,
-                                        style: context.textStyle.displaySmall,
-                                      ),
-                                    ],
+                                  Text(
+                                    product.title ?? "Product",
+                                    style: context.textStyle.displaySmall,
                                   ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        product.description,
-                                        style: context.textStyle.bodySmall,
-                                      ),
-                                    ],
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    product.category?.title ?? "Category",
+                                    style: context.textStyle.bodySmall,
                                   ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          "\$ ${product.price}",
-                                          style: context.textStyle.titleSmall,
-                                        ),
-                                      ),
-                                    ],
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "\$${(product.discountedPrice as num).toStringAsFixed(2)}",
+                                      style: context.textStyle.titleSmall,
+                                    ),
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                        );
-                      },
-                      separatorBuilder: (context, index) => 10.pw,
-                      itemCount: promotionalProducts.length,
-                    ),
-                  ),
-                  10.ph,
-                ],
+                        ],
+                      ),
+                    );
+                  },
+                  onRetry: () => fetchProducts(), // TODO: Get storeId
+                );
+              },
+            ),
+         ),
+        
+        10.ph,
+                
 
                 Text(
                   "Order Summary",
@@ -278,21 +327,23 @@ class _CartViewState extends ConsumerState<CartView> {
                   ),
                 ),
                 Divider(),
-                OrderDetailTitleWidget(
-                  title: "Item Total",
-                  value:
-                      "\$$total",
-                ),
+                OrderDetailTitleWidget(title: "Item Total", value: "\$$total"),
+                if(voucherRes.status == Status.completed && voucherRes.data != null &&voucherRes.data!.discountValue != 0)...[
                 10.ph,
-                OrderDetailTitleWidget(
-                  title: "Total",
-                  value:
-                      "\$$total",
-                ),
+                OrderDetailTitleWidget(title: "Voucher Discount", value: "\$${voucherRes.data!.discountValue}"),
+
+                ],
                 10.ph,
-                GestureDetector(
+            
+
+                OrderDetailTitleWidget(title: "Total", value: "\$$total"),
+                
+                // if()
+                if(voucherRes.status != Status.completed)...[
+                  10.ph,
+                  GestureDetector(
                   onTap: () {
-                    AppRouter.push(VoucherApplyView());
+                    AppRouter.push(VoucherApplyView(totalAmount: total,));
                   },
                   child: Row(
                     spacing: 10,
@@ -305,7 +356,9 @@ class _CartViewState extends ConsumerState<CartView> {
                     ],
                   ),
                 ),
-              ],
+              
+                ],
+                ],
             ),
           ),
           Padding(
@@ -330,10 +383,7 @@ class _CartViewState extends ConsumerState<CartView> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      "\$${cartList.fold(
-  0.0,
-  (sum, item) => sum + item.price! * item.selectQuantity,
-).toStringAsFixed(2)}",
+                      "\$${cartList.fold(0.0, (sum, item) => sum + item.price! * item.selectQuantity).toStringAsFixed(2)}",
                       style: context.textStyle.displaySmall!.copyWith(
                         decoration: TextDecoration.lineThrough,
                       ),

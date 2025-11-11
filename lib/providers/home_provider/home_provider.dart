@@ -21,6 +21,9 @@ class HomeProvider extends Notifier<HomeState> {
       getStoreProductsApiResponse: ApiResponse.undertermined(),
       products: [],
       productsSkip: 0,
+      getPromotionalProductsApiResponse: ApiResponse.undertermined(),
+      promotionalProducts: [],
+      promotionalProductsSkip: 0,
       getProductDetailApiResponse: ApiResponse.undertermined(),
       productDetail: null,
       getNearbyStoresApiResponse: ApiResponse.undertermined(),
@@ -47,7 +50,7 @@ class HomeProvider extends Notifier<HomeState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         List temp = response ?? [];
         final List<CategoryDataModel> list = List.from(
           temp.map((e) => CategoryDataModel.fromJson(e)),
@@ -58,6 +61,10 @@ class HomeProvider extends Notifier<HomeState> {
           chainId: chainId,
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_categories"),
+        );
         state = state.copyWith(
           getCategoriesApiResponse: ApiResponse.error(),
         );
@@ -101,7 +108,7 @@ class HomeProvider extends Notifier<HomeState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         List temp = response['stores'] ?? [];
         final List<StoreDataModel> list = List.from(
           temp.map((e) => StoreDataModel.fromJson(e)),
@@ -114,6 +121,10 @@ class HomeProvider extends Notifier<HomeState> {
           storesSkip: list.length >= limit ? skip + limit : 0,
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_stores"),
+        );
         state = state.copyWith(
           getStoresApiResponse: skip == 0
               ? ApiResponse.error()
@@ -166,10 +177,14 @@ class HomeProvider extends Notifier<HomeState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         List temp = response['products'] ?? [];
         final List<ProductPurchasingDataModel> list = List.from(
-          temp.map((e) => ProductPurchasingDataModel.fromJson(e, quantity: 0, discount: e['current_discount_percent'] ?? 0)),
+          temp.map((e) {
+            final cartIndex = state.cartList.indexWhere((cart) => cart.title == e['product_name']);
+            final selectQty = cartIndex != -1 ? state.cartList[cartIndex].selectQuantity : 0;
+            return ProductPurchasingDataModel.fromJson(e, quantity: selectQty, discount: e['current_discount_percent'] ?? 0);
+          }),
         );
         state = state.copyWith(
           getStoreProductsApiResponse: ApiResponse.completed(response),
@@ -179,6 +194,10 @@ class HomeProvider extends Notifier<HomeState> {
           productsSkip: list.length >= limit ? skip + limit : 0,
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_store_products"),
+        );
         state = state.copyWith(
           getStoreProductsApiResponse: skip == 0
               ? ApiResponse.error()
@@ -208,13 +227,17 @@ class HomeProvider extends Notifier<HomeState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         final ProductDataModel product = ProductDataModel.fromJson(response);
         state = state.copyWith(
           getProductDetailApiResponse: ApiResponse.completed(response),
           productDetail: product,
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_product_detail"),
+        );
         state = state.copyWith(
           getProductDetailApiResponse: ApiResponse.error(),
         );
@@ -285,6 +308,66 @@ class HomeProvider extends Notifier<HomeState> {
     }
   }
 
+  FutureOr<void> getPromotionalProducts({
+    required int storeId,
+    required int skip,
+    required int limit,
+  }) async {
+    if (!ref.mounted) return;
+    if (skip == 0 && state.promotionalProducts!.isNotEmpty) {
+      state = state.copyWith(promotionalProducts: [], promotionalProductsSkip: 0);
+    }
+    Map<String, dynamic> params = {'skip': skip, 'limit': limit, 'listing_type_filter': 'PROMOTIONAL_PRODUCTS'};
+    try {
+      state = state.copyWith(
+        getPromotionalProductsApiResponse: skip == 0
+            ? ApiResponse.loading()
+            : ApiResponse.loadingMore(),
+      );
+      final response = await MyHttpClient.instance.get(
+        ApiEndpoints.getStoreProducts(storeId),
+        params: params,
+      );
+
+      if (!ref.mounted) return;
+
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+        List temp = response['products'] ?? [];
+        final List<ProductPurchasingDataModel> list = List.from(
+          temp.map((e) {
+            final cartIndex = state.cartList.indexWhere((cart) => cart.title == e['product_name']);
+            final selectQty = cartIndex != -1 ? state.cartList[cartIndex].selectQuantity : 0;
+            return ProductPurchasingDataModel.fromJson(e, quantity: selectQty, discount: e['current_discount_percent'] ?? 0);
+          }),
+        );
+        state = state.copyWith(
+          getPromotionalProductsApiResponse: ApiResponse.completed(response),
+          promotionalProducts: skip == 0 && state.promotionalProducts!.isEmpty
+              ? list
+              : [...state.promotionalProducts!, ...list],
+          promotionalProductsSkip: list.length >= limit ? skip + limit : 0,
+        );
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_promotional_products"),
+        );
+        state = state.copyWith(
+          getPromotionalProductsApiResponse: skip == 0
+              ? ApiResponse.error()
+              : ApiResponse.undertermined(),
+        );
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        getPromotionalProductsApiResponse: skip == 0
+            ? ApiResponse.error()
+            : ApiResponse.undertermined(),
+      );
+    }
+  }
+
   FutureOr<void> getNearbyStores({
     required int limit,
     required int skip,
@@ -308,7 +391,7 @@ class HomeProvider extends Notifier<HomeState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         List temp = response['stores'] ?? [];
         final List<StoreDataModel> list = List.from(
           temp.map((e) => StoreDataModel.fromJson(e)),
@@ -321,6 +404,10 @@ class HomeProvider extends Notifier<HomeState> {
           nearbyStoresSkip: list.length >= limit ? skip + limit : 0,
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_nearby_stores"),
+        );
         state = state.copyWith(
           getNearbyStoresApiResponse: skip == 0
               ? ApiResponse.error()
@@ -336,6 +423,7 @@ class HomeProvider extends Notifier<HomeState> {
       );
     }
   }
+
 }
 
 final homeProvider = NotifierProvider.autoDispose<HomeProvider, HomeState>(

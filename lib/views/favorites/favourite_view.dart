@@ -65,7 +65,7 @@ class ProductTitleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        AppRouter.push(ProductDetailView(quatity: 0));
+        AppRouter.push(ProductDetailView(quatity: 0, product: product, discount: 0, storeId: 1,));
       },
       child: Container(
         padding: EdgeInsets.symmetric(

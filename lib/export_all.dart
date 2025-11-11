@@ -26,28 +26,29 @@ export './models/calender_data_model.dart';
 //MODELS
 export './models/category_data_model.dart';
 export './models/info_data_model.dart';
-export './models/listing_data_model.dart';
 export './models/location_data_model.dart';
 export './models/menu_data_model.dart';
 export './models/notification_data_model.dart';
+export './models/order_data_model.dart';
 export './models/product_data_model.dart';
 export './models/staff_data_model.dart';
 export './models/store_data_model.dart';
 export './models/user_data_model.dart';
 export './models/user_rating_data_model.dart';
-
+export './models/voucher_data_model.dart';
 //PROVIDERS
 export './providers/auth_provider/auth_provider.dart';
 export './providers/home_provider/home_provider.dart';
 export './providers/navigation_provider/navigation_provider.dart';
+export './providers/order_provider/order_provider.dart';
 //SERVICES
 export './services/base_api_services.dart';
 export './services/firebase_service.dart';
 export './services/geolocator_service.dart';
+export './services/google_map_services.dart';
 export './services/notification_service.dart';
 export './services/secure_storage.dart';
 export './services/shared_preferences.dart';
-export './services/google_map_services.dart';
 export './utils/assets.dart';
 //UTILS
 export './utils/colors.dart';

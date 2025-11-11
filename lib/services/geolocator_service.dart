@@ -65,6 +65,7 @@ class GeolocatorService {
     String city = '';
     String state = '';
     String country = '';
+    String postalCode = '';
     
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -78,6 +79,8 @@ class GeolocatorService {
         city = place.locality ?? '';
         state = place.administrativeArea ?? '';
         country = place.country ?? '';
+        postalCode = place.postalCode ?? "";
+      
       }
     } catch (e) {
       // Geocoding failed (common in background), continue with empty address fields
@@ -93,6 +96,7 @@ class GeolocatorService {
       country: country,
       latitude: position.latitude,
       longitude: position.longitude,
+      postalCode: postalCode
     );
   }
 
@@ -115,6 +119,7 @@ class GeolocatorService {
           String city = '';
           String state = '';
           String country = '';
+          String postalCode = '';
           try {
             List<Placemark> placemarks = await placemarkFromCoordinates(
               loc.lat ?? 0.0,
@@ -126,6 +131,7 @@ class GeolocatorService {
               city = place.locality ?? '';
               state = place.administrativeArea ?? '';
               country = place.country ?? '';
+              postalCode = place.postalCode ?? '';
             }
           } catch (e) {
             // Geocoding failed, continue with empty fields
@@ -140,6 +146,7 @@ class GeolocatorService {
             country: country,
             latitude: loc.lat ?? 0.0,
             longitude: loc.lng ?? 0.0,
+            postalCode: postalCode
           ));
         }
       }

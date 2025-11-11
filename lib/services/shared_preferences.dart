@@ -76,7 +76,10 @@ class SharedPreferenceManager {
 
   List<ProductPurchasingDataModel> getCartList() {
     final cartJson = instance.getStringList(cartListKey) ?? [];
-    return cartJson.map((e) => ProductPurchasingDataModel.fromJson(jsonDecode(e))).toList();
+    return cartJson.map((e) {
+      final json = jsonDecode(e);
+      return ProductPurchasingDataModel.fromJson(json,quantity: json['select_quantity'] ?? 0, discount: json['discountAmount'] ?? 0 );
+    }).toList();
   }
 
   Future<bool> clearCartList() => instance.remove(cartListKey);

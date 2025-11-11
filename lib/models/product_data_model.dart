@@ -69,15 +69,27 @@ class ProductDataModel {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'product_name': title,
-      'product_description': description,
-      'product_image': image,
-      'base_price': price,
-      'discounted_price': discountedPrice,
-    };
-  }
+ Map<String, dynamic> toJson() {
+  return {
+    'product_id': id,
+    'listing_id': listingId,
+    'quantity': quantity,
+    'product_name': title,
+    'product_description': description,
+    'product_image': image,
+    'base_price': price,
+    'discounted_price': discountedPrice,
+    'listing_type': type,
+    'category': category?.toJson(),
+    'chain_id': chainId,
+    'created_at': createdAt?.toIso8601String(),
+    'best_by_date': bestByDate?.toIso8601String(),
+    'go_live_date': goLiveDate?.toIso8601String(),
+    'store': store?.toJson(),
+    'stores': stores?.map((e) => e.toJson()).toList(),
+    'weighted_items_prices': weightedItemsPrices,
+  };
+}
 
   ProductDataModel copyWith({
     String? title,
@@ -216,7 +228,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
   Map<String, dynamic> toJson() {
     final base = super.toJson();
     base.addAll({
-      'quantity': quantity,
+      'select_quantity': quantity,
       'discountAmount': discount,
     });
     return base;
