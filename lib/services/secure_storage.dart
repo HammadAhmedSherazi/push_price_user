@@ -47,14 +47,14 @@ class SecureStorageManager {
   Future<void> clearEmail() => _storage.delete(key: email);
   Future<void> clearPass() => _storage.delete(key: pass);
   Future<void> clearRememberMe() => _storage.delete(key: rememberMe);
-  Future<void> clearCartList()=>_storage.delete(key: cartListKey);
+  // Future<void> clearCartList()=>_storage.delete(key: cartListKey);
 
   Future<void> clearAll() async {
     await clearRefreshToken();
     await clearToken();
     await clearUser();
-    await clearCartList();
-    await SharedPreferenceManager.sharedInstance.clearCartList();
+    // await clearCartList();
+    // await SharedPreferenceManager.sharedInstance.clearCartList();
     // await clearEmail();
     // await clearPass();
     // await clearRememberMe();

@@ -8,6 +8,8 @@ class GeolocatorState {
   final List<LocationDataModel>? addresses;
   final ApiResponse addAddressApiResponse;
   final ApiResponse activateAddressApiResponse;
+  final ApiResponse updateAddressApiResponse;
+  final ApiResponse deleteAddressApiResponse;
   final ApiResponse searchLocationsApiResponse;
   final List<LocationDataModel>? searchResults;
 
@@ -18,6 +20,8 @@ class GeolocatorState {
     this.addresses,
     required this.addAddressApiResponse,
     required this.activateAddressApiResponse,
+    required this.updateAddressApiResponse,
+    required this.deleteAddressApiResponse,
     required this.searchLocationsApiResponse,
     this.searchResults,
   });
@@ -29,6 +33,8 @@ class GeolocatorState {
     List<LocationDataModel>? addresses,
     ApiResponse? addAddressApiResponse,
     ApiResponse? activateAddressApiResponse,
+    ApiResponse? updateAddressApiResponse,
+    ApiResponse? deleteAddressApiResponse,
     ApiResponse? searchLocationsApiResponse,
     List<LocationDataModel>? searchResults,
   }) => GeolocatorState(
@@ -38,6 +44,8 @@ class GeolocatorState {
     addresses: addresses ?? this.addresses,
     addAddressApiResponse: addAddressApiResponse ?? this.addAddressApiResponse,
     activateAddressApiResponse: activateAddressApiResponse ?? this.activateAddressApiResponse,
+    updateAddressApiResponse: updateAddressApiResponse ?? this.updateAddressApiResponse,
+    deleteAddressApiResponse: deleteAddressApiResponse ?? this.deleteAddressApiResponse,
     searchLocationsApiResponse: searchLocationsApiResponse ?? this.searchLocationsApiResponse,
     searchResults: searchResults ?? this.searchResults,
   );

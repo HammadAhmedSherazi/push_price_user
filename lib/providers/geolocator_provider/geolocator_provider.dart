@@ -18,6 +18,8 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       getAddressesApiResponse: ApiResponse.undertermined(),
       addAddressApiResponse: ApiResponse.undertermined(),
       activateAddressApiResponse: ApiResponse.undertermined(),
+      updateAddressApiResponse: ApiResponse.undertermined(),
+      deleteAddressApiResponse: ApiResponse.undertermined(),
       searchLocationsApiResponse: ApiResponse.undertermined(),
     );
   }
@@ -101,7 +103,7 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
         state = state.copyWith(
           getAddressesApiResponse: ApiResponse.completed(response),
           addresses: list,
-          locationData: loc
+          locationData:list.isEmpty ? LocationDataModel(latitude: 0, longitude: 0) : loc
         );
       } else {
         Helper.showMessage(
@@ -211,6 +213,84 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
         message: e.toString(),
       );
       state = state.copyWith(searchLocationsApiResponse: ApiResponse.error());
+    }
+  }
+
+  Future<void> updateAddress(int addressId, Map<String, dynamic> addressData) async {
+    if (!ref.mounted) return;
+
+    try {
+      state = state.copyWith(updateAddressApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.put(ApiEndpoints.address(addressId), addressData);
+
+      if (!ref.mounted) return;
+
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: "Location Successfully Updated!",
+        );
+        final LocationDataModel loc = LocationDataModel.fromJson(response);
+        state = state.copyWith(
+          updateAddressApiResponse: ApiResponse.completed(response),
+          locationData: loc.isActive!? loc : null
+        );
+        AppRouter.customback(times: 2);
+        // Optionally refresh addresses after updating
+        await getAddresses();
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_update_address"),
+        );
+        state = state.copyWith(
+          updateAddressApiResponse: ApiResponse.error(),
+        );
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        updateAddressApiResponse: ApiResponse.error(),
+      );
+    }
+  }
+
+  Future<void> deleteAddress(int addressId) async {
+    if (!ref.mounted) return;
+
+    try {
+      state = state.copyWith(deleteAddressApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.delete(ApiEndpoints.address(addressId), null);
+
+      if (!ref.mounted) return;
+
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: "Successfully Deleted!",
+        );
+        state = state.copyWith(
+          deleteAddressApiResponse: ApiResponse.completed(response),
+        );
+        // Refresh addresses after deleting
+        AppRouter.back();
+        await getAddresses();
+      } else {
+        AppRouter.back();
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_delete_address"),
+        );
+        state = state.copyWith(
+          deleteAddressApiResponse: ApiResponse.error(),
+        );
+      }
+    } catch (e) {
+      AppRouter.back();
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        deleteAddressApiResponse: ApiResponse.error(),
+      );
     }
   }
 

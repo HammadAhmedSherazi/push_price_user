@@ -9,8 +9,9 @@ class OrderState {
   final ApiResponse getOrderDetailApiResponse;
   final OrderModel? orderDetail;
   final ApiResponse cancelOrderApiResponse;
+  final ApiResponse updateOrderApiResponse;
   final ApiResponse<VoucherModel?> validateVoucherApiResponse;
-  
+
 
   OrderState({
     required this.getOrdersApiResponse,
@@ -20,6 +21,7 @@ class OrderState {
     required this.getOrderDetailApiResponse,
     this.orderDetail,
     required this.cancelOrderApiResponse,
+    required this.updateOrderApiResponse,
     required this.validateVoucherApiResponse,
 
   });
@@ -32,8 +34,9 @@ class OrderState {
     ApiResponse? getOrderDetailApiResponse,
     OrderModel? orderDetail,
     ApiResponse? cancelOrderApiResponse,
+    ApiResponse? updateOrderApiResponse,
     ApiResponse<VoucherModel?>? validateVoucherApiResponse,
-   
+
   }) => OrderState(
     getOrdersApiResponse: getOrdersApiResponse ?? this.getOrdersApiResponse,
     orders: orders ?? this.orders,
@@ -42,7 +45,8 @@ class OrderState {
     getOrderDetailApiResponse: getOrderDetailApiResponse ?? this.getOrderDetailApiResponse,
     orderDetail: orderDetail ?? this.orderDetail,
     cancelOrderApiResponse: cancelOrderApiResponse ?? this.cancelOrderApiResponse,
+    updateOrderApiResponse: updateOrderApiResponse ?? this.updateOrderApiResponse,
     validateVoucherApiResponse: validateVoucherApiResponse ?? this.validateVoucherApiResponse,
-    
+
   );
 }

@@ -23,7 +23,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    Future.microtask(()async {
       fetchProducts(0);
       loadCartData();
       

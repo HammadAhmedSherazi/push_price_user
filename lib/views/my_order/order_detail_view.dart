@@ -71,9 +71,17 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                   20.ph,
 
                   // Next Button
-                  CustomButtonWidget(title: "next", onPressed: (){
-                    AppRouter.back();
-                  })
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final isLoad = ref.watch(orderProvider.select((e)=>e.cancelOrderApiResponse.status)) == Status.loading;
+                      return  CustomButtonWidget(
+                        isLoad: isLoad,
+                        title: "next", onPressed: (){
+                          ref.read(orderProvider.notifier).cancelOrder(orderId: widget.orderId);
+                  });
+                    },
+                  )
+                 
                 ],
               ),
             ),
@@ -83,43 +91,40 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
     },
   );
 }
-
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask((){
+      ref.read(orderProvider.notifier).getOrderDetail(orderId: widget.orderId);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final orderState = ref.watch(orderProvider);
-    ref.listen(orderProvider.select((e) => e.getOrderDetailApiResponse), (previous, next) {
-      if (next.status == Status.completed) {
-        // Handle successful order detail fetch
-      }
-    });
-
-    // Fetch order detail on init
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (orderState.getOrderDetailApiResponse.status == Status.undertermined) {
-        ref.read(orderProvider.notifier).getOrderDetail(orderId: widget.orderId);
-      }
-    });
-
+    final order = orderState.orderDetail;
+   
     return CustomScreenTemplate(
       title: "Order details",
       bottomButtonText:  widget.afterPayment!?"back to home" : null,
       onButtonTap: (){
         AppRouter.customback(times: 6);
       },
-      showBottomButton: orderState.orderDetail?.status == OrderStatus.inProcess.name || widget.afterPayment!,
-      customBottomWidget: orderState.orderDetail?.status == OrderStatus.inProcess.name?
+      showBottomButton: orderState.orderDetail?.status == "IN_PROCESS" && orderState.getOrderDetailApiResponse.status == Status.completed || widget.afterPayment!,
+      customBottomWidget: orderState.orderDetail?.status == "IN_PROCESS" && orderState.getOrderDetailApiResponse.status == Status.completed?
       Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: Column(
         spacing: 15,
         children: [
           CustomOutlineButtonWidget(title: "modify order", onPressed: (){
-            AppRouter.push(ModifyOrderView());
+            AppRouter.push(ModifyOrderView(
+              orderData: orderState.orderDetail!,
+            ));
           }),
           CustomButtonWidget(title: "make payment", onPressed: (){
             AppRouter.push(SelectPaymentMethodView());
           }),
         ],
       ),) : null,
-      actionWidget: orderState.orderDetail?.status == OrderStatus.inProcess.name
+      actionWidget: orderState.orderDetail?.status == "IN_PROCESS" && orderState.getOrderDetailApiResponse.status == Status.completed
           ? Row(
               children: [
                 TextButton(
@@ -148,9 +153,11 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
       child: AsyncStateHandler(
         status: orderState.getOrderDetailApiResponse.status,
         dataList: orderState.orderDetail != null ? [orderState.orderDetail!] : [],
-        itemBuilder: (context, index) {
-          final order = orderState.orderDetail!;
-          return ListView(
+        itemBuilder: null,
+        customSuccessWidget: 
+        order != null ? ListView(
+            shrinkWrap: true,
+            physics: BouncingScrollPhysics(),
             padding: EdgeInsets.all(AppTheme.horizontalPadding),
             children: [
               Text(
@@ -158,22 +165,29 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                 style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
               ),
               10.ph,
-              OrderItemCardWidget(order: order),
-              10.ph,
+              ListView.separated(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final item = orderState.orderDetail!.items[index];
+                  return OrderItemCardWidget(order: item);
+                }, separatorBuilder: (context, index)=> 5.ph, itemCount: orderState.orderDetail!.items.length),
+              5.ph,
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    setTitle(OrderStatus.values.firstWhere((e) => e.name == order.status)),
+                    
+                    setTitle(order.status),
                     style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
                   ),
-                  Text("Today 3:45pm", style: context.textStyle.bodySmall,)
+                  // Text("Today 3:45pm", style: context.textStyle.bodySmall,)
                 ],
               ),
               Divider(),
               OrderDetailTitleWidget(
                 title: "Order ID",
-                value: "#${order.orderId}" ,
+                value: "#${order!.orderId}" ,
               ),
               10.ph,
               OrderDetailTitleWidget(
@@ -185,7 +199,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                 title: "Total",
                 value: "\$${order.finalAmount}" ,
               ),
-              if(order.status == OrderStatus.completed.name)...[
+              if(order.status == "COMPLETED")...[
                 30.verticalSpace,
               Center(
                 child: Column(
@@ -210,23 +224,24 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
               ]
 
             ],
-          );
-        },
+          )
+       : null,
         onRetry: () => ref.read(orderProvider.notifier).getOrderDetail(orderId: widget.orderId),
       ),
     );
   }
 }
 
-String setTitle(OrderStatus status){
+String setTitle(String status){
   switch (status) {
-    case OrderStatus.inProcess:
+    case "IN_PROCESS":
       return "Order In-Process";
-    case OrderStatus.completed:
+    case "COMPLETED":
       return "Order Completed";
-    case OrderStatus.cancelled:
+    case "CANCELLED":
       return "Order Cancelled";   
-      
+    default:
+      return "";
    
   }
 }
@@ -267,7 +282,7 @@ class OrderDetailTitleWidget extends StatelessWidget {
 }
 
 class OrderItemCardWidget extends StatelessWidget {
-  final OrderModel order;
+  final OrderItem order;
   const OrderItemCardWidget({super.key, required this.order});
 
   @override
@@ -287,18 +302,22 @@ class OrderItemCardWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text.rich(
+                  maxLines: 1,
                   TextSpan(
+                    
                     children: [
                       TextSpan(
-                        text: "Order Items",
+                        text: order.productName,
                         style: context.textStyle.displayMedium,
+                        
                       ),
                     ],
                   ),
                 ),
                 3.ph,
+                if(order.listingData.listingType == "BEST_BY_PRODUCTS" && order.listingData.bestByDate != null)
                 Text(
-                  "Items: ${order.items.length}",
+                  "Best By: ${Helper.selectDateFormat(order.listingData.bestByDate!)} ",
                   style: context.textStyle.bodySmall!.copyWith(
                     color: AppColors.primaryTextColor.withValues(alpha: 0.7),
                   ),
@@ -308,7 +327,7 @@ class OrderItemCardWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Total Items: ${order.items.length}",
+                      "Quantity: ${order.quantity}",
                       style: context.textStyle.displayMedium!.copyWith(
                         color: Color.fromRGBO(91, 91, 91, 1),
                       ),
@@ -318,11 +337,13 @@ class OrderItemCardWidget extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "\$${order.finalAmount}",
+                            text: "\$${order.unitPrice * order.quantity}",
                             style: context.textStyle.displayMedium!.copyWith(
                               color: AppColors.secondaryColor,
                             ),
+                            
                           ),
+                          // if(order.listingData.)
                         ],
                       ),
                     ),

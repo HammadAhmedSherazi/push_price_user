@@ -1,5 +1,7 @@
 
 
+import 'package:push_price_user/export_all.dart';
+
 class OrderModel {
   final int orderId;
   final int userId;
@@ -15,6 +17,7 @@ class OrderModel {
   final DateTime updatedAt;
   final List<OrderItem> items;
   final Address shippingAddress;
+  
 
   const OrderModel({
     required this.orderId,
@@ -31,6 +34,7 @@ class OrderModel {
     required this.updatedAt,
     required this.items,
     required this.shippingAddress,
+
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -53,6 +57,7 @@ class OrderModel {
       shippingAddress: json['shipping_address'] != null
           ? Address.fromJson(json['shipping_address'])
           : Address(),
+      
     );
   }
 
@@ -84,6 +89,7 @@ class OrderItem {
   final int quantity;
   final num unitPrice;
   final num totalPrice;
+  final ListingModel listingData;
 
   const OrderItem({
     required this.orderItemId,
@@ -93,6 +99,7 @@ class OrderItem {
     required this.quantity,
     required this.unitPrice,
     required this.totalPrice,
+    required this.listingData
   });
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
@@ -104,6 +111,7 @@ class OrderItem {
       quantity: json['quantity'] ?? 0,
       unitPrice: json['unit_price'] ?? 0,
       totalPrice: json['total_price'] ?? 0,
+      listingData: ListingModel.fromJson(json['listing'])
     );
   }
 
@@ -116,6 +124,7 @@ class OrderItem {
       'quantity': quantity,
       'unit_price': unitPrice,
       'total_price': totalPrice,
+      'listing' : listingData.toJson()
     };
   }
 }

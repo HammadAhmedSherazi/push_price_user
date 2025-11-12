@@ -5,12 +5,12 @@ import '../export_all.dart' hide PhoneNumber;
 
 class CustomPhoneTextfieldWidget extends StatefulWidget {
   final TextEditingController phoneNumberController;
-  final String initialCountryCode;
+  // final String initialCountryCode;
   final PhoneNumber? initialValue;
-  final void Function(Country country)? onCountryChanged;
+  
   final void Function(PhoneNumber)? onPhoneNumberChanged;
 
-  const CustomPhoneTextfieldWidget({super.key, required this.phoneNumberController, required this.initialCountryCode, required this.onCountryChanged, this.initialValue , required this.onPhoneNumberChanged});
+  const CustomPhoneTextfieldWidget({super.key, required this.phoneNumberController,   this.initialValue , required this.onPhoneNumberChanged});
 
   @override
   State<CustomPhoneTextfieldWidget> createState() => _CustomPhoneTextfieldWidgetState();
@@ -22,18 +22,10 @@ class _CustomPhoneTextfieldWidgetState extends State<CustomPhoneTextfieldWidget>
   @override
   void initState() {
     super.initState();
-    currentCountryCode = widget.initialCountryCode;
+    // currentCountryCode = widget.initialCountryCode;
   }
 
-  @override
-  void didUpdateWidget(covariant CustomPhoneTextfieldWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialCountryCode != widget.initialCountryCode) {
-      setState(() {
-        currentCountryCode = widget.initialCountryCode;
-      });
-    }
-  }
+ 
 
   // Country getCurrentCountry() {
   //   return countries.firstWhere(
@@ -45,16 +37,9 @@ class _CustomPhoneTextfieldWidgetState extends State<CustomPhoneTextfieldWidget>
   @override
 Widget build(BuildContext context) {
   return InternationalPhoneNumberInput(
+    
 
-    onInputChanged: (phone) {
-      widget.onPhoneNumberChanged?.call(phone);
-      // Update current country code when phone number changes
-      if (phone.isoCode != null && phone.isoCode != currentCountryCode) {
-        setState(() {
-          currentCountryCode = phone.isoCode!;
-        });
-      }
-    },
+    onInputChanged: widget.onPhoneNumberChanged,
 
     
     onInputValidated: (bool value) {

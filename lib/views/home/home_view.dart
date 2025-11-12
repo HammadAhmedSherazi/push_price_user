@@ -203,8 +203,8 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                         spacing: 5,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(location== null ? "Select Location" :location.addressLine1 ?? "" , style: context.textStyle.headlineMedium, maxLines: 1,),
-                          if(location != null)...[
+                          Text(location== null || location.label == null ? "Select Location" :location.label ?? "" , style: context.textStyle.headlineMedium, maxLines: 1,),
+                          if(location != null && location.addressLine1 != null)...[
                             Text(
                             location.addressLine1 ?? "",
                             style: context.textStyle.titleSmall,
@@ -373,9 +373,10 @@ class NearbyStoresSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
+        final locationData = ref.watch(geolocatorProvider.select((e)=>e.locationData));
         final homeState = ref.watch(homeProvider.select((e) => (e.getNearbyStoresApiResponse, e.nearbyStores)));
         final stores = homeState.$2 ?? [];
-        return SizedBox(
+        return locationData != null? SizedBox(
           height: context.screenheight * 0.20,
           child: Column(
             spacing: 10,
@@ -422,7 +423,7 @@ class NearbyStoresSection extends StatelessWidget {
               ),
             ],
           ),
-        );
+        ) : SizedBox.shrink();
       },
     );
   }

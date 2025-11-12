@@ -30,7 +30,8 @@ class _LoginViewState extends State<LoginView> {
     
     final secureStorage = SecureStorageManager.sharedInstance;
     final token = await secureStorage.getToken();
-    if(token != null && token != ""){
+    final user = await secureStorage.getUserData();
+    if(token != null && token != "" && user != null){
       AppRouter.pushAndRemoveUntil(NavigationView());
     }
     else{

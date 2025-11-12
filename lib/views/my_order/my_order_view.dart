@@ -34,6 +34,7 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     final orderState = ref.watch(orderProvider);
+    final orders = orderState.orders ?? [];
 
     return CustomScreenTemplate(
       title: "My Orders", child: Column(
@@ -43,18 +44,19 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
 
         Expanded(child: AsyncStateHandler(
           status: orderState.getOrdersApiResponse.status,
-          dataList: orderState.orders ?? [],
+          dataList: orders,
           itemBuilder: (context, index) {
-            final filteredOrders = orderState.orders?.where((order) => order.status == setOrderStatus(tabController.index).name).toList() ?? [];
+            // final filteredOrders = orderState.orders?.where((order) => order.status == setOrderStatus(tabController.index).name).toList() ?? [];
             return GestureDetector(
               onTap: () {
-                AppRouter.push(OrderDetailView(orderId: filteredOrders[index].orderId));
+                AppRouter.push(OrderDetailView(orderId: orders[index].orderId));
               },
-              child: OrderCardWidget(order: filteredOrders[index])
+              child: OrderCardWidget(order: orders[index])
             );
           },
           onRetry: () => fetchOrder(),
-          length: orderState.orders?.where((order) => order.status == setOrderStatus(tabController.index).name).length ?? 0
+        
+          // orderState.orders?.where((order) => order.status == setOrderStatus(tabController.index).name).length ?? 0
         ))
       ],
     ));

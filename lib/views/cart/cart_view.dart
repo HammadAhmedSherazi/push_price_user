@@ -282,7 +282,7 @@ class _CartViewState extends ConsumerState<CartView> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    product.title ?? "Product",
+                                    product.title,
                                     style: context.textStyle.displaySmall,
                                   ),
                                 ],

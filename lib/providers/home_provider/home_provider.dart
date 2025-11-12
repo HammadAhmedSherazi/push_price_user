@@ -423,7 +423,11 @@ class HomeProvider extends Notifier<HomeState> {
       );
     }
   }
-
+  void clearCartList()
+  {
+    SharedPreferenceManager.sharedInstance.clearCartList();
+    state = state.copyWith(cartList: []);
+  }
 }
 
 final homeProvider = NotifierProvider.autoDispose<HomeProvider, HomeState>(

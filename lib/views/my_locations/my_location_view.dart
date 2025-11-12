@@ -20,6 +20,62 @@ class _MyLocationViewState extends ConsumerState<MyLocationView> {
   void fetchLocationData(){
     ref.read(geolocatorProvider.notifier).getAddresses();
   }
+  void showDeleteLocationDialog(BuildContext context, int id) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: const Color(0xFFF2F7FA),
+          child: Padding(
+            padding: EdgeInsets.all(AppTheme.horizontalPadding),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(context.tr('delete'), style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp)),
+                10.ph,
+                Text(
+                  context.tr('are_you_sure_you_want_to_delete'),
+                  textAlign: TextAlign.center,
+                  style: context.textStyle.bodyMedium!.copyWith(color: Colors.grey),
+                ),
+                30.ph,
+                Row(
+                  spacing: 20,
+                  children: [
+                    Expanded(
+                      child: CustomOutlineButtonWidget(
+                        title: context.tr("cancel"),
+                        onPressed: () => AppRouter.back(),
+                      ),
+                    ),
+                    Expanded(
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final isLoad = ref.watch(geolocatorProvider.select((e)=>e.deleteAddressApiResponse.status)) == Status.loading;
+                          return CustomButtonWidget(
+                            isLoad: isLoad,
+                            color: Color.fromRGBO(174, 27, 13, 1),
+                            title: context.tr("delete"),
+                            onPressed: () {
+                              ref.read(geolocatorProvider.notifier).deleteAddress(id);
+                            },
+                          );
+                        }
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+ 
   @override
   Widget build(BuildContext context) {
     
@@ -75,7 +131,9 @@ class _MyLocationViewState extends ConsumerState<MyLocationView> {
                       icon: Icon(Icons.edit, color: AppColors.secondaryColor),
                     ),
                     IconButton(
-                      onPressed: () {}, // TODO: Implement delete
+                      onPressed: () {
+                        showDeleteLocationDialog(context,address.addressId!);
+                      }, 
                       icon: Icon(Icons.delete, color: Color.fromRGBO(174, 27, 13, 1)),
                     ),
                   ],

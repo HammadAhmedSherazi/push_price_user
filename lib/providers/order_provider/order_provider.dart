@@ -16,6 +16,7 @@ class OrderProvider extends Notifier<OrderState> {
       getOrderDetailApiResponse: ApiResponse.undertermined(),
       orderDetail: null,
       cancelOrderApiResponse: ApiResponse.undertermined(),
+      updateOrderApiResponse: ApiResponse.undertermined(),
       validateVoucherApiResponse: ApiResponse.undertermined(),
 
     );
@@ -64,11 +65,14 @@ class OrderProvider extends Notifier<OrderState> {
 
       if (response != null) {
         final OrderModel order = OrderModel.fromJson(response);
+       
+        ref.read(homeProvider.notifier).clearCartList();
         state = state.copyWith(
           placeOrderApiResponse: ApiResponse.completed(response),
           placedOrder: order,
           validateVoucherApiResponse: ApiResponse.undertermined()
         );
+        
         AppRouter.pushReplacement(
           OrderSuccessModifiedView(
             count:count,
@@ -126,6 +130,7 @@ class OrderProvider extends Notifier<OrderState> {
       if (!ref.mounted) return;
 
       if (response != null) {
+        AppRouter.customback(times: 2);
         state = state.copyWith(
           cancelOrderApiResponse: ApiResponse.completed(response),
         );
@@ -169,6 +174,37 @@ class OrderProvider extends Notifier<OrderState> {
       if (!ref.mounted) return;
       state = state.copyWith(
         validateVoucherApiResponse: ApiResponse.error(),
+      );
+    }
+  }
+
+  FutureOr<void> updateOrder({required int orderId, required List<Map<String, dynamic>> items}) async {
+    if (!ref.mounted) return;
+
+    try {
+      state = state.copyWith(updateOrderApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.put(ApiEndpoints.updateOrder(orderId), {"items": items});
+
+      if (!ref.mounted) return;
+
+      if (response != null) {
+        state = state.copyWith(
+          updateOrderApiResponse: ApiResponse.completed(response),
+        );
+        // getOrderDetail(orderId: orderId);
+        AppRouter.pushReplacement(OrderSuccessModifiedView(
+          message: "Your Order Has Been Modified Successfully!",
+        ));
+        
+      } else {
+        state = state.copyWith(
+          updateOrderApiResponse: ApiResponse.error(),
+        );
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        updateOrderApiResponse: ApiResponse.error(),
       );
     }
   }

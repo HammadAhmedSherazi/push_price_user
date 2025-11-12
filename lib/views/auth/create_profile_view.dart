@@ -18,7 +18,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
   final TextEditingController phoneTextController = TextEditingController();
   final TextEditingController emailTextController = TextEditingController();
   final TextEditingController addressTextController = TextEditingController();
-  String profileImage = "", initialCountryCode = "US", isoCode = "", dialCode = "";
+  String profileImage = "",  isoCode = "US", dialCode = "+1";
 
   @override
   void initState() {
@@ -74,14 +74,14 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     try {
-                      final isoCode = IsoCode.values.firstWhere(
-                        (c) => c.name == initialCountryCode.toUpperCase(),
+                      final isoCodeN = IsoCode.values.firstWhere(
+                        (c) => c.name == isoCode.toUpperCase(),
                         orElse: () => IsoCode.US, // fallback
                       );
 
                       final parsed = PhoneNumber.parse(
                         phoneTextController.text,
-                        destinationCountry: isoCode,
+                        destinationCountry: isoCodeN,
                       );
 
                       if (parsed.isValid()) {
@@ -158,7 +158,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
                         e.imageUrl,
                         e.uploadImageApiResponse,
                         e.removeImageApiResponse,
-                        e.userData!.profileImage
+                        e.userData?.profileImage
                       ),
                     ),
                   );
@@ -181,6 +181,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
             20.ph,
             TextFormField(
               controller: nameTextController,
+              validator: (value) => value?.validateUsername(),
               onTapOutside: (event) {
                 FocusScope.of(context).unfocus();
               },
@@ -195,6 +196,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
               onTapOutside: (event) {
                 FocusScope.of(context).unfocus();
               },
+              validator: (value) => value?.validateGeneralField(fieldName: "Address", minStrLen: 10),
               controller: addressTextController,
               decoration: InputDecoration(
                 labelText: context.tr("address"),
@@ -208,16 +210,14 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
             10.ph,
             CustomPhoneTextfieldWidget(
               phoneNumberController: phoneTextController,
-              initialCountryCode: initialCountryCode,
               initialValue: ph.PhoneNumber(phoneNumber: phoneTextController.text, isoCode: isoCode, dialCode: dialCode),
-              onCountryChanged: (c) {
-                setState(() {
-                  initialCountryCode = c.code;
-                });
-              },
+              
               onPhoneNumberChanged: (phone) {
-                print(phone);
-                initialCountryCode = phone.isoCode!;
+                
+                // initialCountryCode = phone.isoCode ?? "";
+                isoCode = phone.isoCode ?? "";
+                dialCode = phone.dialCode ?? "";
+                print("${phone.phoneNumber}");
                 // Handle phone number changes here
                 // For example, update the controller or send to API
                 // phoneTextController.text += phone.phoneNumber ?? '';

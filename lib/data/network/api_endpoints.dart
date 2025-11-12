@@ -25,9 +25,11 @@ class ApiEndpoints {
   static const String getNearbyStores = "${user}nearby-stores";
   static const String getAddresses = "${user}addresses";
   static String activateAddress(int addressId) => "$getAddresses/$addressId/activate";
+  static String address(int addressId) => "$getAddresses/$addressId";
   static const String orders = "${user}orders";
   static String getOrderDetail(int orderId) => "$orders/$orderId";
   static String cancelOrder(int orderId) => "$orders/$orderId/cancel";
+  static String updateOrder(int orderId) => "$orders/$orderId";
   static const String validateVoucher = "${user}vouchers/validate";
   static const String googleMapApi = "https://maps.googleapis.com/maps/api/";
 

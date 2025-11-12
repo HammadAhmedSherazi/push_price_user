@@ -1,53 +1,143 @@
+import '../../export_all.dart';
 import '../../utils/extension.dart';
 
-import '../../export_all.dart';
-
-class ModifyOrderView extends StatefulWidget {
-  const ModifyOrderView({super.key});
+class ModifyOrderView extends ConsumerStatefulWidget {
+  final OrderModel orderData;
+  const ModifyOrderView({super.key, required this.orderData});
 
   @override
-  State<ModifyOrderView> createState() => _ModifyOrderViewState();
+  ConsumerState<ModifyOrderView> createState() => _ModifyOrderViewState();
 }
 
-class _ModifyOrderViewState extends State<ModifyOrderView> {
-  int quantity = 1;
-  void addQuantity() {
+class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
+  late OrderModel modifiedOrder;
+
+  @override
+  void initState() {
+    super.initState();
+    modifiedOrder = OrderModel(
+      orderId: widget.orderData.orderId,
+      userId: widget.orderData.userId,
+      storeId: widget.orderData.storeId,
+      addressId: widget.orderData.addressId,
+      status: widget.orderData.status,
+      totalAmount: widget.orderData.totalAmount,
+      discountAmount: widget.orderData.discountAmount,
+      finalAmount: widget.orderData.finalAmount,
+      voucherCode: widget.orderData.voucherCode,
+      notes: widget.orderData.notes,
+      createdAt: widget.orderData.createdAt,
+      updatedAt: widget.orderData.updatedAt,
+      items: widget.orderData.items.map((item) => OrderItem(
+        orderItemId: item.orderItemId,
+        listingId: item.listingId,
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        listingData: item.listingData,
+      )).toList(),
+      shippingAddress: widget.orderData.shippingAddress,
+    );
+  }
+
+  void addQuantity(int index) {
     setState(() {
-      quantity++;
+      modifiedOrder.items[index] = OrderItem(
+        orderItemId: modifiedOrder.items[index].orderItemId,
+        listingId: modifiedOrder.items[index].listingId,
+        productId: modifiedOrder.items[index].productId,
+        productName: modifiedOrder.items[index].productName,
+        quantity: modifiedOrder.items[index].quantity + 1,
+        unitPrice: modifiedOrder.items[index].unitPrice,
+        totalPrice: (modifiedOrder.items[index].quantity + 1) * modifiedOrder.items[index].unitPrice,
+        listingData: modifiedOrder.items[index].listingData,
+      );
+      modifiedOrder = OrderModel(
+        orderId: modifiedOrder.orderId,
+        userId: modifiedOrder.userId,
+        storeId: modifiedOrder.storeId,
+        addressId: modifiedOrder.addressId,
+        status: modifiedOrder.status,
+        totalAmount: modifiedOrder.items.fold(0, (sum, item) => sum + item.totalPrice),
+        discountAmount: modifiedOrder.discountAmount,
+        finalAmount: modifiedOrder.finalAmount,
+        voucherCode: modifiedOrder.voucherCode,
+        notes: modifiedOrder.notes,
+        createdAt: modifiedOrder.createdAt,
+        updatedAt: modifiedOrder.updatedAt,
+        items: modifiedOrder.items,
+        shippingAddress: modifiedOrder.shippingAddress,
+      );
     });
   }
 
-  void removeQuantity() {
-    if (quantity > 1) {
+  void removeQuantity(int index) {
+    if (modifiedOrder.items[index].quantity > 1) {
       setState(() {
-        quantity--;
+        modifiedOrder.items[index] = OrderItem(
+          orderItemId: modifiedOrder.items[index].orderItemId,
+          listingId: modifiedOrder.items[index].listingId,
+          productId: modifiedOrder.items[index].productId,
+          productName: modifiedOrder.items[index].productName,
+          quantity: modifiedOrder.items[index].quantity - 1,
+          unitPrice: modifiedOrder.items[index].unitPrice,
+          totalPrice: (modifiedOrder.items[index].quantity - 1) * modifiedOrder.items[index].unitPrice,
+          listingData: modifiedOrder.items[index].listingData,
+        );
+        modifiedOrder = OrderModel(
+          orderId: modifiedOrder.orderId,
+          userId: modifiedOrder.userId,
+          storeId: modifiedOrder.storeId,
+          addressId: modifiedOrder.addressId,
+          status: modifiedOrder.status,
+          totalAmount: modifiedOrder.items.fold(0, (sum, item) => sum + item.totalPrice),
+          discountAmount: modifiedOrder.discountAmount,
+          finalAmount: modifiedOrder.finalAmount,
+          voucherCode: modifiedOrder.voucherCode,
+          notes: modifiedOrder.notes,
+          createdAt: modifiedOrder.createdAt,
+          updatedAt: modifiedOrder.updatedAt,
+          items: modifiedOrder.items,
+          shippingAddress: modifiedOrder.shippingAddress,
+        );
       });
     }
   }
 
-  ProductPurchasingDataModel product = ProductPurchasingDataModel(
-    title: "ABC Product",
-    description: "ABC Category",
-    image: Assets.groceryBag,
-    quantity: 1,
-    discount: 80.00,
-    price: 99.99,
-  );
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
       showBottomButton: true,
-      bottomButtonText: "save",
-      onButtonTap: () {
-        AppRouter.pushReplacement(OrderSuccessModifiedView(
-          message: "Your Order Has Been Modified Successfully!",
-        ));
-      },
+      customBottomWidget: Consumer(
+        builder: (ctx, ref,child) {
+          final isLoad = ref.watch(orderProvider.select((e)=>e.updateOrderApiResponse.status)) == Status.loading;
+          return Padding(
+            padding: EdgeInsets.symmetric(
+            horizontal: AppTheme.horizontalPadding
+          ), child: CustomButtonWidget(
+            isLoad: isLoad,
+            title: "save", onPressed: (){
+            final items = modifiedOrder.items.map((item) => {
+          "listing_id": item.listingId,
+          "quantity": item.quantity,
+        }).toList();
+        ref.read(orderProvider.notifier).updateOrder(orderId: modifiedOrder.orderId, items: items);
+     
+          }),);
+        },
+      ),
       title: "Modify Order",
       child: ListView(
         padding: EdgeInsets.all(AppTheme.horizontalPadding),
         children: [
-          Container(
+          ListView.separated(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              final item = modifiedOrder.items[index];
+              return Container(
             padding: EdgeInsets.symmetric(horizontal: 10.r, vertical: 15.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.r),
@@ -67,15 +157,16 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
                         TextSpan(
                           children: [
                             TextSpan(
-                              text: "${product.title} ",
+                              text: "${item.productName} ",
                               style: context.textStyle.displayMedium,
                             ),
-                            TextSpan(
-                              text: " 20% Off",
-                              style: context.textStyle.titleSmall!.copyWith(
-                                color: AppColors.secondaryColor,
-                              ),
-                            ),
+                            
+                            // TextSpan(
+                            //   text: " 20% Off",
+                            //   style: context.textStyle.titleSmall!.copyWith(
+                            //     color: AppColors.secondaryColor,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -85,31 +176,31 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
                         TextSpan(
                           children: [
                             TextSpan(
-                              text: "\$${product.discountedPrice} ",
+                              text: "\$${item.unitPrice} ",
                               style: context.textStyle.displayMedium!.copyWith(
                                 color: AppColors.secondaryColor,
                               ),
                             ),
-                            TextSpan(
-                              text: "\$${product.price}",
-                              style: context.textStyle.displayMedium!.copyWith(
-                                decoration: TextDecoration.lineThrough,
-                                color: Color.fromRGBO(91, 91, 91, 1),
-                              ),
-                            ),
+                            // TextSpan(
+                            //   text: "\$${0}",
+                            //   style: context.textStyle.displayMedium!.copyWith(
+                            //     decoration: TextDecoration.lineThrough,
+                            //     color: Color.fromRGBO(91, 91, 91, 1),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
                       8.ph,
-                      Text(
-                        "Best By: April 25, 2025",
-                        style: context.textStyle.bodySmall!.copyWith(
-                          color: AppColors.primaryTextColor.withValues(
-                            alpha: 0.7,
-                          ),
-                        ),
-                      ),
-
+                     
+                      if(item.listingData.listingType == "BEST_BY_PRODUCTS" && item.listingData.bestByDate != null)
+                Text(
+                  "Best By: ${Helper.selectDateFormat(item.listingData.bestByDate!)} ",
+                  style: context.textStyle.bodySmall!.copyWith(
+                    color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                  ),
+                ),
+            
                       // 2.ph,
                     ],
                   ),
@@ -129,14 +220,14 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          removeQuantity();
+                          removeQuantity(index);
                         },
                         child: SvgPicture.asset(Assets.minusSquareIcon),
                       ),
-                      Text("$quantity", style: context.textStyle.displayMedium),
+                      Text("${item.quantity}", style: context.textStyle.displayMedium),
                       GestureDetector(
                         onTap: () {
-                          addQuantity();
+                          addQuantity(index);
                         },
                         child: SvgPicture.asset(Assets.plusSquareIcon),
                       ),
@@ -145,8 +236,11 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
                 ),
               ],
             ),
-          ),
-          10.ph,
+                      );
+            },
+           separatorBuilder: (context, index)=> 10.ph, itemCount: modifiedOrder.items.length),
+
+         
           Text(
             "Order Summary",
             style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
@@ -154,12 +248,12 @@ class _ModifyOrderViewState extends State<ModifyOrderView> {
           Divider(),
           OrderDetailTitleWidget(
             title: "Item Total",
-            value: "\$${product.discountedPrice! * quantity}",
+            value: "\$${modifiedOrder.totalAmount}",
           ),
           10.ph,
           OrderDetailTitleWidget(
             title: "Total",
-            value: "\$${product.discountedPrice! * quantity}",
+            value: "\$${modifiedOrder.totalAmount}",
           ),
         ],
       ),

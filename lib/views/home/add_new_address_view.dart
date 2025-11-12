@@ -30,6 +30,12 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
     if (widget.addressToEdit != null) {
      _selectSearchResult(widget.addressToEdit!);
     }
+    // final locationData = ref.read(geolocatorProvider.select((e)=>e.locationData));
+    //  if (locationData == null) {
+    //   Future.microtask((){
+    //     ref.read(geolocatorProvider.notifier).getCurrentLocation();
+    //   });
+    //       }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -144,15 +150,22 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                                     Consumer(
                                       builder: (context, ref, child) {
                                         final locationData = ref.watch(geolocatorProvider.select((e) => e.locationData));
-                                        final isLoading = ref.watch(geolocatorProvider.select((e) => e.addAddressApiResponse.status == Status.loading));
+                                        final isLoading =   ref.watch(geolocatorProvider.select((e) => widget.addressToEdit != null ?e.updateAddressApiResponse.status == Status.loading : e.addAddressApiResponse.status == Status.loading));
                                         return CustomButtonWidget(
                                           isLoad: isLoading,
                                           onPressed: () {
                                             if (formKey.currentState?.validate() == true && locationData != null) {
                                               final updatedData = _selectedLocationData!.copyWith(
-                                                label: labelController.text.trim()
+                                                label: labelController.text.trim(),
+                                                isActive: widget.addressToEdit?.isActive 
                                               );
+                                              if(widget.addressToEdit != null){
+                                                ref.read(geolocatorProvider.notifier).updateAddress(widget.addressToEdit!.addressId!, updatedData.toJson());
+                                              }
+                                              else{
                                               ref.read(geolocatorProvider.notifier).addAddress(updatedData.toJson());
+
+                                              }
                                                // close bottom sheet
                                             } else if (locationData == null) {
                                               // Handle case where location data is not available
@@ -173,7 +186,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                         );
                      
               // ref.read(geolocatorProvider.notifier).addAddress(_selectedLocationData!.toJson());
-            }, title: "Add Address");
+            }, title: widget.addressToEdit != null ? "Edit" : "Add Address");
           }
         ),
       ),
@@ -191,9 +204,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
           ) ?? [];
 
           // Get current location on first build
-          if (locationData == null) {
-            ref.read(geolocatorProvider.notifier).getCurrentLocation();
-          }
+         
 
           // Set initial map position and marker
           LatLng initialPosition = const LatLng(
@@ -371,9 +382,22 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                                 ),
                                 title: Text('Use My Current Location'),
                                 onTap: () {
-                                  ref
+                                  final locationData = ref.watch(geolocatorProvider.select((e)=>e.locationData));
+                                  if(locationData == null){
+                                    ref
                                       .read(geolocatorProvider.notifier)
-                                      .getCurrentLocation();
+                                      .getCurrentLocation().whenComplete((){
+                                        if(locationData != null){
+                                        _selectSearchResult(locationData);
+
+                                        } 
+                                      });
+                                  }
+                                  else{
+                                        _selectSearchResult(locationData);
+
+                                  }
+                                  
                                 },
                               ),
                       ],

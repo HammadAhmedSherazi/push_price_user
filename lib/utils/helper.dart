@@ -134,4 +134,5 @@ static Future<File?> compressImage(File file) async {
 
   return result != null ? File(result.path) : null;
 }
+
 }
