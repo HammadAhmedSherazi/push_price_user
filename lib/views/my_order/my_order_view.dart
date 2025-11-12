@@ -19,17 +19,34 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
   void initState() {
     tabController = TabController(length: tabs.length, vsync: this);
     tabController.addListener(() {
-      setState(() {});
+      if (tabController.indexIsChanging) return; // Avoid unnecessary calls
+      fetchOrder(tabController.index);
+      
+
+      // Fetch new chat list based on selected tab
+
     });
     Future.microtask((){
-      fetchOrder();
+      fetchOrder(0);
     });
     
     super.initState();
 
   }
-  void fetchOrder(){
-    ref.read(orderProvider.notifier).getOrders();
+  void fetchOrder(int index){
+    String type = getTabType(index);
+    ref.read(orderProvider.notifier).getOrders(type: type);
+  }
+  String getTabType(int index){
+    if(index == 0){
+      return "IN_PROCESS";
+    }
+    else if(index == 1){
+      return "COMPLETED";
+    }
+    else{
+      return "CANCELLED";
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -47,14 +64,11 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
           dataList: orders,
           itemBuilder: (context, index) {
             // final filteredOrders = orderState.orders?.where((order) => order.status == setOrderStatus(tabController.index).name).toList() ?? [];
-            return GestureDetector(
-              onTap: () {
-                AppRouter.push(OrderDetailView(orderId: orders[index].orderId));
-              },
-              child: OrderCardWidget(order: orders[index])
-            );
+            return OrderCardWidget(order: orders[index], fun: (){
+              fetchOrder(0);
+            },);
           },
-          onRetry: () => fetchOrder(),
+          onRetry: () => fetchOrder(tabController.index),
         
           // orderState.orders?.where((order) => order.status == setOrderStatus(tabController.index).name).length ?? 0
         ))
@@ -65,9 +79,11 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
 
 class OrderCardWidget extends StatelessWidget {
   final OrderModel order;
+  final VoidCallback fun;
   const OrderCardWidget({
     super.key,
     required this.order,
+    required this.fun
   });
 
   @override
@@ -105,7 +121,9 @@ class OrderCardWidget extends StatelessWidget {
                     horizontal: -4.0
                   )
                 ),
-                onPressed: (){}, child: Text("View Details", style: context.textStyle.bodyMedium!.copyWith(
+                onPressed: (){
+                  AppRouter.push(OrderDetailView(orderId: order.orderId),fun:fun);
+                }, child: Text("View Details", style: context.textStyle.bodyMedium!.copyWith(
                 color: AppColors.primaryColor,
                 decoration: TextDecoration.underline
                ),))
@@ -119,16 +137,4 @@ class OrderCardWidget extends StatelessWidget {
   }
 }
 
-OrderStatus setOrderStatus(int index){
-  switch (index) {
-    case 0:
-      return OrderStatus.inProcess;
-    case 1:
-      return OrderStatus.completed;
-    case 2:
-      return OrderStatus.cancelled;
-    default:
-      return OrderStatus.inProcess;
-  }
-  
-}
+

@@ -23,12 +23,14 @@ class OrderProvider extends Notifier<OrderState> {
   }
 
 
-  FutureOr<void> getOrders({String? type}) async {
+  FutureOr<void> getOrders({required String type}) async {
     if (!ref.mounted) return;
 
     try {
       state = state.copyWith(getOrdersApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.get(ApiEndpoints.orders);
+      final response = await MyHttpClient.instance.get(ApiEndpoints.orders,params: {
+        'status_filter' : type
+      });
 
       if (!ref.mounted) return;
 
@@ -129,12 +131,20 @@ class OrderProvider extends Notifier<OrderState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+         Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: "Order successfully cancelled!",
+        );
         AppRouter.customback(times: 2);
         state = state.copyWith(
           cancelOrderApiResponse: ApiResponse.completed(response),
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_nearby_stores"),
+        );
         state = state.copyWith(
           cancelOrderApiResponse: ApiResponse.error(),
         );

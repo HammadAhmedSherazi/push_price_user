@@ -120,7 +120,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
             ));
           }),
           CustomButtonWidget(title: "make payment", onPressed: (){
-            AppRouter.push(SelectPaymentMethodView());
+            AppRouter.push(StoreCodeView());
           }),
         ],
       ),) : null,
