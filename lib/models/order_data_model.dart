@@ -17,6 +17,7 @@ class OrderModel {
   final DateTime updatedAt;
   final List<OrderItem> items;
   final Address shippingAddress;
+  final String? paymentIntentId;
   
 
   const OrderModel({
@@ -30,6 +31,7 @@ class OrderModel {
     required this.finalAmount,
     this.voucherCode,
     this.notes,
+    this.paymentIntentId,
     required this.createdAt,
     required this.updatedAt,
     required this.items,
@@ -57,6 +59,7 @@ class OrderModel {
       shippingAddress: json['shipping_address'] != null
           ? Address.fromJson(json['shipping_address'])
           : Address(),
+      paymentIntentId: json['payment_intent_id'] ?? ""
       
     );
   }

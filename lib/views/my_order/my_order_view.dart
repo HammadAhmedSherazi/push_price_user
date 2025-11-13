@@ -65,7 +65,7 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
           itemBuilder: (context, index) {
             // final filteredOrders = orderState.orders?.where((order) => order.status == setOrderStatus(tabController.index).name).toList() ?? [];
             return OrderCardWidget(order: orders[index], fun: (){
-              fetchOrder(0);
+              fetchOrder(tabController.index);
             },);
           },
           onRetry: () => fetchOrder(tabController.index),

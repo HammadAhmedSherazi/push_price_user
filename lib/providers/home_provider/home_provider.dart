@@ -252,7 +252,7 @@ class HomeProvider extends Notifier<HomeState> {
 
   void addQuantity(ProductPurchasingDataModel product, [int? index]) {
     List<ProductPurchasingDataModel> products = List.from(state.products ?? []);
-    int productIndex = index ?? products.indexWhere((e) => e.title == product.title);
+    int productIndex = index ?? products.indexWhere((e) => e.id == product.id);
     if (productIndex != -1 && productIndex < products.length) {
       if (products[productIndex].selectQuantity < products[productIndex].quantity!) {
         final updatedProduct = products[productIndex].copyWith(selectQuantity: products[productIndex].selectQuantity + 1);
@@ -263,8 +263,19 @@ class HomeProvider extends Notifier<HomeState> {
         return;
       }
     }
+    else{
+      List<ProductPurchasingDataModel> promotionalProducts = List.from(state.promotionalProducts ?? []);
+      int productIndex = index ?? promotionalProducts.indexWhere((e) => e.id == product.id);
+      if(productIndex != -1 && productIndex < promotionalProducts.length){
+         List<ProductPurchasingDataModel> products = List.from(state.products ?? []);
+         promotionalProducts.removeAt(productIndex);
+      products.add(product.copyWith(selectQuantity: 1));
+      state = state.copyWith(products: products, promotionalProducts: promotionalProducts);
+      }
+     
+    }
 
-    final existingIndex = state.cartList.indexWhere((e) => e.title == product.title);
+    final existingIndex = state.cartList.indexWhere((e) => e.id == product.id);
     final updatedCartList = List<ProductPurchasingDataModel>.from(state.cartList);
     if (existingIndex != -1) {
       if (state.cartList[existingIndex].selectQuantity < state.cartList[existingIndex].quantity!) {
@@ -294,7 +305,7 @@ class HomeProvider extends Notifier<HomeState> {
     }
 
     // Update cart list
-    final existingIndex = state.cartList.indexWhere((e) => e.title == product.title);
+    final existingIndex = state.cartList.indexWhere((e) => e.id == product.id);
     if (existingIndex != -1) {
       final updatedCartList = List<ProductPurchasingDataModel>.from(state.cartList);
       if (state.cartList[existingIndex].selectQuantity > 1) {

@@ -120,7 +120,9 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
             ));
           }),
           CustomButtonWidget(title: "make payment", onPressed: (){
-            AppRouter.push(StoreCodeView());
+            AppRouter.push(StoreCodeView(
+              orderId: order!.orderId,
+            ));
           }),
         ],
       ),) : null,
@@ -187,7 +189,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
               Divider(),
               OrderDetailTitleWidget(
                 title: "Order ID",
-                value: "#${order!.orderId}" ,
+                value: "#${order.orderId}" ,
               ),
               10.ph,
               OrderDetailTitleWidget(

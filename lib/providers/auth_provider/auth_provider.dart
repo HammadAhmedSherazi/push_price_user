@@ -374,7 +374,7 @@ class AuthProvider  extends Notifier<AuthState> {
 
       if (!ref.mounted) return;
 
-      if (response != null) {
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
         List temp = response ?? [];
         final List<CategoryDataModel> list = List.from(
           temp.map((e) => CategoryDataModel.fromJson(e)),
@@ -387,6 +387,10 @@ class AuthProvider  extends Notifier<AuthState> {
           categoriesSkip: list.length >= limit ? skip + limit : 0,
         );
       } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_categories"),
+        );
         state = state.copyWith(
           getCategoriesApiResponse: skip == 0
               ? ApiResponse.error()

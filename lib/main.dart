@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/firebase_options.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 import 'export_all.dart';
 // import 'firebase_options.dart';
@@ -19,6 +20,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM';
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Future.wait([
     ScreenUtil.ensureScreenSize(),

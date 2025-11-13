@@ -23,7 +23,7 @@ class _SelectPaymentMethodViewState extends State<SelectPaymentMethodView> {
       showBottomButton: selectIndex >= 0,
       bottomButtonText: "Proceed with Payment",
       onButtonTap: (){
-        AppRouter.push(StoreCodeView());
+        // AppRouter.push(StoreCodeView());
       },
       title: "Select Payment Method", child: ListView.separated(
       
