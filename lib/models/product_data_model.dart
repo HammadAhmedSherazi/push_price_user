@@ -128,6 +128,8 @@ class ProductSelectionDataModel extends ProductDataModel {
     super.price,
     super.type,
     super.quantity,
+    super.id,
+    super.listingId,
     required this.isSelect,
   });
 
@@ -138,6 +140,8 @@ class ProductSelectionDataModel extends ProductDataModel {
       description: base.description,
       image: base.image,
       price: base.price,
+      id: base.id,
+      listingId: base.listingId,
       discountedPrice: base.discountedPrice,
       isSelect: isSelect,
       type: base.type,
@@ -164,7 +168,10 @@ class ProductSelectionDataModel extends ProductDataModel {
     String? type,
     DateTime? bestByDate,
     DateTime? goLiveDate,
-    int ? quantity
+    int ? quantity,
+    int? id,
+    int? listingId
+
 
   }) {
     return ProductSelectionDataModel(
@@ -177,7 +184,9 @@ class ProductSelectionDataModel extends ProductDataModel {
       type:type ?? this.type,
       bestByDate: bestByDate ?? this.bestByDate,
       goLiveDate: goLiveDate ?? this.goLiveDate,
-      quantity: quantity ?? this.quantity
+      quantity: quantity ?? this.quantity,
+      id: id ?? this.id,
+      listingId: listingId ?? this.listingId
 
     );
   }

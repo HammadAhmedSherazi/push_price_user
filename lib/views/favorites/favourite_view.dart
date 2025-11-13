@@ -1,20 +1,39 @@
+import 'dart:async';
+
+import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../utils/extension.dart';
 import '../../export_all.dart';
 
-class FavouriteView extends StatefulWidget {
+class FavouriteView extends ConsumerStatefulWidget {
   final ScrollController scrollController;
   const FavouriteView({super.key, required this.scrollController});
 
   @override
-  State<FavouriteView> createState() => _FavouriteViewState();
+  ConsumerState<FavouriteView> createState() => _FavouriteViewState();
 }
 
-class _FavouriteViewState extends State<FavouriteView> {
-  final List<ProductDataModel> products = [
-    ProductDataModel(title: "ABC Product", description: "ABC Category", image: Assets.groceryBag)
-  ];
+class _FavouriteViewState extends ConsumerState<FavouriteView> {
+  Timer? _searchDebounce;
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask((){
+      fetchFavouriteProducts();
+    });
+    
+  }
+  void fetchFavouriteProducts({String? search}){
+    ref.read(favouriteProvider.notifier).getFavouriteProducts(
+      search: search
+    );
+  }
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -23,23 +42,49 @@ class _FavouriteViewState extends State<FavouriteView> {
       child: Scaffold(
         
         appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: "My Favorites", children: [
-          CustomSearchBarWidget(hintText: "Hinted search text", onTapOutside: (x){
+          CustomSearchBarWidget(
+            hintText: "Hinted search text",
+             onTapOutside: (x){
              FocusScope.of(context).unfocus();
+          }, onChanged:(value){
+             if (_searchDebounce?.isActive ?? false) {
+                        _searchDebounce!.cancel();
+                      }
+          
+                      _searchDebounce = Timer(
+                        const Duration(milliseconds: 500),
+                        () {
+                          if (value.length >= 3) {
+                            fetchFavouriteProducts(search: value);
+                            
+                          }
+                          // else{
+                          //   fetchProduct(skip: 0);
+                          // }
+                        },
+                      );
           },)
         ]),
         body: Column(
           children: [
             Expanded(
-              child: ListView.separated(
-                controller: widget.scrollController,
-                padding: EdgeInsets.all(AppTheme.horizontalPadding),
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return ProductTitleWidget(product: product, onEditCall: (){
-                    // AppRouter.push()
-                    AppRouter.push(AddNewFavouriteView(isSignUp: false, isEdit: true,));
-                  },);
-                }, separatorBuilder: (context, index)=> 10.ph, itemCount: products.length),
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final data = ref.watch(favouriteProvider.select((e)=>(e.getFavouriteProductsApiResponse, e.favouriteProducts)));
+                  final response = data.$1;
+                  final list = data.$2 ?? [];
+                  return AsyncStateHandler(
+                   dataList: list,
+                   status: response.status,
+                    itemBuilder: (context, index) {
+                      final product = list[index];
+                      return ProductTitleWidget(product: product, onEditCall: (){
+                        // AppRouter.push()
+                        AppRouter.push(AddNewFavouriteView(isSignUp: false, isEdit: true,));
+                      },);
+                    }, onRetry: ()=>fetchFavouriteProducts(), );
+                }
+              ),
             ),
             Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "add new favorite", onPressed: (){
               AppRouter.push(SearchProductView());
@@ -79,7 +124,7 @@ class ProductTitleWidget extends StatelessWidget {
       child: Row(
         spacing: 10,
         children: [
-          Image.asset(product.image, width: 57.w, height: 70.h,),
+          DisplayNetworkImage(imageUrl:  product.image, width: 57.w, height: 70.h,),
           Expanded(
             child: Column(
               spacing: 12,

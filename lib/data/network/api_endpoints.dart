@@ -33,6 +33,12 @@ class ApiEndpoints {
   static String paymentIntent(int orderId) => "$orders/$orderId/payment-intent";
   static String confirmPayment(int orderId) => "$orders/$orderId/confirm-payment";
   static const String validateVoucher = "${user}vouchers/validate";
+  static const String products = "${user}products";
+  static String getFavouriteProductDetail(int productId) => "$products/$productId";
+  static String getProductByBarCode(String barcode) => "$products/barcode/$barcode";
+  static const String favourites = "${user}favorites";
+  static String updateFavourite(int favouriteId) => "$favourites/$favouriteId";
+  static String deleteFavourite(int favouriteId) => "$favourites/$favouriteId";
   static const String googleMapApi = "https://maps.googleapis.com/maps/api/";
 
 }

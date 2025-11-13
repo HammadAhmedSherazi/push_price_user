@@ -1,101 +1,183 @@
+import 'dart:async';
+
+import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
+
 import '../../utils/extension.dart';
 import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../export_all.dart';
 
-class SearchProductView extends StatefulWidget {
+class SearchProductView extends ConsumerStatefulWidget {
   final bool? isSignUp;
   const SearchProductView({super.key, this.isSignUp = false});
 
   @override
-  State<SearchProductView> createState() => _SearchProductViewState();
+  ConsumerState<SearchProductView> createState() => _SearchProductViewState();
 }
 
-class _SearchProductViewState extends State<SearchProductView> {
-   void addFavoriteProduct(int index){
-    final product = products[index];
-    products[index] = product.copyWith(isSelect: !product.isSelect);
-    setState(() {
-      
+class _SearchProductViewState extends ConsumerState<SearchProductView> {
+  Timer? _searchDebounce;
+  //  void addFavoriteProduct(int index){
+  //   final product = products[index];
+  //   products[index] = product.copyWith(isSelect: !product.isSelect);
+  //   setState(() {
+
+  //   });
+  //  }
+  //  List<ProductSelectionDataModel> products = List.generate(5, (index)=> ProductSelectionDataModel(title: "ABC Product", description: "ABC Category", image: Assets.groceryBag, isSelect: false, discountedPrice: 0.0));
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      fetchProducts(skip: 0, limit: 10);
     });
-   }
-   List<ProductSelectionDataModel> products = List.generate(5, (index)=> ProductSelectionDataModel(title: "ABC Product", description: "ABC Category", image: Assets.groceryBag, isSelect: false, discountedPrice: 0.0)); 
+  }
+
+  void fetchProducts({
+    required int skip,
+    required int limit,
+    int? categoryId,
+    String? search,
+    int? storeId,
+  }) {
+    ref
+        .read(favouriteProvider.notifier)
+        .getProducts(
+          skip: skip,
+          limit: limit,
+          search: search,
+          categoryId: categoryId,
+          storeId: storeId,
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
-      showBottomButton: products.indexWhere((item)=> item.isSelect) != -1,
+      showBottomButton:
+          ref
+              .watch(favouriteProvider.select((e) => e.products ?? []))
+              .indexWhere((item) => item.isSelect) !=
+          -1,
       bottomButtonText: "next",
-      onButtonTap: (){
-        if(widget.isSignUp!){
+      onButtonTap: () {
+        if (widget.isSignUp!) {
           AppRouter.pushAndRemoveUntil(NavigationView());
-        }
-        else{
+        } else {
           AppRouter.push(AddNewFavouriteView(isSignUp: widget.isSignUp!));
         }
-        
       },
-      title: "Search", actionWidget: Row(
-      children: [
-        GestureDetector(
-          onTap: (){
-            AppRouter.push(ScanView(isSignUp: widget.isSignUp!,));
-          },
-          child: Container(
-            
-            padding: EdgeInsets.symmetric(
-              horizontal: 15.r,
-              vertical: 10.r
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.secondaryColor,
-              borderRadius: BorderRadius.circular(15.r)
-          
-            ),
-            child: Row(
-              spacing: 5,
-              children: [
-                SvgPicture.asset(Assets.menuScanBarIcon),
-                Text("Scan", style: context.textStyle.displayMedium!.copyWith(
-                  color: Colors.white
-                ),)]
-            ),
-          ),
-        ),
-        15.pw
-      ],
-    ),child: SizedBox(
-      height: double.infinity,
-      child: Column(
+      title: "Search",
+      actionWidget: Row(
         children: [
-          20.ph,
-          Padding(
-            padding:  EdgeInsets.symmetric(
-              horizontal: AppTheme.horizontalPadding
+          GestureDetector(
+            onTap: () {
+              AppRouter.push(ScanView(isSignUp: widget.isSignUp!));
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 15.r, vertical: 10.r),
+              decoration: BoxDecoration(
+                color: AppColors.secondaryColor,
+                borderRadius: BorderRadius.circular(15.r),
+              ),
+              child: Row(
+                spacing: 5,
+                children: [
+                  SvgPicture.asset(Assets.menuScanBarIcon),
+                  Text(
+                    "Scan",
+                    style: context.textStyle.displayMedium!.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: CustomSearchBarWidget(hintText: "Hinted search text",  suffixIcon: SvgPicture.asset(Assets.filterIcon), onTapOutside: (v){
-               FocusScope.of(context).unfocus();
-            },),
           ),
-          Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.all(AppTheme.horizontalPadding),
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      ProductTitleWidget(product: product),
-                      Positioned(
-                        right: 15.r,
-                        child: IconButton(onPressed: (){
-                          addFavoriteProduct(index);
-                        }, icon: Icon(!product.isSelect? Icons.check_box_outline_blank : Icons.check_box, color: AppColors.secondaryColor,)))
-                    ],
-                  );
-                }, separatorBuilder: (context, index)=> 10.ph, itemCount: products.length),
-            ),
+          15.pw,
         ],
       ),
-    ));
+      child: SizedBox(
+        height: double.infinity,
+        child: Column(
+          children: [
+            20.ph,
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppTheme.horizontalPadding,
+              ),
+              child: CustomSearchBarWidget(
+                hintText: "Hinted search text",
+                onChanged:(value){
+                  if (_searchDebounce?.isActive ?? false) {
+                        _searchDebounce!.cancel();
+                      }
+          
+                      _searchDebounce = Timer(
+                        const Duration(milliseconds: 500),
+                        () {
+                          if (value.length >= 3) {
+                            fetchProducts(search: value, skip: 0, limit: 10, );
+                            
+                          }
+                          // else{
+                          //   fetchProduct(skip: 0);
+                          // }
+                        },
+                      );
+                },
+                suffixIcon: SvgPicture.asset(Assets.filterIcon),
+                onTapOutside: (v) {
+                  FocusScope.of(context).unfocus();
+                },
+              ),
+            ),
+            Expanded(
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final data = ref.watch(
+                    favouriteProvider.select(
+                      (e) => ( e.products, e.getProductsApiResponse),
+                    ),
+                  );
+                  final response = data.$2;
+                  final list= data.$1 ?? [];
+                  return AsyncStateHandler(
+                    dataList: list,
+                    itemBuilder: (context, index) {
+                      final product = list[index];
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ProductTitleWidget(product: product),
+                          Positioned(
+                            right: 15.r,
+                            child: IconButton(
+                              onPressed: () {
+                                ref
+                                    .read(favouriteProvider.notifier)
+                                    .selectProduct(index);
+                              },
+                              icon: Icon(
+                                !product.isSelect
+                                    ? Icons.check_box_outline_blank
+                                    : Icons.check_box,
+                                color: AppColors.secondaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                    status: response.status,
+                    onRetry: () => fetchProducts(skip: 0, limit: 10),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -12,6 +12,7 @@ class LocationDataModel {
   final bool? isActive;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  bool? isSelect;
 
   LocationDataModel({
     this.label,
@@ -27,6 +28,7 @@ class LocationDataModel {
     this.isActive = false,
     this.createdAt,
     this.updatedAt,
+    this.isSelect = false
   });
 
   factory LocationDataModel.fromJson(Map<String, dynamic> json) {

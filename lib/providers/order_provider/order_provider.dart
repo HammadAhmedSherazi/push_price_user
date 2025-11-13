@@ -262,6 +262,8 @@ class OrderProvider extends Notifier<OrderState> {
 
         // Make payment with Stripe
         await makePayment(clientSecret);
+          // state = state.copyWith(payNowApiResponse: ApiResponse.completed(intentResponse));
+
         confirmPayment(orderId, paymentIntentId);
 
         

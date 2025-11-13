@@ -252,7 +252,7 @@ class HomeProvider extends Notifier<HomeState> {
 
   void addQuantity(ProductPurchasingDataModel product, [int? index]) {
     List<ProductPurchasingDataModel> products = List.from(state.products ?? []);
-    int productIndex = index ?? products.indexWhere((e) => e.id == product.id);
+    int productIndex = index ?? products.indexWhere((e) => e.listingId == product.listingId);
     if (productIndex != -1 && productIndex < products.length) {
       if (products[productIndex].selectQuantity < products[productIndex].quantity!) {
         final updatedProduct = products[productIndex].copyWith(selectQuantity: products[productIndex].selectQuantity + 1);
@@ -265,7 +265,7 @@ class HomeProvider extends Notifier<HomeState> {
     }
     else{
       List<ProductPurchasingDataModel> promotionalProducts = List.from(state.promotionalProducts ?? []);
-      int productIndex = index ?? promotionalProducts.indexWhere((e) => e.id == product.id);
+      int productIndex = index ?? promotionalProducts.indexWhere((e) => e.listingId == product.listingId);
       if(productIndex != -1 && productIndex < promotionalProducts.length){
          List<ProductPurchasingDataModel> products = List.from(state.products ?? []);
          promotionalProducts.removeAt(productIndex);
@@ -275,7 +275,7 @@ class HomeProvider extends Notifier<HomeState> {
      
     }
 
-    final existingIndex = state.cartList.indexWhere((e) => e.id == product.id);
+    final existingIndex = state.cartList.indexWhere((e) => e.listingId == product.listingId);
     final updatedCartList = List<ProductPurchasingDataModel>.from(state.cartList);
     if (existingIndex != -1) {
       if (state.cartList[existingIndex].selectQuantity < state.cartList[existingIndex].quantity!) {
@@ -295,7 +295,7 @@ class HomeProvider extends Notifier<HomeState> {
   void removeQuantity(ProductPurchasingDataModel product) {
     // Update products list
     List<ProductPurchasingDataModel> products = List.from(state.products ?? []);
-    int productIndex = products.indexWhere((e) => e.title == product.title);
+    int productIndex = products.indexWhere((e) => e.listingId == product.listingId);
     if (productIndex != -1) {
       if (products[productIndex].selectQuantity > 0) {
         final updatedProduct = products[productIndex].copyWith(selectQuantity: products[productIndex].selectQuantity - 1);
@@ -305,7 +305,7 @@ class HomeProvider extends Notifier<HomeState> {
     }
 
     // Update cart list
-    final existingIndex = state.cartList.indexWhere((e) => e.id == product.id);
+    final existingIndex = state.cartList.indexWhere((e) => e.listingId == product.listingId);
     if (existingIndex != -1) {
       final updatedCartList = List<ProductPurchasingDataModel>.from(state.cartList);
       if (state.cartList[existingIndex].selectQuantity > 1) {
