@@ -1,3 +1,4 @@
+import 'package:push_price_user/models/favourite_data_model.dart';
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 
 import '../../export_all.dart';
@@ -5,10 +6,10 @@ import '../../utils/extension.dart';
 
 class AddNewFavouriteView extends ConsumerStatefulWidget {
   final bool isSignUp;
-  final bool? isEdit;
+  final FavouriteModel? data;
   const AddNewFavouriteView({
     super.key,
-    this.isEdit = false,
+    this.data,
     required this.isSignUp,
   });
 
@@ -23,15 +24,23 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
 
   int selectIndex = -1;
   bool selectTravelMode = false;
+  num radius = 0;
   @override
   void initState() {
     Future.microtask(() {
       ref.read(geolocatorProvider.notifier).getAddresses();
-      products = List.from(
+      products = widget.data != null ?widget.data!.products! : List.from(
         ref.watch(favouriteProvider).products!.where((e) => e.isSelect),
       );
+      if(widget.data != null)
+      {
+      selectTravelMode = widget.data!.travelMode;
+      radius = widget.data!.distanceValue;
+
+      }
       setState(() {});
     });
+    
     super.initState();
   }
 
@@ -42,7 +51,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
     }
   }
 
-  num radius = 0;
+  
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
@@ -52,7 +61,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
           final isLoad =
               ref.watch(
                 favouriteProvider.select(
-                  (e) => e.addNewFavouriteApiResponse.status,
+                  (e) => widget.data != null? e.updateFavouriteApiResponse.status : e.addNewFavouriteApiResponse.status,
                 ),
               ) ==
               Status.loading;
@@ -62,13 +71,9 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
             ),
             child: CustomButtonWidget(
               isLoad: isLoad,
-              title: widget.isEdit! ? "save" : "add favorite",
+              title: widget.data != null ? "save" : "add favorite",
               onPressed: () {
-                if (widget.isSignUp) {
-                  AppRouter.pushAndRemoveUntil(NavigationView());
-                } else {
-                  if (!widget.isEdit!) {
-                    List<int> addressIds = [];
+               List<int> addressIds = [];
 
                     for (var item in myLocation) {
                       if (item.isSelect!) {
@@ -82,26 +87,29 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
                       );
                       return;
                     }
-
-                    ref.read(favouriteProvider.notifier).addNewFavourite({
+                    Map<String, dynamic> data = {
                       "product_ids": products.map((e) => e.id).toList(),
                       "address_ids": addressIds,
                       "distance_value": radius,
                       "distance_unit": "METERS",
                       "travel_mode": selectTravelMode,
-                    });
+                    };
+                  if (widget.data == null || widget.isSignUp) {
+                    
+
+                    ref.read(favouriteProvider.notifier).addNewFavourite(data,widget.isSignUp);
                   } else {
-                    AppRouter.back();
+                    ref.read(favouriteProvider.notifier).updateFavourite(favouriteId: widget.data!.favoriteId, favouriteData: data);
                   }
-                }
+                
               },
             ),
           );
         },
       ),
-      bottomButtonText: widget.isEdit! ? "save" : "add favorite",
+      bottomButtonText:  widget.data != null ? "save" : "add favorite",
 
-      title: widget.isEdit! ? "Edit" : "Add New Favorite",
+      title:  widget.data != null ? "Edit" : "Add New Favorite",
       child: ListView(
         padding: EdgeInsets.symmetric(vertical: AppTheme.horizontalPadding),
         children: [
@@ -129,6 +137,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
           ),
           10.ph,
           CustomRangeSlider(
+            initialValue: widget.data != null ?widget.data!.distanceValue: radius,
             onValueChanged: (value) {
               radius = value;
             },
@@ -148,7 +157,13 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
                   (e) => (e.addresses ?? [], e.getAddressesApiResponse),
                 ),
               );
-              myLocation = data.$1;
+              
+              if(widget.data != null){
+                myLocation = List.from(data.$1.map((e)=>widget.data!.addresses.contains(e)? e.copyWith(isSelect: true): e ));
+              }
+              else{
+                myLocation = data.$1;
+              }
               final res = data.$2;
               return AsyncStateHandler(
                 status: res.status,
@@ -317,14 +332,22 @@ class ProductPriceTitleWidget extends StatelessWidget {
 
 class CustomRangeSlider extends StatefulWidget {
   final ValueChanged<double>? onValueChanged;
-  const CustomRangeSlider({super.key, this.onValueChanged});
+  final num initialValue;
+  const CustomRangeSlider({super.key, this.onValueChanged,required this.initialValue});
 
   @override
   State<CustomRangeSlider> createState() => _CustomRangeSliderState();
 }
 
 class _CustomRangeSliderState extends State<CustomRangeSlider> {
-  double _endValue = 17;
+   double _endValue = 17;
+  @override
+  void initState() {
+    super.initState();
+    _endValue = double.parse(widget.initialValue.toString());
+    
+  }
+ 
 
   @override
   Widget build(BuildContext context) {

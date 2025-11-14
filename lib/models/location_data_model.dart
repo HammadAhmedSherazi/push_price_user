@@ -78,6 +78,7 @@ class LocationDataModel {
     bool? isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isSelect
   }) {
     return LocationDataModel(
       label: label ?? this.label,
@@ -93,8 +94,47 @@ class LocationDataModel {
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isSelect: isSelect ?? this.isSelect
     );
   }
+  @override
+bool operator ==(Object other) {
+  if (identical(this, other)) return true;
+
+  return other is LocationDataModel &&
+      other.label == label &&
+      other.addressLine1 == addressLine1 &&
+      other.addressLine2 == addressLine2 &&
+      other.city == city &&
+      other.state == state &&
+      other.postalCode == postalCode &&
+      other.country == country &&
+      other.latitude == latitude &&
+      other.longitude == longitude &&
+      other.addressId == addressId &&  // include addressId
+      other.isActive == isActive &&
+      other.createdAt == createdAt &&
+      other.updatedAt == updatedAt &&
+      other.isSelect == isSelect;
+}
+
+@override
+int get hashCode {
+  return label.hashCode ^
+      addressLine1.hashCode ^
+      addressLine2.hashCode ^
+      city.hashCode ^
+      state.hashCode ^
+      postalCode.hashCode ^
+      country.hashCode ^
+      latitude.hashCode ^
+      longitude.hashCode ^
+      addressId.hashCode ^   // include addressId
+      isActive.hashCode ^
+      createdAt.hashCode ^
+      updatedAt.hashCode ^
+      isSelect.hashCode;
+}
 
   @override
   String toString() {

@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
-import '../../utils/extension.dart';
 import '../../export_all.dart';
+import '../../models/favourite_data_model.dart';
+import '../../utils/extension.dart';
 
 class FavouriteView extends ConsumerStatefulWidget {
   final ScrollController scrollController;
@@ -29,6 +30,62 @@ class _FavouriteViewState extends ConsumerState<FavouriteView> {
       search: search
     );
   }
+  void showDeleteFavouriteItemDialog(BuildContext context, int id) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: const Color(0xFFF2F7FA),
+          child: Padding(
+            padding: EdgeInsets.all(AppTheme.horizontalPadding),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(context.tr('delete'), style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp)),
+                10.ph,
+                Text(
+                  context.tr('are_you_sure_you_want_to_delete'),
+                  textAlign: TextAlign.center,
+                  style: context.textStyle.bodyMedium!.copyWith(color: Colors.grey),
+                ),
+                30.ph,
+                Row(
+                  spacing: 20,
+                  children: [
+                    Expanded(
+                      child: CustomOutlineButtonWidget(
+                        title: context.tr("cancel"),
+                        onPressed: () => AppRouter.back(),
+                      ),
+                    ),
+                    Expanded(
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final isLoad = ref.watch(favouriteProvider.select((e)=>e.deleteFavouriteApiResponse.status)) == Status.loading;
+                          return CustomButtonWidget(
+                            isLoad: isLoad,
+                            color: Color.fromRGBO(174, 27, 13, 1),
+                            title: context.tr("delete"),
+                            onPressed: () {
+                              ref.read(favouriteProvider.notifier).deleteFavourite(favouriteId: id);
+                            },
+                          );
+                        }
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   void dispose() {
     _searchDebounce?.cancel();
@@ -77,10 +134,13 @@ class _FavouriteViewState extends ConsumerState<FavouriteView> {
                    dataList: list,
                    status: response.status,
                     itemBuilder: (context, index) {
-                      final product = list[index];
-                      return ProductTitleWidget(product: product, onEditCall: (){
+                      final favourite = list[index];
+                      return FavouriteTitleWidget(favourite: favourite, 
+                      onEditCall: (){
                         // AppRouter.push()
-                        AppRouter.push(AddNewFavouriteView(isSignUp: false, isEdit: true,));
+                        AppRouter.push(AddNewFavouriteView(isSignUp: false, data: favourite,));
+                      }, onDeleteCall: (){
+                        showDeleteFavouriteItemDialog(context, favourite.favoriteId);
                       },);
                     }, onRetry: ()=>fetchFavouriteProducts(), );
                 }
@@ -96,58 +156,70 @@ class _FavouriteViewState extends ConsumerState<FavouriteView> {
   }
 }
 
-class ProductTitleWidget extends StatelessWidget {
+class FavouriteTitleWidget extends StatelessWidget {
   final VoidCallback ? onEditCall;
-  const ProductTitleWidget({
+  final VoidCallback ? onDeleteCall;
+  const FavouriteTitleWidget({
     super.key,
-    required this.product,
-    this.onEditCall
+    required this.favourite,
+    this.onEditCall,
+    this.onDeleteCall
+
   });
 
-  final ProductDataModel product;
+  final FavouriteModel favourite;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-        AppRouter.push(ProductDetailView(quatity: 0, product: product, discount: 0, storeId: 1,));
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 10.r,
-          vertical: 3.r
-        ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.r),
-        color: Color.fromRGBO(243, 243, 243, 1)
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 10.r,
+        vertical: 3.r
       ),
-      child: Row(
-        spacing: 10,
-        children: [
-          DisplayNetworkImage(imageUrl:  product.image, width: 57.w, height: 70.h,),
-          Expanded(
-            child: Column(
-              spacing: 12,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(product.title, style: context.textStyle.bodyMedium),
-                Text(product.description, style: context.textStyle.bodySmall!.copyWith(
-                  color: AppColors.primaryTextColor.withValues(alpha: 0.7),
-                  
-                )),
-              
-              ],
-            ),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8.r),
+      color: Color.fromRGBO(243, 243, 243, 1)
+    ),
+    child: Row(
+      spacing: 10,
+      children: [
+        Image.asset(Assets.groceryBag,width: 57.w, height: 70.h,),
+        // DisplayNetworkImage(imageUrl:  favourite.products.first.image, width: 57.w, height: 70.h,),
+        Expanded(
+          child: Column(
+            spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Favourite ${favourite.favoriteId}', style: context.textStyle.bodyMedium),
+              Text('${favourite.products.length} products', style: context.textStyle.bodySmall!.copyWith(
+                color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+    
+              )),
+    
+            ],
           ),
-          if(onEditCall == null)
-          20.pw,
-          if(onEditCall != null)
-          IconButton(onPressed: onEditCall, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))
-
-         
-        ],
-      ),
-                      ),
-    );
+        ),
+        if(onEditCall == null)
+        20.pw,
+        if(onEditCall != null)
+        IconButton(
+          visualDensity: VisualDensity(
+            horizontal: -4.0
+          ),
+          padding: EdgeInsets.zero,
+          onPressed: onEditCall, icon: Icon(Icons.edit, color: AppColors.secondaryColor,)),
+        if(onDeleteCall != null)
+        IconButton(
+          visualDensity: VisualDensity(
+            horizontal: -4.0
+          ),
+          padding: EdgeInsets.zero,
+          onPressed: onDeleteCall, icon: Icon(Icons.delete, color: Color.fromRGBO(174, 27, 13, 1),)),
+        
+    
+    
+      ],
+    ),
+                    );
   }
 }

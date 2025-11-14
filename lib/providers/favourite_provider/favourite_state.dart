@@ -1,5 +1,6 @@
 import '../../../data/network/api_response.dart';
 import '../../../export_all.dart';
+import '../../../models/favourite_data_model.dart';
 
 class FavouriteState {
   final ApiResponse getProductsApiResponse;
@@ -9,7 +10,7 @@ class FavouriteState {
   final ApiResponse getProductByBarCodeApiResponse;
   final ProductDataModel? productByBarCode;
   final ApiResponse getFavouriteProductsApiResponse;
-  final List<ProductDataModel>? favouriteProducts;
+  final List<FavouriteModel>? favouriteProducts;
   final ApiResponse addNewFavouriteApiResponse;
   final ApiResponse updateFavouriteApiResponse;
   final ApiResponse deleteFavouriteApiResponse;
@@ -28,6 +29,22 @@ class FavouriteState {
     required this.deleteFavouriteApiResponse,
   });
 
+  factory FavouriteState.initial() {
+    return FavouriteState(
+      getProductsApiResponse: ApiResponse.undertermined(),
+      products: [],
+      getProductDetailApiResponse: ApiResponse.undertermined(),
+      productDetail: null,
+      getProductByBarCodeApiResponse: ApiResponse.undertermined(),
+      productByBarCode: null,
+      getFavouriteProductsApiResponse: ApiResponse.undertermined(),
+      favouriteProducts: [],
+      addNewFavouriteApiResponse: ApiResponse.undertermined(),
+      updateFavouriteApiResponse: ApiResponse.undertermined(),
+      deleteFavouriteApiResponse: ApiResponse.undertermined(),
+    );
+  }
+
   FavouriteState copyWith({
     ApiResponse? getProductsApiResponse,
     List<ProductSelectionDataModel>? products,
@@ -36,7 +53,7 @@ class FavouriteState {
     ApiResponse? getProductByBarCodeApiResponse,
     ProductDataModel? productByBarCode,
     ApiResponse? getFavouriteProductsApiResponse,
-    List<ProductDataModel>? favouriteProducts,
+    List<FavouriteModel>? favouriteProducts,
     ApiResponse? addNewFavouriteApiResponse,
     ApiResponse? updateFavouriteApiResponse,
     ApiResponse? deleteFavouriteApiResponse,

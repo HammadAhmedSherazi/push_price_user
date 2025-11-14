@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
-
-import '../../utils/extension.dart';
 import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class SearchProductView extends ConsumerStatefulWidget {
   final bool? isSignUp;
@@ -13,6 +12,62 @@ class SearchProductView extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<SearchProductView> createState() => _SearchProductViewState();
+}
+
+class ProductTitleWidget extends StatelessWidget {
+  final VoidCallback ? onEditCall;
+  const ProductTitleWidget({
+    super.key,
+    required this.product,
+    this.onEditCall
+  });
+
+  final ProductSelectionDataModel product;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: (){
+        // AppRouter.push(ProductDetailView(quatity: 0, product: product, discount: 0, storeId: 1,));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 10.r,
+          vertical: 3.r
+        ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.r),
+        color: Color.fromRGBO(243, 243, 243, 1)
+      ),
+      child: Row(
+        spacing: 10,
+        children: [
+          DisplayNetworkImage(imageUrl:  product.image, width: 57.w, height: 70.h,),
+          Expanded(
+            child: Column(
+              spacing: 12,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(product.title, style: context.textStyle.bodyMedium),
+                Text(product.description, style: context.textStyle.bodySmall!.copyWith(
+                  color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+
+                )),
+
+              ],
+            ),
+          ),
+          if(onEditCall == null)
+          20.pw,
+          if(onEditCall != null)
+          IconButton(onPressed: onEditCall, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))
+
+
+        ],
+      ),
+                      ),
+    );
+  }
 }
 
 class _SearchProductViewState extends ConsumerState<SearchProductView> {

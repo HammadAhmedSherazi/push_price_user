@@ -3,24 +3,13 @@ import 'dart:async';
 import 'package:push_price_user/export_all.dart';
 
 import '../../../data/network/api_response.dart';
+import '../../../models/favourite_data_model.dart';
 import 'favourite_state.dart';
 
 class FavouriteProvider extends Notifier<FavouriteState> {
   @override
   FavouriteState build() {
-    return FavouriteState(
-      getProductsApiResponse: ApiResponse.undertermined(),
-      products: [],
-      getProductDetailApiResponse: ApiResponse.undertermined(),
-      productDetail: null,
-      getProductByBarCodeApiResponse: ApiResponse.undertermined(),
-      productByBarCode: null,
-      getFavouriteProductsApiResponse: ApiResponse.undertermined(),
-      favouriteProducts: [],
-      addNewFavouriteApiResponse: ApiResponse.undertermined(),
-      updateFavouriteApiResponse: ApiResponse.undertermined(),
-      deleteFavouriteApiResponse: ApiResponse.undertermined(),
-    );
+    return FavouriteState.initial();
   }
 
   FutureOr<void> getProducts({required int skip, required int limit, int? categoryId, String? search, int? storeId}) async {
@@ -144,8 +133,8 @@ class FavouriteProvider extends Notifier<FavouriteState> {
 
       if (response != null && !(response is Map && response.containsKey('detail'))) {
         List temp = response ?? [];
-        final List<ProductDataModel> list = List.from(
-          temp.map((e) => ProductDataModel.fromJson(e)),
+        final List<FavouriteModel> list = List.from(
+          temp.map((e) => FavouriteModel.fromJson(e)),
         );
         state = state.copyWith(
           getFavouriteProductsApiResponse: ApiResponse.completed(response),
@@ -168,7 +157,7 @@ class FavouriteProvider extends Notifier<FavouriteState> {
     }
   }
 
-  FutureOr<void> addNewFavourite(Map<String, dynamic> favouriteData) async {
+  FutureOr<void> addNewFavourite(Map<String, dynamic> favouriteData, bool isSignup) async {
     if (!ref.mounted) return;
 
     try {
@@ -178,7 +167,14 @@ class FavouriteProvider extends Notifier<FavouriteState> {
       if (!ref.mounted) return;
 
       if (response != null && !(response is Map && response.containsKey('detail'))) {
-        AppRouter.customback(times: 2);
+        if(isSignup){
+          AppRouter.pushAndRemoveUntil(NavigationView());
+        }
+        else{
+          AppRouter.customback(times: 2);
+          getFavouriteProducts();
+        
+        }
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
           message: "Favourite added successfully!",
@@ -213,6 +209,8 @@ class FavouriteProvider extends Notifier<FavouriteState> {
       if (!ref.mounted) return;
 
       if (response != null && !(response is Map && response.containsKey('detail'))) {
+        AppRouter.back();
+        getFavouriteProducts();
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
           message: "Favourite updated successfully!",
@@ -245,8 +243,9 @@ class FavouriteProvider extends Notifier<FavouriteState> {
       final response = await MyHttpClient.instance.delete(ApiEndpoints.deleteFavourite(favouriteId), null);
 
       if (!ref.mounted) return;
-
+      AppRouter.back();
       if (response != null && !(response is Map && response.containsKey('detail'))) {
+        getFavouriteProducts();
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
           message: "Favourite deleted successfully!",

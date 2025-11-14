@@ -97,7 +97,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
   Widget build(BuildContext context) {
      final List<MenuDataModel> menuData = [
     MenuDataModel(title: "My Favorites", icon: Assets.menuFavouritIcon, onTap: () {
-      AppRouter.back();
+      ref.read(navigationProvider.notifier).setIndex(2);
       // setState(() {
       //   selectIndex = 2;
       // });
@@ -105,9 +105,9 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     }),
     MenuDataModel(title: "My Orders", icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
     MenuDataModel(title: "My Locations", icon: Assets.menuLocationIcon, onTap: () => AppRouter.push(MyLocationView())),
-    MenuDataModel(title: "Subscription & Savings", icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
-    MenuDataModel(title: "Vouchers", icon: Assets.menuVoucherIcon, onTap: () => AppRouter.push(VoucherView())),
-    MenuDataModel(title: "Payment Methods", icon: Assets.menuPaymentIcon, onTap: () => AppRouter.push(MyPaymentMethodView())),
+    // MenuDataModel(title: "Subscription & Savings", icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
+    // MenuDataModel(title: "Vouchers", icon: Assets.menuVoucherIcon, onTap: () => AppRouter.push(VoucherView())),
+    // MenuDataModel(title: "Payment Methods", icon: Assets.menuPaymentIcon, onTap: () => AppRouter.push(MyPaymentMethodView())),
     MenuDataModel(title: "Settings", icon: Assets.menuSettingIcon, onTap: () => AppRouter.push(SettingView())),
     MenuDataModel(title: "Help & Feedback", icon: Assets.menuHelpIcon, onTap: () => AppRouter.push(HelpFeedbackView())),
   ];
