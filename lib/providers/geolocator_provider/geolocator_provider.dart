@@ -39,16 +39,19 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       );
       final user = ref.read(authProvider.select((e)=>e.userData));
       if(user != null){
-        if(user.latitude != locationData.latitude || user.longitude != locationData.longitude){
+        if(user.latitude != locationData.latitude || user.longitude != locationData.longitude ){
          ref.read(authProvider.notifier).updateProfile(userDataModel: user.copyWith(
         latitude: locationData.latitude,
-        longitude: locationData.longitude
+        longitude: locationData.longitude,
+
       ));
       }
       }
 
 
     } catch (e) {
+      
+      
       if (!ref.mounted) return;
       Helper.showMessage(
         AppRouter.navKey.currentContext!,

@@ -522,7 +522,12 @@ class AuthProvider  extends Notifier<AuthState> {
     String? userData = await SecureStorageManager.sharedInstance.getUserData();
     if (userData != null) {
       Map<String, dynamic> userJson = jsonDecode(userData);
-      state = state.copyWith(userData: UserDataModel.fromJson(userJson));
+      final UserDataModel user = UserDataModel.fromJson(userJson); 
+      state = state.copyWith(userData: user);
+      if(user.deviceToken == "" || user.deviceToken != FirebaseService.fcmToken){
+        updateProfile(userDataModel: user.copyWith(deviceToken: FirebaseService.fcmToken));
+      }
+
     }
 
   }

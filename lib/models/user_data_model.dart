@@ -4,7 +4,7 @@ class UserDataModel {
   final String fullName;
   final String phoneNumber;
   final String address;
-  final String? profileImage;
+  final String? profileImage, deviceToken;
   final bool isVerified;
   final bool isActive;
   final bool isTravelMode;
@@ -19,6 +19,7 @@ class UserDataModel {
     required this.phoneNumber,
     required this.address,
     this.profileImage,
+    this.deviceToken,
     required this.isVerified,
     required this.isActive,
     required this.createdAt,
@@ -42,7 +43,8 @@ class UserDataModel {
       updatedAt: json['updated_at'] ?? '',
       isTravelMode: json['is_travel_enabled'] ?? false,
       longitude: json['longitude'] ?? 0,
-      latitude: json['latitude'] ?? 0
+      latitude: json['latitude'] ?? 0,
+      deviceToken: json['device_token'] ?? ""
     );
   }
 
@@ -60,7 +62,8 @@ class UserDataModel {
       'updated_at': updatedAt,
       'is_travel_enabled' : isTravelMode,
       'longitude' : longitude,
-      'latitude' : latitude
+      'latitude' : latitude,
+      'device_token' : deviceToken
     };
   }
 
@@ -77,6 +80,7 @@ class UserDataModel {
     String? updatedAt,
     num? latitude, longitude,
     bool? isTravelMode,
+    String? deviceToken
   }) {
     return UserDataModel(
       userId: userId ?? this.userId,
@@ -91,13 +95,14 @@ class UserDataModel {
       updatedAt: updatedAt ?? this.updatedAt,
       isTravelMode: isTravelMode ?? this.isTravelMode,
       latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude
+      longitude: longitude ?? this.longitude,
+      deviceToken: deviceToken ?? this.deviceToken
     );
   }
 
   @override
   String toString() {
-    return 'UserDataModel(userId: $userId, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, address: $address, profileImage: $profileImage, isVerified: $isVerified, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserDataModel(userId: $userId, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, address: $address, profileImage: $profileImage, isVerified: $isVerified, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt, deviceToken : $deviceToken)';
   }
 }
   

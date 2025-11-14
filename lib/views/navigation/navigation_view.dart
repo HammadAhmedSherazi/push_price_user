@@ -97,6 +97,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
   Widget build(BuildContext context) {
      final List<MenuDataModel> menuData = [
     MenuDataModel(title: "My Favorites", icon: Assets.menuFavouritIcon, onTap: () {
+      AppRouter.back();
       ref.read(navigationProvider.notifier).setIndex(2);
       // setState(() {
       //   selectIndex = 2;
