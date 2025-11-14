@@ -1,3 +1,5 @@
+import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
+
 import '../../utils/extension.dart';
 import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
@@ -5,7 +7,8 @@ import '../../export_all.dart';
 
 class ScanProductView extends StatelessWidget {
   final bool isSignUp;
-  const ScanProductView({super.key, required this.isSignUp});
+  final ProductDataModel product;
+  const ScanProductView({super.key, required this.isSignUp, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +34,16 @@ class ScanProductView extends StatelessWidget {
               spacing: 15,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("ABC Product", style: context.textStyle.bodyMedium!.copyWith(
+                Text(product.title, style: context.textStyle.bodyMedium!.copyWith(
                   fontSize: 18.sp
                 ),),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Category", style: context.textStyle.bodyMedium!.copyWith(
+                    Text(context.tr('context'), style: context.textStyle.bodyMedium!.copyWith(
                       color: Colors.grey
                     ),),
-                    Text("ABC Category", style: context.textStyle.bodyMedium!,),
+                    Text(product.category?.title ?? "", style: context.textStyle.bodyMedium!,),
                   ],
                 ),
                 SizedBox(
@@ -53,16 +56,22 @@ class ScanProductView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Price", style: context.textStyle.bodyMedium!.copyWith(
+                    Text(context.tr('price'), style: context.textStyle.bodyMedium!.copyWith(
                       color: Colors.grey
                     ),),
-                    Text("\$99.99", style: context.textStyle.bodyMedium!,),
+                    Text("\$${product.price}", style: context.textStyle.bodyMedium!,),
                   ],
                 ),
                 5.ph,
-                CustomButtonWidget(title: "select product", onPressed: (){
-                  AppRouter.push(AddNewFavouriteView(isSignUp: isSignUp,));
-                })
+                Consumer(
+                  builder: (context, ref, child) {
+                    return CustomButtonWidget(title: "select product", onPressed: (){
+                      ref.read(favouriteProvider.notifier).addProduct(product);
+                      
+                      AppRouter.push(AddNewFavouriteView(isSignUp: isSignUp,));
+                    });
+                  }
+                )
               ],
             ),
           )

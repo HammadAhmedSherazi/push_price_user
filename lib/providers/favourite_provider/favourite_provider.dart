@@ -16,7 +16,7 @@ class FavouriteProvider extends Notifier<FavouriteState> {
     if (!ref.mounted) return;
 
     try {
-      state = state.copyWith(getProductsApiResponse: ApiResponse.loading());
+      state = state.copyWith(getProductsApiResponse: ApiResponse.loading(), products: []);
       Map<String, dynamic> params = {
         'skip': skip,
         'limit': limit,
@@ -87,20 +87,22 @@ class FavouriteProvider extends Notifier<FavouriteState> {
     }
   }
 
-  FutureOr<void> getProductByBarCode({required String barcode, int? storeId}) async {
+  FutureOr<void> getProductByBarCode({required String barcode, int? storeId, required bool isSignup}) async {
     if (!ref.mounted) return;
 
     try {
-      state = state.copyWith(getProductByBarCodeApiResponse: ApiResponse.loading());
+      state = state.copyWith(getProductByBarCodeApiResponse: ApiResponse.loading(), products: []);
       Map<String, dynamic> params = {};
       if (storeId != null) params['store_id'] = storeId;
 
       final response = await MyHttpClient.instance.get(ApiEndpoints.getProductByBarCode(barcode), params: params);
 
       if (!ref.mounted) return;
-
+       AppRouter.back();
       if (response != null && !(response is Map && response.containsKey('detail'))) {
         final ProductDataModel product = ProductDataModel.fromJson(response);
+       
+        AppRouter.push(ScanProductView(isSignUp: isSignup , product: product,));
         state = state.copyWith(
           getProductByBarCodeApiResponse: ApiResponse.completed(response),
           productByBarCode: product,
@@ -281,6 +283,12 @@ class FavouriteProvider extends Notifier<FavouriteState> {
 
   void clearProducts(){
     state = state.copyWith(products: []);
+  }
+
+  void addProduct(ProductDataModel product){
+    List<ProductSelectionDataModel> products = [];
+    products.add(ProductSelectionDataModel.fromJson(product.toJson(), isSelect: true));
+    state = state.copyWith(products: products);
   }
 }
 
