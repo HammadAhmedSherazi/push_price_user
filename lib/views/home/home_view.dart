@@ -173,7 +173,8 @@ class _HomeViewState extends ConsumerState<HomeView>  {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
+    return 
+    Scaffold(
       appBar: CustomAppBarWidget(
         height: context.screenheight * 0.21,
         title: "Home",
@@ -257,6 +258,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
         ],
       ),
     );
+  
   }
 }
 

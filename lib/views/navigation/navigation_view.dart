@@ -114,6 +114,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
   ];
     return Scaffold(
       key: AppRouter.scaffoldkey,
+      resizeToAvoidBottomInset: false,
       drawerEnableOpenDragGesture: false,
       extendBody: true,
       drawer: SafeArea(

@@ -259,7 +259,7 @@ class HomeProvider extends Notifier<HomeState> {
         products[productIndex] = updatedProduct;
         state = state.copyWith(products: products);
       } else {
-        Helper.showMessage(AppRouter.navKey.currentState!.context, message: 'Not available quantity to select');
+        Helper.showMessage(AppRouter.navKey.currentState!.context, message: AppRouter.navKey.currentState!.context.tr('not_available_quantity_to_select'));
         return;
       }
     }
@@ -282,7 +282,7 @@ class HomeProvider extends Notifier<HomeState> {
         final updatedProduct = state.cartList[existingIndex].copyWith(selectQuantity: state.cartList[existingIndex].selectQuantity + 1);
         updatedCartList[existingIndex] = updatedProduct;
       } else {
-        Helper.showMessage(AppRouter.navKey.currentState!.context, message: 'Not available quantity to select');
+        Helper.showMessage(AppRouter.navKey.currentState!.context, message: AppRouter.navKey.currentState!.context.tr('not_available_quantity_to_select'));
       }
     } else {
       final updatedProduct = product.copyWith(selectQuantity: 1);

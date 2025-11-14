@@ -13,15 +13,15 @@ class VoucherView extends StatelessWidget {
 
         if (voucher == null) {
           return CustomScreenTemplate(
-            title: "Vouchers",
+            title: context.tr("vouchers"),
             child: Center(
-              child: Text("No voucher available"),
+              child: Text(context.tr("no_voucher_available")),
             ),
           );
         }
 
         return CustomScreenTemplate(
-          title: "Vouchers",
+          title: context.tr("vouchers"),
           child: ListView(
             padding: EdgeInsets.all(AppTheme.horizontalPadding),
             children: [

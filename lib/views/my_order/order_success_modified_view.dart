@@ -1,6 +1,5 @@
-import '../../utils/extension.dart';
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class OrderSuccessModifiedView extends StatelessWidget {
   final String message;
@@ -10,6 +9,7 @@ class OrderSuccessModifiedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         height: double.infinity,
         width: double.infinity,

@@ -14,6 +14,7 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body:  Consumer(builder: (context, ref, child){
         final response = ref.watch(authProvider.select((e)=>e.getUserApiResponse));
         return AsyncStateHandler(status: response.status, dataList: [1], itemBuilder: null, onRetry: (){

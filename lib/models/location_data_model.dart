@@ -16,12 +16,12 @@ class LocationDataModel {
 
   LocationDataModel({
     this.label,
-    this.addressLine1,
-    this.addressLine2,
-    this.city,
-    this.state,
-    this.postalCode,
-    this.country,
+    this.addressLine1 = "",
+    this.addressLine2 = "",
+    this.city = "",
+    this.state = "",
+    this.postalCode = "",
+    this.country = "",
     required this.latitude,
     required this.longitude,
     this.addressId,

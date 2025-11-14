@@ -67,12 +67,12 @@ Future<void> _pickImage() async {
               children: [
                 ListTile(
                   leading: const Icon(Icons.camera_alt),
-                  title: const Text('Take a photo'),
+                  title: Text(context.tr('take_a_photo')),
                   onTap: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 ListTile(
                   leading: const Icon(Icons.photo_library),
-                  title: const Text('Choose from gallery'),
+                  title: Text(context.tr('choose_from_gallery')),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
               ],

@@ -37,7 +37,7 @@ class ScanView extends StatelessWidget {
                    
                     );
                    
-                    if(providerVM.getProductByBarCodeApiResponse.status != Status.loading && res != null){
+                    if(providerVM.getProductByBarCodeApiResponse.status != Status.loading && res != null && res != "-1"){
                       if(!context.mounted) return;
                                 Helper.showFullScreenLoader(context);
                                 ref.read(favouriteProvider.notifier).getProductByBarCode(barcode: res, isSignup: isSignUp);

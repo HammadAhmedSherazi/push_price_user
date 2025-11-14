@@ -248,7 +248,7 @@ class AuthProvider  extends Notifier<AuthState> {
         }
         await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
         await SecureStorageManager.sharedInstance.storeRefreshToken(response['refresh_token'] ?? "");
-        AppRouter.pushAndRemoveUntil(NavigationView());
+        AppRouter.push(AddFavouriteView());
 
       }
       else{

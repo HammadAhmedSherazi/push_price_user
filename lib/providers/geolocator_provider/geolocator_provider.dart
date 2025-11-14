@@ -35,12 +35,13 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       if (!ref.mounted) return;
       state = state.copyWith(
         getLocationApiResponse: ApiResponse.completed(locationData),
-        locationData: locationData,
+        // locationData: locationData,
       );
+      
       final user = ref.read(authProvider.select((e)=>e.userData));
       if(user != null){
         if(user.latitude != locationData.latitude || user.longitude != locationData.longitude ){
-         ref.read(authProvider.notifier).updateProfile(userDataModel: user.copyWith(
+        await ref.read(authProvider.notifier).updateProfile(userDataModel: user.copyWith(
         latitude: locationData.latitude,
         longitude: locationData.longitude,
 
@@ -302,6 +303,6 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
 
 }
 
-final geolocatorProvider = NotifierProvider<GeolocatorProvider, GeolocatorState>(
+final geolocatorProvider = NotifierProvider.autoDispose<GeolocatorProvider, GeolocatorState>(
   GeolocatorProvider.new,
 );

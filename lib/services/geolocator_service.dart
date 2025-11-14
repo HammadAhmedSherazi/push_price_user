@@ -120,22 +120,7 @@ class GeolocatorService {
           String state = '';
           String country = '';
           String postalCode = '';
-          try {
-            List<Placemark> placemarks = await placemarkFromCoordinates(
-              loc.lat ?? 0.0,
-              loc.lng ?? 0.0,
-            ).timeout(const Duration(seconds: 5));
-
-            if (placemarks.isNotEmpty) {
-              Placemark place = placemarks[0];
-              city = place.locality ?? '';
-              state = place.administrativeArea ?? '';
-              country = place.country ?? '';
-              postalCode = place.postalCode ?? '';
-            }
-          } catch (e) {
-            // Geocoding failed, continue with empty fields
-          }
+          
 
           results.add(LocationDataModel(
             label: prediction.description ?? '',
@@ -157,6 +142,26 @@ class GeolocatorService {
     }
   }
 
+ static Future<Placemark?> getLocationDetail({required double lat, required double lon})async{
+    try {
+            List<Placemark> placemarks = await placemarkFromCoordinates(
+              lat,lon
+            ).timeout(const Duration(seconds: 5));
+
+            if (placemarks.isNotEmpty) {
+              Placemark place = placemarks[0];
+              return place;
+            }
+            else{
+              return null;
+            }
+          } catch (e) {
+            
+            return null;
+            
+            // Geocoding failed, continue with empty fields
+          }
+  }
   
   
  

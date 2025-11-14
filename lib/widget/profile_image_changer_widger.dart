@@ -47,19 +47,19 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.camera_alt),
-                  title: const Text('Take a photo'),
+                  title: Text(context.tr('take_a_photo')),
                   onTap: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 ListTile(
                   leading: const Icon(Icons.photo_library),
-                  title: const Text('Choose from gallery'),
+                  title: Text(context.tr('choose_from_gallery')),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
                 if((widget.profileUrl != null  || _selectedImage != null) && widget.profileUrl != "")...[
                   ListTile(
                   
                   leading: const Icon(Icons.delete, color: Colors.red,),
-                  title:  Text('Remove profile picture', style: context.textStyle.displayMedium!.copyWith(
+                  title:  Text(context.tr('remove_profile_picture'), style: context.textStyle.displayMedium!.copyWith(
                     color: Colors.red
                   ),),
                   onTap: () {
@@ -98,7 +98,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
       } else {
         // Handle compression failure, e.g., show a message
         if(!context.mounted) return;
-        Helper.showMessage(context, message: 'Failed to compress image');
+        Helper.showMessage(context, message: context.tr('failed_to_compress_image'));
       }
     }
   }

@@ -60,6 +60,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomSheet: count >0? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "", onPressed: (){
         AppRouter.push(CartView(
           storeId: widget.storeData.storeId,

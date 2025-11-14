@@ -1,9 +1,8 @@
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
-
-import '../../utils/extension.dart';
 import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class ScanProductView extends StatelessWidget {
   final bool isSignUp;
@@ -12,7 +11,7 @@ class ScanProductView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScreenTemplate(title: "Barcode", child: SizedBox(
+    return CustomScreenTemplate(title: context.tr("barcode"), child: SizedBox(
       height: double.infinity,
       child: Column(
         children: [
@@ -40,7 +39,7 @@ class ScanProductView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(context.tr('context'), style: context.textStyle.bodyMedium!.copyWith(
+                    Text(context.tr('category'), style: context.textStyle.bodyMedium!.copyWith(
                       color: Colors.grey
                     ),),
                     Text(product.category?.title ?? "", style: context.textStyle.bodyMedium!,),
@@ -65,7 +64,7 @@ class ScanProductView extends StatelessWidget {
                 5.ph,
                 Consumer(
                   builder: (context, ref, child) {
-                    return CustomButtonWidget(title: "select product", onPressed: (){
+                    return CustomButtonWidget(title: context.tr("select_product"), onPressed: (){
                       ref.read(favouriteProvider.notifier).addProduct(product);
                       
                       AppRouter.push(AddNewFavouriteView(isSignUp: isSignUp,));

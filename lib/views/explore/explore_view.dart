@@ -21,6 +21,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: CustomAppBarWidget(
         height: context.screenheight * 0.15,
         title: "Explore",

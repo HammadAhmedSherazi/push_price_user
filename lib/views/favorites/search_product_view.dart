@@ -116,11 +116,7 @@ class _SearchProductViewState extends ConsumerState<SearchProductView> {
           -1,
       bottomButtonText: "next",
       onButtonTap: () {
-        if (widget.isSignUp!) {
-          AppRouter.pushAndRemoveUntil(NavigationView());
-        } else {
-          AppRouter.push(AddNewFavouriteView(isSignUp: widget.isSignUp!));
-        }
+         AppRouter.push(AddNewFavouriteView(isSignUp: widget.isSignUp!));
       },
       title: "Search",
       actionWidget: Row(

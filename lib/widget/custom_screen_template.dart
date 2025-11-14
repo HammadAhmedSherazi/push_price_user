@@ -24,8 +24,9 @@ class CustomScreenTemplate extends StatelessWidget {
         bottom: 10.h
       ),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         // bottomSheet: (showBottomButton ?? false)? customBottomWidget ?? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),) : null,
-        
+
         appBar:AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,

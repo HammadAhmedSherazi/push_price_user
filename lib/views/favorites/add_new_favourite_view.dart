@@ -73,6 +73,10 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
               isLoad: isLoad,
               title: widget.data != null ? "save" : "add favorite",
               onPressed: () {
+              if(myLocation.isEmpty){
+                Helper.showMessage(context, message: "Please first add location");
+                return;
+              }
                List<int> addressIds = [];
 
                     for (var item in myLocation) {
@@ -165,7 +169,27 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
                 myLocation = data.$1;
               }
               final res = data.$2;
-              return AsyncStateHandler(
+              return res.status == Status.completed && myLocation.isEmpty ?  Padding(
+               padding: EdgeInsets.symmetric(
+              horizontal: AppTheme.horizontalPadding,
+            ),
+                child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () {
+                          // Handle adding new address
+                          AppRouter.push(AddNewAddressView());
+                        },
+                        icon: Icon(Icons.add, color: AppColors.primaryColor),
+                        label: Text(
+                          "Add Address",
+                          style: context.textStyle.displayMedium!.copyWith(
+                            color: AppColors.primaryColor
+                          ),
+                        ),
+                      ),
+                    ),
+              ) : AsyncStateHandler(
                 status: res.status,
                 dataList: [""],
                 itemBuilder: null,

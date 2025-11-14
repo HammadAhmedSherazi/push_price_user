@@ -62,6 +62,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomSheet: count > 0
           ? Padding(
               padding: EdgeInsets.all(AppTheme.horizontalPadding),

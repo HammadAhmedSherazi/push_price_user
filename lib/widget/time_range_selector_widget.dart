@@ -49,19 +49,19 @@ class _TimeRangePickerDialogState extends State<TimeRangePickerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title ?? 'Select Time Range'),
+      title: Text(widget.title ?? context.tr('select_time_range')),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: const Text('Start Time'),
+            title: Text(context.tr('start_time')),
             trailing: Text(startTime == null
                 ? '--:--'
                 : startTime!.format(context)),
             onTap: _pickStartTime,
           ),
           ListTile(
-            title: const Text('End Time'),
+            title: Text(context.tr('end_time')),
             trailing:
                 Text(endTime == null ? '--:--' : endTime!.format(context)),
             onTap: _pickEndTime,
@@ -71,7 +71,7 @@ class _TimeRangePickerDialogState extends State<TimeRangePickerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.tr('cancel')),
         ),
         ElevatedButton(
           onPressed: () {
@@ -93,7 +93,7 @@ class _TimeRangePickerDialogState extends State<TimeRangePickerDialog> {
               'end': endTime,
             });
           },
-          child: const Text('Save'),
+          child: Text(context.tr('save')),
         ),
       ],
     );
