@@ -2,16 +2,16 @@ import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 
-class CustomBottomNavBarWidget extends StatelessWidget {
-  
+class CustomBottomNavBarWidget extends ConsumerWidget {
+
   const CustomBottomNavBarWidget({super.key, required this.items, required this.currentIndex, this.onTap});
   final List<BottomDataModel> items;
   final int currentIndex;
   final void Function(int)? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return 
+  Widget build(BuildContext context, WidgetRef ref) {
+    return
     Container(
       width: double.infinity,
       height: 80.r,
@@ -22,7 +22,7 @@ class CustomBottomNavBarWidget extends StatelessWidget {
       top: 15.r,
       // bottom: 30.r
      ),
-     
+
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(
@@ -50,16 +50,16 @@ class CustomBottomNavBarWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 10,
               children: [
-               SvgPicture.asset(item.icon,  colorFilter: ColorFilter.mode(selectColor, BlendMode.srcIn),),
+                SvgPicture.asset(item.icon,  colorFilter: ColorFilter.mode(selectColor, BlendMode.srcIn),),
                   Expanded(
-                    child: Text(item.title, 
+                    child: Text(item.title,
                     maxLines: 2,
                     textAlign: TextAlign.center,
                     style: context.textStyle.displaySmall!.copyWith(
                       color: selectColor
                     ),),
                   )
-                      
+
               ],
                       ),
             ),

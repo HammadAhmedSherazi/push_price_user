@@ -1,4 +1,6 @@
 
+import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
+import 'package:push_price_user/providers/notification_provider/notification_provider.dart';
 import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
@@ -29,12 +31,16 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     //     setState(() => _isBottomBarVisible = true);
     //   }
     // });
+    
     bottomNavItems = [
     BottomDataModel(title: "Home", icon: Assets.home, child: HomeView(scrollController: scrollController ,)),
     BottomDataModel(title: "Explore", icon: Assets.explore, child: ExploreView(scrollController: scrollController,)),
     BottomDataModel(title: "Favourite", icon: Assets.heart, child: FavouriteView(scrollController: scrollController,)),
     BottomDataModel(title: "Profile", icon: Assets.profile, child: ProfileView()),
   ];
+  Future.microtask((){
+    ref.read(notificationProvider.notifier).getUnreadNotificationCount();
+  });
   }
 
   void showLogoutDialog(BuildContext context) {

@@ -205,6 +205,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
     super.bestByDate,
     super.goLiveDate,
     super.listingId,
+    super.id,
    this.selectQuantity = 0,
     required this.discount,
     super.discountedPrice,
@@ -228,7 +229,8 @@ class ProductPurchasingDataModel extends ProductDataModel {
       type: base.type,
       bestByDate: base.bestByDate,
       goLiveDate: base.goLiveDate,
-      listingId: base.listingId
+      listingId: base.listingId,
+      id: base.id
       
     );
   }
@@ -256,7 +258,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
     String? type,
     DateTime? bestByDate,
     DateTime? goLiveDate,
-    int? listingId
+    int? listingId, id
   }) {
     return ProductPurchasingDataModel(
       title: title ?? this.title,
@@ -270,7 +272,8 @@ class ProductPurchasingDataModel extends ProductDataModel {
       bestByDate: bestByDate ?? this.bestByDate,
       goLiveDate: goLiveDate ?? this.goLiveDate,
       selectQuantity: selectQuantity ?? this.selectQuantity,
-      listingId: listingId ?? this.listingId
+      listingId: listingId ?? this.listingId,
+      id: id ?? id
     );
   }
 }

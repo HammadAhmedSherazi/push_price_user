@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../export_all.dart';
+import '../providers/notification_provider/notification_provider.dart';
 
 class FirebaseService {
   FirebaseService._();
@@ -17,6 +18,7 @@ class FirebaseService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   static Future<void> firebaseTokenInitial() async {
       try {
+        
         fcmToken = await firebaseMessaging.getToken() ?? "";
     debugPrint("Fcm Token - $fcmToken");
     await FirebaseMessaging.instance
@@ -45,6 +47,11 @@ class FirebaseService {
     //Message Listen from Firebase
     FirebaseMessaging.onMessage.listen((noti)async {
      handleBackgroundMessage(noti);
+     // Update unread notification count when new message arrives
+     if (AppRouter.navKey.currentContext != null) {
+       final container = ProviderScope.containerOf(AppRouter.navKey.currentContext!);
+       container.read(notificationProvider.notifier).getUnreadNotificationCount();
+     }
 
       // NotificationServices.showNotitfication(noti);
     });

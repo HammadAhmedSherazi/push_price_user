@@ -3,7 +3,8 @@ import '../../utils/extension.dart';
 
 class StoreView extends ConsumerStatefulWidget {
   final StoreDataModel storeData;
-  const StoreView({super.key, required this.storeData});
+  final int? productId;
+  const StoreView({super.key, required this.storeData, this.productId});
 
   @override
   ConsumerState<StoreView> createState() => _StoreViewState();
@@ -232,7 +233,9 @@ class _StoreViewState extends ConsumerState<StoreView> {
                           vertical: 10.r,
                           horizontal: 20.r,
                         ),
-                        decoration: AppTheme.productBoxDecoration,
+                        decoration:widget.productId != null ?AppTheme.productBoxDecoration.copyWith(
+                          color: widget.productId== product.id? AppColors.secondaryColor.withValues(alpha: 0.1) : null
+                        ) : AppTheme.productBoxDecoration,
                         child: Stack(
                           children: [
                             Positioned(

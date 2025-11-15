@@ -39,6 +39,9 @@ class ApiEndpoints {
   static const String favourites = "${user}favorites";
   static String updateFavourite(int favouriteId) => "$favourites/$favouriteId";
   static String deleteFavourite(int favouriteId) => "$favourites/$favouriteId";
+  static const String notifications = "${user}notifications";
+  static const String unreadNotificationCount = "${notifications}/unread-count";
+  static String markAsRead(int notificationId) => "$notifications/$notificationId/read";
   static const String googleMapApi = "https://maps.googleapis.com/maps/api/";
 
 }

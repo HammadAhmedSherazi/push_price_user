@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/firebase_options.dart';
 
 import 'export_all.dart';
+import 'providers/notification_provider/notification_provider.dart';
 // import 'firebase_options.dart';
 
 
@@ -30,11 +31,13 @@ void main() async {
 
   runApp(
     const ProviderScope(child: MyApp()),
-  );
-
+        );
+  await Future.delayed(Duration(seconds: 1));
   // Run heavy stuff AFTER UI built
   WidgetsBinding.instance.addPostFrameCallback((_) async {
-    await Future.wait([
+    try {
+      
+      await Future.wait([
       NotificationService.initNotifications(),
       FirebaseService.firebaseTokenInitial(),
     ]);
@@ -44,6 +47,25 @@ void main() async {
     }
 
     initializeService(); // if safe
+
+    // Initialize unread notification count
+    // if (AppRouter.navKey.currentContext != null) {
+    //   final container = ProviderScope.containerOf(AppRouter.navKey.currentContext!);
+    //   container.read(notificationProvider.notifier).getUnreadNotificationCount();
+    // }
+    } catch (e) {
+      if (Platform.isIOS) {
+      SecureStorageManager.sharedInstance.deletePreviousStorage();
+    }
+
+    initializeService(); // if safe
+
+    // Initialize unread notification count
+    // if (AppRouter.navKey.currentContext != null) {
+    //   final container = ProviderScope.containerOf(AppRouter.navKey.currentContext!);
+    //   container.read(notificationProvider.notifier).getUnreadNotificationCount();
+    // }
+    }
   });
 }
 

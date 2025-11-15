@@ -1,8 +1,9 @@
 import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
+import '../providers/notification_provider/notification_provider.dart';
 
-class CustomAppBarWidget extends StatelessWidget implements PreferredSize {
+class CustomAppBarWidget extends ConsumerWidget implements PreferredSizeWidget {
   final double height;
   final String title;
   final List<Widget> children;
@@ -19,7 +20,8 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSize {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(notificationProvider.select((e) => e.unreadCount ?? 0));
     return PreferredSize(
       preferredSize: Size.fromHeight(height),
       child: Container(
@@ -89,10 +91,35 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSize {
                     onTap: () {
                       AppRouter.push(NotificationView());
                     },
-                    child: CircleAvatar(
-                      backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
-                      radius: 20.r,
-                      child: SvgPicture.asset(Assets.notificationIcon),
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
+                          radius: 20.r,
+                          child: SvgPicture.asset(Assets.notificationIcon),
+                        ),
+                        if (unreadCount > 0)
+                          Positioned(
+                            right: 10,
+                            top: 0,
+                            child: Container(
+                              width: 16.r,
+                              height: 16.r,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                unreadCount > 99 ? '99+' : unreadCount.toString(),
+                                style: context.textStyle.bodySmall!.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 10.sp,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
@@ -107,7 +134,4 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSize {
 
   @override
   Size get preferredSize => Size.fromHeight(height);
-
-  @override
-  Widget get child => throw UnimplementedError();
 }
