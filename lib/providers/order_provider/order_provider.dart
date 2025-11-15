@@ -20,23 +20,23 @@ class OrderProvider extends Notifier<OrderState> {
       updateOrderApiResponse: ApiResponse.undertermined(),
       payNowApiResponse: ApiResponse.undertermined(),
       validateVoucherApiResponse: ApiResponse.undertermined(),
-
     );
   }
-
 
   FutureOr<void> getOrders({required String type}) async {
     if (!ref.mounted) return;
 
     try {
       state = state.copyWith(getOrdersApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.get(ApiEndpoints.orders,params: {
-        'status_filter' : type
-      });
+      final response = await MyHttpClient.instance.get(
+        ApiEndpoints.orders,
+        params: {'status_filter': type},
+      );
 
       if (!ref.mounted) return;
 
-      if (response != null && !(response is Map && response.containsKey('detail'))) {
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
         List temp = response ?? [];
         final List<OrderModel> list = List.from(
           temp.map((e) => OrderModel.fromJson(e)),
@@ -48,17 +48,15 @@ class OrderProvider extends Notifier<OrderState> {
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
-          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_orders"),
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr("failed_to_get_orders"),
         );
-        state = state.copyWith(
-          getOrdersApiResponse: ApiResponse.error(),
-        );
+        state = state.copyWith(getOrdersApiResponse: ApiResponse.error());
       }
     } catch (e) {
       if (!ref.mounted) return;
-      state = state.copyWith(
-        getOrdersApiResponse: ApiResponse.error(),
-      );
+      state = state.copyWith(getOrdersApiResponse: ApiResponse.error());
     }
   }
 
@@ -67,40 +65,42 @@ class OrderProvider extends Notifier<OrderState> {
 
     try {
       state = state.copyWith(placeOrderApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.post(ApiEndpoints.orders, orderData);
+      final response = await MyHttpClient.instance.post(
+        ApiEndpoints.orders,
+        orderData,
+      );
 
       if (!ref.mounted) return;
 
-      if (response != null && !(response is Map && response.containsKey('detail'))) {
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
         final OrderModel order = OrderModel.fromJson(response);
 
         ref.read(homeProvider.notifier).clearCartList();
         state = state.copyWith(
           placeOrderApiResponse: ApiResponse.completed(response),
           placedOrder: order,
-          validateVoucherApiResponse: ApiResponse.undertermined()
+          validateVoucherApiResponse: ApiResponse.undertermined(),
         );
 
         AppRouter.pushReplacement(
           OrderSuccessModifiedView(
-            count:count,
+            count: count,
             message: "Your Order Has Been Placed Successfully!",
           ),
         );
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
-          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_place_order"),
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr("failed_to_place_order"),
         );
-        state = state.copyWith(
-          placeOrderApiResponse: ApiResponse.error(),
-        );
+        state = state.copyWith(placeOrderApiResponse: ApiResponse.error());
       }
     } catch (e) {
       if (!ref.mounted) return;
-      state = state.copyWith(
-        placeOrderApiResponse: ApiResponse.error(),
-      );
+      state = state.copyWith(placeOrderApiResponse: ApiResponse.error());
     }
   }
 
@@ -109,11 +109,14 @@ class OrderProvider extends Notifier<OrderState> {
 
     try {
       state = state.copyWith(getOrderDetailApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.get(ApiEndpoints.getOrderDetail(orderId));
+      final response = await MyHttpClient.instance.get(
+        ApiEndpoints.getOrderDetail(orderId),
+      );
 
       if (!ref.mounted) return;
 
-      if (response != null && !(response is Map && response.containsKey('detail'))) {
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
         final OrderModel order = OrderModel.fromJson(response);
         state = state.copyWith(
           getOrderDetailApiResponse: ApiResponse.completed(response),
@@ -122,17 +125,17 @@ class OrderProvider extends Notifier<OrderState> {
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
-          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_order_detail"),
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "failed_to_get_order_detail",
+                ),
         );
-        state = state.copyWith(
-          getOrderDetailApiResponse: ApiResponse.error(),
-        );
+        state = state.copyWith(getOrderDetailApiResponse: ApiResponse.error());
       }
     } catch (e) {
       if (!ref.mounted) return;
-      state = state.copyWith(
-        getOrderDetailApiResponse: ApiResponse.error(),
-      );
+      state = state.copyWith(getOrderDetailApiResponse: ApiResponse.error());
     }
   }
 
@@ -141,12 +144,16 @@ class OrderProvider extends Notifier<OrderState> {
 
     try {
       state = state.copyWith(cancelOrderApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.post(ApiEndpoints.cancelOrder(orderId), null);
+      final response = await MyHttpClient.instance.post(
+        ApiEndpoints.cancelOrder(orderId),
+        null,
+      );
 
       if (!ref.mounted) return;
 
-      if (response != null && !(response is Map && response.containsKey('detail'))) {
-         Helper.showMessage(
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
+        Helper.showMessage(
           AppRouter.navKey.currentContext!,
           message: "Order successfully cancelled!",
         );
@@ -157,30 +164,35 @@ class OrderProvider extends Notifier<OrderState> {
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
-          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_cancel_order"),
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr("failed_to_cancel_order"),
         );
-        state = state.copyWith(
-          cancelOrderApiResponse: ApiResponse.error(),
-        );
+        state = state.copyWith(cancelOrderApiResponse: ApiResponse.error());
       }
     } catch (e) {
       if (!ref.mounted) return;
-      state = state.copyWith(
-        cancelOrderApiResponse: ApiResponse.error(),
-      );
+      state = state.copyWith(cancelOrderApiResponse: ApiResponse.error());
     }
   }
 
-  FutureOr<void> validateVoucher({required String voucherCode, required num totalAmount}) async {
+  FutureOr<void> validateVoucher({
+    required String voucherCode,
+    required num totalAmount,
+  }) async {
     if (!ref.mounted) return;
 
     try {
       state = state.copyWith(validateVoucherApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.post(ApiEndpoints.validateVoucher, {"code": voucherCode, "order_total": totalAmount});
+      final response = await MyHttpClient.instance.post(
+        ApiEndpoints.validateVoucher,
+        {"code": voucherCode, "order_total": totalAmount},
+      );
 
       if (!ref.mounted) return;
 
-      if (response != null && !(response is Map && response.containsKey('detail'))) {
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
         final VoucherModel voucher = VoucherModel.fromJson(response);
         state = state.copyWith(
           validateVoucherApiResponse: ApiResponse.completed(voucher),
@@ -188,92 +200,105 @@ class OrderProvider extends Notifier<OrderState> {
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
-          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_validate_voucher"),
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "failed_to_validate_voucher",
+                ),
         );
-        state = state.copyWith(
-          validateVoucherApiResponse: ApiResponse.error(),
-        );
+        state = state.copyWith(validateVoucherApiResponse: ApiResponse.error());
       }
     } catch (e) {
       if (!ref.mounted) return;
-      state = state.copyWith(
-        validateVoucherApiResponse: ApiResponse.error(),
-      );
+      state = state.copyWith(validateVoucherApiResponse: ApiResponse.error());
     }
   }
 
-  FutureOr<void> updateOrder({required int orderId, required List<Map<String, dynamic>> items}) async {
+  FutureOr<void> updateOrder({
+    required int orderId,
+    required List<Map<String, dynamic>> items,
+  }) async {
     if (!ref.mounted) return;
 
     try {
       state = state.copyWith(updateOrderApiResponse: ApiResponse.loading());
-      final response = await MyHttpClient.instance.put(ApiEndpoints.updateOrder(orderId), {"items": items});
+      final response = await MyHttpClient.instance.put(
+        ApiEndpoints.updateOrder(orderId),
+        {"items": items},
+      );
 
       if (!ref.mounted) return;
 
-      if (response != null && !(response is Map && response.containsKey('detail'))) {
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
         state = state.copyWith(
           updateOrderApiResponse: ApiResponse.completed(response),
         );
-        AppRouter.pushReplacement(OrderSuccessModifiedView(
-          message: "Your Order Has Been Modified Successfully!",
-        ));
+        AppRouter.pushReplacement(
+          OrderSuccessModifiedView(
+            message: "Your Order Has Been Modified Successfully!",
+          ),
+        );
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
-          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_update_order"),
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr("failed_to_update_order"),
         );
-        state = state.copyWith(
-          updateOrderApiResponse: ApiResponse.error(),
-        );
+        state = state.copyWith(updateOrderApiResponse: ApiResponse.error());
       }
     } catch (e) {
       if (!ref.mounted) return;
-      state = state.copyWith(
-        updateOrderApiResponse: ApiResponse.error(),
-      );
+      state = state.copyWith(updateOrderApiResponse: ApiResponse.error());
     }
   }
-  
-  FutureOr<void> payNow({required int orderId, required String chainCode}) async {
+
+  FutureOr<void> payNow({
+    required int orderId,
+    required String chainCode,
+  }) async {
     if (!ref.mounted) return;
     String paymentIntentId = state.orderDetail?.paymentIntentId ?? "";
-    
 
     try {
       state = state.copyWith(payNowApiResponse: ApiResponse.loading());
-      if(paymentIntentId != ""){
-      confirmPayment(orderId, paymentIntentId);
-      return;
-    }
-      
+      if (paymentIntentId != "") {
+        confirmPayment(orderId, paymentIntentId);
+        return;
+      }
+
       // Create payment intent
-      final intentResponse = await MyHttpClient.instance.post(ApiEndpoints.paymentIntent(orderId), {"chain_code": chainCode});
+      final intentResponse = await MyHttpClient.instance.post(
+        ApiEndpoints.paymentIntent(orderId),
+        {"chain_code": chainCode},
+      );
 
       if (!ref.mounted) return;
 
-      if (intentResponse != null && !(intentResponse is Map && intentResponse.containsKey('detail'))) {
+      if (intentResponse != null &&
+          !(intentResponse is Map && intentResponse.containsKey('detail'))) {
         String clientSecret = intentResponse['client_secret'];
         num amount = intentResponse['amount'];
         String currency = intentResponse['currency'];
         String status = intentResponse['status'];
         paymentIntentId = intentResponse['payment_intent_id'];
-        
 
         // Make payment with Stripe
         await makePayment(clientSecret);
-          // state = state.copyWith(payNowApiResponse: ApiResponse.completed(intentResponse));
+        // state = state.copyWith(payNowApiResponse: ApiResponse.completed(intentResponse));
 
         confirmPayment(orderId, paymentIntentId);
-
-        
-
-        
       } else {
         state = state.copyWith(payNowApiResponse: ApiResponse.error());
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
-          message: (intentResponse is Map && intentResponse.containsKey('detail')) ? intentResponse['detail'] as String : AppRouter.navKey.currentContext!.tr("payment_intent_creation_failed"),
+          message:
+              (intentResponse is Map && intentResponse.containsKey('detail'))
+              ? intentResponse['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "payment_intent_creation_failed",
+                ),
         );
       }
     } catch (e) {
@@ -285,27 +310,37 @@ class OrderProvider extends Notifier<OrderState> {
       );
     }
   }
-  Future<void> confirmPayment(int orderId,String paymentIntentId)async{
+
+  Future<void> confirmPayment(int orderId, String paymentIntentId) async {
     try {
       if (!ref.mounted) return;
-        // Confirm payment
-        final confirmResponse = await MyHttpClient.instance.post(ApiEndpoints.confirmPayment(orderId), {
-  "payment_intent_id": paymentIntentId
-});
-        if (confirmResponse != null && !(confirmResponse is Map && confirmResponse.containsKey('detail'))) {
-          state = state.copyWith(payNowApiResponse: ApiResponse.completed(confirmResponse));
-          AppRouter.push(OrderDetailView(orderId: orderId, afterPayment: true,));
-          Helper.showMessage(
-            AppRouter.navKey.currentContext!,
-            message: "Payment successful!",
-          );
-        } else {
-          state = state.copyWith(payNowApiResponse: ApiResponse.error());
-          Helper.showMessage(
-            AppRouter.navKey.currentContext!,
-            message: (confirmResponse is Map && confirmResponse.containsKey('detail')) ? confirmResponse['detail'] as String : AppRouter.navKey.currentContext!.tr("payment_confirmation_failed"),
-          );
-        }
+      // Confirm payment
+      final confirmResponse = await MyHttpClient.instance.post(
+        ApiEndpoints.confirmPayment(orderId),
+        {"payment_intent_id": paymentIntentId},
+      );
+      if (confirmResponse != null &&
+          !(confirmResponse is Map && confirmResponse.containsKey('detail'))) {
+        state = state.copyWith(
+          payNowApiResponse: ApiResponse.completed(confirmResponse),
+        );
+        AppRouter.push(OrderDetailView(orderId: orderId, afterPayment: true));
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: "Payment successful!",
+        );
+      } else {
+        state = state.copyWith(payNowApiResponse: ApiResponse.error());
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message:
+              (confirmResponse is Map && confirmResponse.containsKey('detail'))
+              ? confirmResponse['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "payment_confirmation_failed",
+                ),
+        );
+      }
     } catch (e) {
       state = state.copyWith(payNowApiResponse: ApiResponse.error());
     }
@@ -331,9 +366,9 @@ class OrderProvider extends Notifier<OrderState> {
     }
   }
 
-  void voucherApiUnset(){
-    state =state.copyWith(
-      validateVoucherApiResponse: ApiResponse.undertermined()
+  void voucherApiUnset() {
+    state = state.copyWith(
+      validateVoucherApiResponse: ApiResponse.undertermined(),
     );
   }
 }

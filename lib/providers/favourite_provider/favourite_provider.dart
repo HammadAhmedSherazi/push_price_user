@@ -159,11 +159,11 @@ class FavouriteProvider extends Notifier<FavouriteState> {
     }
   }
 
-  FutureOr<void> addNewFavourite(Map<String, dynamic> favouriteData, bool isSignup) async {
+  FutureOr<void> addNewFavourite(Map<String, dynamic> favouriteData, bool isSignup, bool isScan) async {
     if (!ref.mounted) return;
 
     try {
-      state = state.copyWith(addNewFavouriteApiResponse: ApiResponse.loading());
+      state = state.copyWith(addNewFavouriteApiResponse: ApiResponse.loading(), );
       final response = await MyHttpClient.instance.post(ApiEndpoints.favourites, favouriteData);
 
       if (!ref.mounted) return;
@@ -173,7 +173,7 @@ class FavouriteProvider extends Notifier<FavouriteState> {
           AppRouter.pushAndRemoveUntil(NavigationView());
         }
         else{
-          AppRouter.customback(times: 2);
+          AppRouter.customback(times: isScan?4 : 2);
           getFavouriteProducts();
         
         }
@@ -183,6 +183,7 @@ class FavouriteProvider extends Notifier<FavouriteState> {
         );
         state = state.copyWith(
           addNewFavouriteApiResponse: ApiResponse.completed(response),
+          products: [],
         );
       } else {
         Helper.showMessage(

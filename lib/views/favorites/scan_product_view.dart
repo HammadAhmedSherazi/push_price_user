@@ -18,7 +18,7 @@ class ScanProductView extends StatelessWidget {
           Expanded(
             child: Align(
               alignment: Alignment.center,
-              child: SvgPicture.asset(Assets.barCodeScanIcon)),
+              child: DisplayNetworkImage(imageUrl: product.image, width: 150.r, height: 150.r,)),
           ),
           Container(
             width: double.infinity,
@@ -67,7 +67,7 @@ class ScanProductView extends StatelessWidget {
                     return CustomButtonWidget(title: context.tr("select_product"), onPressed: (){
                       ref.read(favouriteProvider.notifier).addProduct(product);
                       
-                      AppRouter.push(AddNewFavouriteView(isSignUp: isSignUp,));
+                      AppRouter.push(AddNewFavouriteView(isSignUp: isSignUp,isScan: true,));
                     });
                   }
                 )

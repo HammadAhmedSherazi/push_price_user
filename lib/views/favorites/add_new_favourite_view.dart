@@ -7,10 +7,12 @@ import '../../utils/extension.dart';
 class AddNewFavouriteView extends ConsumerStatefulWidget {
   final bool isSignUp;
   final FavouriteModel? data;
+  final bool? isScan;
   const AddNewFavouriteView({
     super.key,
     this.data,
     required this.isSignUp,
+    this.isScan = false
   });
 
   @override
@@ -24,7 +26,8 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
 
   int selectIndex = -1;
   bool selectTravelMode = false;
-  num radius = 0;
+  double radius = 0;
+  String distanceUnit = "METERS";
   @override
   void initState() {
     Future.microtask(() {
@@ -35,11 +38,21 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
       if(widget.data != null)
       {
       selectTravelMode = widget.data!.travelMode;
-      radius = widget.data!.distanceValue;
+      radius = double.tryParse(widget.data!.distanceValue.toString()) ?? 0.0;
+      distanceUnit = widget.data!.distanceUnit;
 
       }
-      setState(() {});
+      setState(() {
+        
+      });
+      
     });
+    // Future.delayed(Duration(seconds: 3),(){
+    //   if(!isSet){
+    //   isSet = true;
+    // }
+    //   setState(() {});
+    // });
     
     super.initState();
   }
@@ -50,10 +63,14 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
       setState(() {});
     }
   }
+  bool isSet = false;
 
   
   @override
   Widget build(BuildContext context) {
+    // if(!isSet){
+    //   isSet = true;
+    // }
     return CustomScreenTemplate(
       showBottomButton: true,
       customBottomWidget: Consumer(
@@ -95,15 +112,15 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
                       "product_ids": products.map((e) => e.id).toList(),
                       "address_ids": addressIds,
                       "distance_value": radius,
-                      "distance_unit": "METERS",
+                      "distance_unit": distanceUnit,
                       "travel_mode": selectTravelMode,
                     };
                   if (widget.data == null || widget.isSignUp) {
                     
 
-                    ref.read(favouriteProvider.notifier).addNewFavourite(data,widget.isSignUp);
+                    ref.read(favouriteProvider.notifier).addNewFavourite(data,widget.isSignUp,widget.isScan!);
                   } else {
-                    ref.read(favouriteProvider.notifier).updateFavourite(favouriteId: widget.data!.favoriteId, favouriteData: data);
+                    ref.read(favouriteProvider.notifier).updateFavourite(favouriteId: widget.data!.favoriteId, favouriteData: data,);
                   }
                 
               },
@@ -137,13 +154,44 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
             padding: EdgeInsets.symmetric(
               horizontal: AppTheme.horizontalPadding,
             ),
-            child: Text("Distance", style: context.textStyle.displayMedium),
+            child: Row(
+              children: [
+                Text("Distance", style: context.textStyle.displayMedium),
+                const Spacer(),
+                DropdownButton<String>(
+                  value: distanceUnit,
+                  items: const [
+                    DropdownMenuItem(value: "METERS", child: Text("Meters")),
+                    DropdownMenuItem(value: "KILOMETERS", child: Text("Kilometers")),
+                  ],
+                  onChanged: (value) {
+                    if(value == null) return;
+                    setState(() {
+                      distanceUnit = value;
+                      radius = 0;
+                    });
+                    
+                    // Handle unit change if needed
+                  },
+                  underline: const SizedBox(),
+                  style: context.textStyle.bodyMedium,
+                ),
+              ],
+            ),
           ),
           10.ph,
           CustomRangeSlider(
-            initialValue: widget.data != null ?widget.data!.distanceValue: radius,
+            unit: distanceUnit,
+            isSet: isSet,
+            initialValue: widget.data != null ?double.tryParse(widget.data!.distanceValue.toString())!: radius,
             onValueChanged: (value) {
-              radius = value;
+              if(!isSet){
+                isSet = true;
+              }
+              setState(() {
+
+                radius = value;
+              });
             },
           ),
           20.ph,
@@ -335,7 +383,9 @@ class ProductPriceTitleWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  product.category?.title ?? "",
+                  product.description,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: context.textStyle.bodySmall!.copyWith(
                     color: AppColors.primaryTextColor.withValues(alpha: 0.7),
                   ),
@@ -356,22 +406,52 @@ class ProductPriceTitleWidget extends StatelessWidget {
 
 class CustomRangeSlider extends StatefulWidget {
   final ValueChanged<double>? onValueChanged;
-  final num initialValue;
-  const CustomRangeSlider({super.key, this.onValueChanged,required this.initialValue});
+  final double initialValue;
+  final String unit;
+  final bool isSet;
+  const CustomRangeSlider({super.key, this.onValueChanged,required this.initialValue, required this.unit, required this.isSet});
 
   @override
   State<CustomRangeSlider> createState() => _CustomRangeSliderState();
 }
 
 class _CustomRangeSliderState extends State<CustomRangeSlider> {
-   double _endValue = 17;
+   double _endValue = 0;
+   String symbol = 'm';
+   int maxValue = 0;
+
   @override
   void initState() {
     super.initState();
-    _endValue = double.parse(widget.initialValue.toString());
-    
+    _updateValues();
+    _endValue = widget.initialValue.clamp(0.0, maxValue.toDouble());
+   
   }
- 
+
+  void _updateValues() {
+    if (widget.unit == "METERS") {
+      symbol = 'm';
+      _endValue = 0;
+      maxValue = 1000;
+    } else {
+      symbol = 'km';
+      _endValue = 0;
+      maxValue = 100;
+    }
+  }
+
+  @override
+  void didUpdateWidget(CustomRangeSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    //  _endValue = widget.initialValue.clamp(0.0, maxValue.toDouble());
+    if (oldWidget.unit != widget.unit) {
+      _updateValues();
+       // Use initial value clamped to new range
+    }
+    if(!widget.isSet){
+      _endValue = widget.initialValue.clamp(0.0, maxValue.toDouble());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -384,14 +464,12 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
               activeTrackColor: AppColors.secondaryColor,
               inactiveTrackColor: Colors.teal.shade100,
               thumbColor: AppColors.secondaryColor,
-
               overlayColor: AppColors.secondaryColor.withValues(alpha: 0.2),
             ),
-
             child: Slider(
               value: _endValue,
               min: 0,
-              max: 20,
+              max: maxValue.toDouble(),
               onChanged: (value) {
                 setState(() => _endValue = value);
                 widget.onValueChanged?.call(value);
@@ -404,19 +482,19 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "0m",
+                  "0$symbol",
                   style: context.textStyle.bodyMedium!.copyWith(
                     color: AppColors.secondaryColor,
                   ),
                 ),
                 Text(
-                  "${_endValue.toInt()}m",
+                  "${_endValue.toInt()}$symbol",
                   style: context.textStyle.bodyMedium!.copyWith(
                     color: AppColors.secondaryColor,
                   ),
                 ),
                 Text(
-                  "20m",
+                  "$maxValue$symbol",
                   style: context.textStyle.bodyMedium!.copyWith(
                     color: AppColors.secondaryColor,
                   ),

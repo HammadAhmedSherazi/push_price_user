@@ -227,7 +227,14 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
                       Text("${item.quantity}", style: context.textStyle.displayMedium),
                       GestureDetector(
                         onTap: () {
-                          addQuantity(index);
+                          if(item.quantity < item.listingData.quantity){
+                            addQuantity(index);
+                          }
+                          else{
+                            Helper.showMessage(AppRouter.navKey.currentState!.context, message: AppRouter.navKey.currentState!.context.tr('not_available_quantity_to_select'));
+        return;
+                          }
+                          
                         },
                         child: SvgPicture.asset(Assets.plusSquareIcon),
                       ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -20,25 +21,30 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await initializeService();
+  await SharedPreferenceManager.init();
+
   Stripe.publishableKey = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM';
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Future.wait([
-    ScreenUtil.ensureScreenSize(),
-    SharedPreferenceManager.init(),
-    NotificationService.initNotifications(),
-    
-  ]);
-  
-  // await Future.delayed(Duration(seconds: 5));
-  // Initialize Firebase Messaging
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await FirebaseService.firebaseTokenInitial();
-  // SecureStorageManager doesn't need initialization
-   runApp(
-    // Adding ProviderScope enables Riverpod for the entire project
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(
     const ProviderScope(child: MyApp()),
   );
+
+  // Run heavy stuff AFTER UI built
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    await Future.wait([
+      NotificationService.initNotifications(),
+      FirebaseService.firebaseTokenInitial(),
+    ]);
+
+    if (Platform.isIOS) {
+      SecureStorageManager.sharedInstance.deletePreviousStorage();
+    }
+
+    initializeService(); // if safe
+  });
 }
 
 Future<void> initializeService() async {
@@ -73,19 +79,20 @@ Future<bool> onIosBackgroundWrapper(ServiceInstance service) async {
 @pragma('vm:entry-point')
 Future<bool> onIosBackground(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+  final hasToken = await SecureStorageManager.sharedInstance.hasToken();
+  final user = await SecureStorageManager.sharedInstance.getUserData();
  
   
   // Start location tracking for iOS background
+
   // Note: iOS has strict limitations - background location may not work when app is completely killed
-  Timer.periodic(const Duration(seconds: 5), (timer) async {
+  
+  // Recursive location fetch to prevent overlaps for iOS
+  Future<void> performLocationUpdate() async {
     try {
-      // Re-check travel mode status on each iteration
-      final hasToken = await SecureStorageManager.sharedInstance.hasToken();
-      final user = await SecureStorageManager.sharedInstance.getUserData();
       if (user != null) {
         final userData = UserDataModel.fromJson(jsonDecode(user));
-        
+
         if (hasToken && userData.isTravelMode) {
           // Fetch current location with retry logic for iOS
           LocationDataModel? locationData;
@@ -110,22 +117,23 @@ Future<bool> onIosBackground(ServiceInstance service) async {
             }
           }
 
-
-         
-
           // Update profile if location changed
           if (userData.latitude != locationData.latitude ||
               userData.longitude != locationData.longitude) {
-                AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: locationData.latitude, longitude: locationData.longitude));
+            await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: locationData.latitude, longitude: locationData.longitude), onBackground: true);
           }
         }
       }
     } catch (e) {
-      // Show error notification with more details
-     
+      // Handle errors silently in background
     }
-    // NotificationService.showNotification(title: "Test Notification", body:"sgdhsgd");
-  });
+
+    // Schedule next update after 60 seconds
+    Future.delayed(const Duration(seconds: 60), performLocationUpdate);
+  }
+
+  // Start the first update
+  performLocationUpdate();
   
   return true;
 }
@@ -145,7 +153,9 @@ void onStart(ServiceInstance service) async {
   // Periodic location fetch
   // Note: For testing, you can reduce the interval (e.g., Duration(seconds: 10))
   // In production, use a longer interval (e.g., 20-30 seconds) to save battery
-  Timer.periodic(const Duration(seconds: 5), (timer) async {
+  // Recursive location fetch to prevent overlaps
+  // Note: Interval set to 60 seconds to reduce frequency and prevent ANR
+  Future<void> performLocationUpdate() async {
     try {
       // Check if service is still running (works for both Android and iOS)
       bool isServiceRunning = false;
@@ -161,7 +171,7 @@ void onStart(ServiceInstance service) async {
         final user = await SecureStorageManager.sharedInstance.getUserData();
         if (user != null) {
           final userData = UserDataModel.fromJson(jsonDecode(user));
-          
+
           if (userData.isTravelMode) {
             // Fetch current location
             final position = await GeolocatorService.geolocatorInstance
@@ -179,17 +189,11 @@ void onStart(ServiceInstance service) async {
               );
             }
 
-            // Show notification with location for testing (works on both iOS and Android)
-           
-
             // Update profile if location changed
-            // TODO: Replace this with direct API call when ready
-            // AuthProvider won't work in background isolate (needs Riverpod context)
-            // Use MyHttpClient.instance.put(ApiEndpoints.updateProfile, {...}) directly
-             if (userData.latitude != position.latitude ||
-              userData.longitude != position.longitude) {
-                AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: position.latitude, longitude: position.longitude), onBackground: true);
-          }
+            if (userData.latitude != position.latitude ||
+                userData.longitude != position.longitude) {
+              await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: position.latitude, longitude: position.longitude), onBackground: true);
+            }
           } else {
             // Travel mode is off, update notification (Android only)
             if (service is AndroidServiceInstance) {
@@ -209,13 +213,14 @@ void onStart(ServiceInstance service) async {
           content: "Error: ${e.toString()}",
         );
       }
-      
-      // Show error notification for testing (works on both iOS and Android)
-      
     }
-    // NotificationService.showNotification(title: "Test Notification 2", body:"sgdhsgd");
 
-  });
+    // Schedule next update after 60 seconds
+    Future.delayed(const Duration(seconds: 60), performLocationUpdate);
+  }
+
+  // Start the first update
+  performLocationUpdate();
 }
 
 class MyApp extends ConsumerWidget {

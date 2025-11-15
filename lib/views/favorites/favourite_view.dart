@@ -183,15 +183,15 @@ class FavouriteTitleWidget extends StatelessWidget {
     child: Row(
       spacing: 10,
       children: [
-        Image.asset(Assets.groceryBag,width: 57.w, height: 70.h,),
-        // DisplayNetworkImage(imageUrl:  favourite.products.first.image, width: 57.w, height: 70.h,),
+        // Image.asset(Assets.groceryBag,width: 57.w, height: 70.h,),
+        DisplayNetworkImage(imageUrl:  favourite.products.first.image, width: 57.w, height: 70.h,),
         Expanded(
           child: Column(
             spacing: 12,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Favourite ${favourite.favoriteId}', style: context.textStyle.bodyMedium),
-              Text('${favourite.products.length} products', style: context.textStyle.bodySmall!.copyWith(
+              Text(favourite.products.first.title, style: context.textStyle.bodyMedium),
+              Text(favourite.products.first.category?.title ?? favourite.products.first.description, style: context.textStyle.bodySmall!.copyWith(
                 color: AppColors.primaryTextColor.withValues(alpha: 0.7),
     
               )),

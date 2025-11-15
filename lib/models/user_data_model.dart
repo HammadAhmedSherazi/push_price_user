@@ -65,7 +65,20 @@ class UserDataModel {
       'latitude' : latitude,
       'device_token' : deviceToken
     };
+    
   }
+  Map<String, dynamic> toUpdateJson() {
+  return {
+    'full_name': fullName,
+    'phone_number': phoneNumber,
+    'address': address,
+    'profile_image': profileImage,
+    'latitude': latitude,
+    'longitude': longitude,
+    'is_travel_enabled': isTravelMode,
+    'device_token': deviceToken,
+  };
+}
 
   UserDataModel copyWith({
     int? userId,

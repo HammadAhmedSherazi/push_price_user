@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:push_price_user/export_all.dart';
-
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart' as pp;
 class SecureStorageManager {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -58,5 +61,13 @@ class SecureStorageManager {
     // await clearEmail();
     // await clearPass();
     // await clearRememberMe();
+  }
+  Future<void> deletePreviousStorage() async {
+    File file = File(p.join(
+        (await pp.getApplicationSupportDirectory()).path, 'first_launch'));
+    if (!file.existsSync()) {
+      await const FlutterSecureStorage().deleteAll();
+      file.createSync();
+    }
   }
 }
