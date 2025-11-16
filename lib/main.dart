@@ -140,10 +140,8 @@ Future<bool> onIosBackground(ServiceInstance service) async {
           }
 
           // Update profile if location changed
-          if (userData.latitude != locationData.latitude ||
-              userData.longitude != locationData.longitude) {
-            await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: locationData.latitude, longitude: locationData.longitude), onBackground: true);
-          }
+          await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: locationData.latitude, longitude: locationData.longitude), onBackground: true);
+
         }
       }
     } catch (e) {
@@ -211,11 +209,8 @@ void onStart(ServiceInstance service) async {
               );
             }
 
-            // Update profile if location changed
-            if (userData.latitude != position.latitude ||
-                userData.longitude != position.longitude) {
-              await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: position.latitude, longitude: position.longitude), onBackground: true);
-            }
+           await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: position.latitude, longitude: position.longitude), onBackground: true);
+
           } else {
             // Travel mode is off, update notification (Android only)
             if (service is AndroidServiceInstance) {
