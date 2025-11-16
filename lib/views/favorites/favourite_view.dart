@@ -184,7 +184,7 @@ class FavouriteTitleWidget extends StatelessWidget {
       spacing: 10,
       children: [
         // Image.asset(Assets.groceryBag,width: 57.w, height: 70.h,),
-        DisplayNetworkImage(imageUrl:  favourite.products.first.image, width: 57.w, height: 70.h,),
+        DisplayNetworkImage(imageUrl:  favourite.products.first.image, width: 57.r, height: 70.r,),
         Expanded(
           child: Column(
             spacing: 12,

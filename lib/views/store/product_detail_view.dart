@@ -6,12 +6,15 @@ class ProductDetailView extends ConsumerStatefulWidget {
   final ProductDataModel product;
   final int storeId;
   final num discount;
+  final bool? isFavourite;
   const ProductDetailView({
     super.key,
     required this.quatity,
     required this.product,
     required this.discount,
-    required this.storeId
+    required this.storeId,
+    this.isFavourite = false
+
   });
 
   @override
@@ -63,7 +66,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      bottomSheet: count > 0
+      bottomSheet: count > 0 && !widget.isFavourite!
           ? Padding(
               padding: EdgeInsets.all(AppTheme.horizontalPadding),
               child: CustomButtonWidget(
@@ -122,7 +125,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Image.asset(Assets.groceryBag, width: 80.h, height: 80.h),
+              DisplayNetworkImage(imageUrl: widget.product.image , width: 80.r, height: 80.r),
               Positioned(
                 left: 20.r,
                 top: 50.r,
@@ -196,7 +199,8 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
               ],
             ),
           ),
-          10.ph,
+          if(!widget.isFavourite!)...[
+             10.ph,
           Row(
             children: quantity > 0
                 ? [
@@ -300,13 +304,13 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             spacing: 3,
                             children: [
-                              Image.asset(Assets.groceryBag, width: 40.r),
+                              DisplayNetworkImage(imageUrl: product.image, width: 49.r, height: 61.r ,),
                               5.ph,
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    product.title ?? "Product",
+                                    product.title ,
                                     style: context.textStyle.displaySmall,
                                   ),
                                 ],
@@ -341,7 +345,9 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
             ),
          ),
         
-        ],
+        
+          ],
+         ],
       ),
     );
   }

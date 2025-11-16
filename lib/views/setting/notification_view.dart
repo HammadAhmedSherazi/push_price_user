@@ -122,7 +122,7 @@ class NotificationTile extends StatelessWidget {
               ),
               child: SvgPicture.asset(Assets.notificationWhiteIcon),
             ),
-            title: Text(notification.title, style: context.textStyle.displayMedium!.copyWith(
+            title: Text(notification.product?.title ?? notification.title, style: context.textStyle.displayMedium!.copyWith(
               color: AppColors.secondaryColor,
               height: 1.0,
               fontSize: 16.sp

@@ -11,8 +11,9 @@ class CustomScreenTemplate extends StatelessWidget {
   final VoidCallback ? onButtonTap;
   final Widget? actionWidget;
   final Widget child;
+  final Widget? floatingActionButton;
   final PreferredSizeWidget? bottom;
-  const CustomScreenTemplate({super.key, required this.title, this.bottomButtonText, this.customBottomWidget, this.showBottomButton = false, this.onBackCall, this.onButtonTap, required this.child, this.actionWidget, this.bottom});
+  const CustomScreenTemplate({super.key, required this.title, this.bottomButtonText, this.customBottomWidget, this.showBottomButton = false, this.onBackCall, this.onButtonTap, required this.child, this.actionWidget, this.bottom, this.floatingActionButton});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,8 @@ class CustomScreenTemplate extends StatelessWidget {
         bottom: 10.h
       ),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        floatingActionButton: floatingActionButton,
+        resizeToAvoidBottomInset: true,
         // bottomSheet: (showBottomButton ?? false)? customBottomWidget ?? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),) : null,
 
         appBar:AppBar(

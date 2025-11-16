@@ -374,9 +374,9 @@ class AuthProvider  extends Notifier<AuthState> {
        try {
       state = state.copyWith(updateProfileApiResponse: ApiResponse.loading());
       
-      print(userDataModel.toUpdateJson());
+ 
       
-      final response = await MyHttpClient.instance.put(ApiEndpoints.updateProfile, userDataModel.toUpdateJson());
+      final response = await MyHttpClient.instance.put(ApiEndpoints.updateProfile, userDataModel.toJson());
 
 
       if(response != null && !(response is Map && response.containsKey('detail'))){

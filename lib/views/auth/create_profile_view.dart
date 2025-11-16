@@ -192,7 +192,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
             ),
             10.ph,
             TextFormField(
-              readOnly: widget.isEdit ?? false,
+            
               onTapOutside: (event) {
                 FocusScope.of(context).unfocus();
               },

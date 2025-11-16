@@ -1,4 +1,3 @@
-import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 import '../export_all.dart' hide PhoneNumber;
@@ -45,7 +44,8 @@ Widget build(BuildContext context) {
     onInputValidated: (bool value) {
       // print(value);
     },
-
+    
+  keyboardAction : TextInputAction.done ,
     selectorConfig: SelectorConfig(
 
       // selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
@@ -54,7 +54,7 @@ Widget build(BuildContext context) {
 
       setSelectorButtonAsPrefixIcon: true, // 👈 Key line here
     ),
-
+    
     ignoreBlank: true,
 
     autoValidateMode: AutovalidateMode.disabled,
@@ -70,10 +70,13 @@ Widget build(BuildContext context) {
     // ),
 
 
-    keyboardType: TextInputType.phone,
+    keyboardType: TextInputType.number,
     inputBorder: OutlineInputBorder(
 
     ),
+    onSubmit: () {
+      FocusScope.of(context).unfocus();
+    },
     onSaved: (PhoneNumber number) {
       // print('On Saved: $number');
     },

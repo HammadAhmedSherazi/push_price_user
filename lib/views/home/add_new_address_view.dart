@@ -122,6 +122,32 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final user = ref.watch(authProvider.select((e) => e.userData));
+          double? lat = double.tryParse("${user?.latitude}");
+          double? lon = double.tryParse("${user?.longitude}");
+          if (lat == 0.0 && lon == 0.0) {
+            ref.read(geolocatorProvider.notifier).getCurrentLocation().then((
+              value,
+            ) {
+              if (value != null) {
+                _selectSearchResult(
+                  LocationDataModel(
+                    latitude: value.latitude,
+                    longitude: value.longitude,
+                  ),
+                );
+              }
+            });
+          } else {
+            _selectSearchResult(
+              LocationDataModel(latitude: lat!, longitude: lon!),
+            );
+          }
+        },
+        child: const Icon(Icons.my_location),
+      ),
       showBottomButton: _selectedLocationData != null,
       customBottomWidget: Padding(
         padding: EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding),
@@ -137,6 +163,11 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
             return CustomButtonWidget(
               isLoad: isLoad,
               onPressed: () {
+                final labelController = TextEditingController(
+  text: widget.addressToEdit?.label ?? "",
+);
+final formKey = GlobalKey<FormState>();
+final FocusNode focusNode = FocusNode();
                 showModalBottomSheet(
                   context: context,
                   shape: RoundedRectangleBorder(
@@ -147,14 +178,14 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                   isScrollControlled: true,
                   backgroundColor: Colors.white,
                   builder: (bottomSheetContext) {
-                    final TextEditingController labelController =
-                        TextEditingController(
-                          text: widget.addressToEdit != null
-                              ? widget.addressToEdit?.label ?? ""
-                              : null,
-                        );
-                    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-                    final FocusNode focusNode = FocusNode();
+                    // final TextEditingController labelController =
+                    //     TextEditingController(
+                    //       text: widget.addressToEdit != null
+                    //           ? widget.addressToEdit?.label ?? ""
+                    //           : null,
+                    //     );
+                    // final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+                    // final FocusNode focusNode = FocusNode();
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       focusNode.requestFocus();
                     });
@@ -190,79 +221,86 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                                   return null;
                                 },
                               ),
-                            20.ph,
-                            Consumer(
-                              builder: (context, ref, child) {
-                                final locationData = ref.watch(
-                                  geolocatorProvider.select(
-                                    (e) => e.locationData,
-                                  ),
-                                );
-                                final isLoading = ref.watch(
-                                  geolocatorProvider.select(
-                                    (e) => widget.addressToEdit != null
-                                        ? e.updateAddressApiResponse.status ==
-                                              Status.loading
-                                        : e.addAddressApiResponse.status ==
-                                              Status.loading,
-                                  ),
-                                );
-                                return CustomButtonWidget(
-                                  isLoad: isLoading,
-                                  onPressed: () {
-                                    if (formKey.currentState?.validate() ==
-                                            true &&
-                                        locationData != null) {
-                                      final updatedData = _selectedLocationData!
-                                          .copyWith(
-                                            label: labelController.text.trim(),
-                                            isActive:
-                                                widget.addressToEdit?.isActive,
-                                          );
-                                      if (widget.addressToEdit != null) {
-                                        ref
-                                            .read(geolocatorProvider.notifier)
-                                            .updateAddress(
-                                              widget.addressToEdit!.addressId!,
-                                              updatedData.toJson(),
+                              20.ph,
+                              Consumer(
+                                builder: (context, ref, child) {
+                                  // final locationData = ref.watch(
+                                  //   geolocatorProvider.select(
+                                  //     (e) => e.locationData,
+                                  //   ),
+                                  // );
+                                  final isLoading = ref.watch(
+                                    geolocatorProvider.select(
+                                      (e) => widget.addressToEdit != null
+                                          ? e.updateAddressApiResponse.status ==
+                                                Status.loading
+                                          : e.addAddressApiResponse.status ==
+                                                Status.loading,
+                                    ),
+                                  );
+                                  return CustomButtonWidget(
+                                    isLoad: isLoading,
+                                    onPressed: () {
+                                      if (formKey.currentState?.validate() ==
+                                              true &&
+                                          _selectedLocationData != null) {
+                                        final updatedData =
+                                            _selectedLocationData!.copyWith(
+                                              label: labelController.text
+                                                  .trim(),
+                                              isActive: widget
+                                                  .addressToEdit
+                                                  ?.isActive,
                                             );
-                                      } else {
-                                        ref
-                                            .read(geolocatorProvider.notifier)
-                                            .addAddress(updatedData.toJson());
-                                      }
-                                      // close bottom sheet
-                                    } else if (locationData == null) {
-                                      // Handle case where location data is not available
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            context.tr(
-                                              "location_data_not_available_please_try_again",
+                                        if (widget.addressToEdit != null) {
+                                          ref
+                                              .read(geolocatorProvider.notifier)
+                                              .updateAddress(
+                                                widget
+                                                    .addressToEdit!
+                                                    .addressId!,
+                                                updatedData.toJson(),
+                                              );
+                                        } else {
+                                          ref
+                                              .read(geolocatorProvider.notifier)
+                                              .addAddress(updatedData.toJson());
+                                        }
+                                        // close bottom sheet
+                                      } else if (_selectedLocationData == null) {
+                                        // Handle case where location data is not available
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              context.tr(
+                                                "location_data_not_available_please_try_again",
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  title: widget.addressToEdit != null
-                                      ? context.tr("update_address")
-                                      : context.tr("add_address"),
-                                );
-                              },
-                            ),
-                          ],
+                                        );
+                                      }
+                                    },
+                                    title: widget.addressToEdit != null
+                                        ? context.tr("update_address")
+                                        : context.tr("add_address"),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ));
+                    );
                   },
                 );
 
                 // ref.read(geolocatorProvider.notifier).addAddress(_selectedLocationData!.toJson());
               },
-              title: widget.addressToEdit != null ? context.tr("edit_address") : context.tr("add_address"),
+              title: widget.addressToEdit != null
+                  ? context.tr("edit_address")
+                  : context.tr("add_address"),
             );
           },
         ),
@@ -327,7 +365,8 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                 markers: _markers,
                 onTap: null,
                 myLocationEnabled: true,
-                myLocationButtonEnabled: false,
+
+                // myLocationButtonEnabled: true,
               ),
 
               // Search Bar on top
@@ -387,125 +426,126 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: AsyncStateHandler(
-                            dataList: searchResults,
+                    child: Expanded(
+                      child: AsyncStateHandler(
+                        dataList: searchResults,
 
-                            status: searchState.status,
-                            onRetry: () {},
-                            itemBuilder: (context, index) {
-                              final result = searchResults[index];
-                              return ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                visualDensity: VisualDensity(
-                                  horizontal: -4.0,
-                                  vertical: -3.0,
-                                ),
-                                minLeadingWidth: 10,
-                                leading: Icon(
-                                  Icons.location_pin,
-                                  color: Colors.red,
-                                ),
-                                title: Text(
-                                  result.addressLine1 ??
-                                      '${result.city}, ${result.state}',
-                                ),
-
-                                // trailing: GestureDetector(
-                                //   onTap: () {
-                                //     searchTextController.text =
-                                //         result.address ??
-                                //         '${result.city}, ${result.state}';
-                                //     setState(() {
-                                //       showSearchDialog = false;
-                                //     });
-                                //   },
-                                //   child: Transform.rotate(
-                                //     // The angle is in radians. math.pi / 4 is 45 degrees.
-                                //     // Positive angle rotates clockwise.
-                                //     angle:
-                                //         -math.pi /
-                                //         4, // for up-left, use math.pi / 4 for up-right if starting from horizontal
-                                //     child: Icon(
-                                //       Icons
-                                //           .arrow_upward, // This icon points straight up by default
-                                //       size: 22.r,
-                                //     ),
-                                //   ),
-                                // ),
-                                onTap: () => _selectSearchResult(result),
-                              );
-                            },
-                          ),
-                        ),
-                        if (searchState.status == Status.completed)
-                          ListTile(
-                            leading: Transform.rotate(
-                              angle: 45,
-                              child: Icon(Icons.navigation, color: Colors.teal),
-                            ),
+                        status: searchState.status,
+                        onRetry: () {},
+                        itemBuilder: (context, index) {
+                          final result = searchResults[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
                             visualDensity: VisualDensity(
                               horizontal: -4.0,
-                              vertical: -4.0,
+                              vertical: -3.0,
                             ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: AppTheme.horizontalPadding,
+                            minLeadingWidth: 10,
+                            leading: Icon(
+                              Icons.location_pin,
+                              color: Colors.red,
                             ),
-                            title: Text(context.tr('use_my_current_location')),
-                            onTap: () async {
-                              final user = ref.watch(
-                                authProvider.select((e) => e.userData),
-                              );
-                              double? lat = double.tryParse(
-                                "${user?.latitude}",
-                              );
-                              double? lon = double.tryParse(
-                                "${user?.longitude}",
-                              );
-                              if (lat == 0.0 && lon == 0.0 ) {
-                                ref
-                                    .read(geolocatorProvider.notifier)
-                                    .getCurrentLocation()
-                                    .whenComplete(() {
-                                      if (user?.latitude != null &&
-                                          user?.longitude != null) {
-                                        final double la =
-                                            double.tryParse(
-                                              user!.latitude!.toString(),
-                                            ) ??
-                                            0.0;
-                                        final double ln =
-                                            double.tryParse(
-                                              user!.longitude.toString(),
-                                            ) ??
-                                            0.0;
+                            title: Text(
+                              result.addressLine1 ??
+                                  '${result.city}, ${result.state}',
+                            ),
 
-                                        // Reverse geocode to get city, state, country
-
-                                        _selectSearchResult(
-                                          LocationDataModel(
-                                            latitude: la,
-                                            longitude: ln,
-                                          ),
-                                        );
-                                      }
-                                    });
-                              } else {
-                                // Reverse geocode to get city, state, country
-
-                                _selectSearchResult(
-                                  LocationDataModel(
-                                    latitude: lat!,
-                                    longitude: lon!,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                      ],
+                            // trailing: GestureDetector(
+                            //   onTap: () {
+                            //     searchTextController.text =
+                            //         result.address ??
+                            //         '${result.city}, ${result.state}';
+                            //     setState(() {
+                            //       showSearchDialog = false;
+                            //     });
+                            //   },
+                            //   child: Transform.rotate(
+                            //     // The angle is in radians. math.pi / 4 is 45 degrees.
+                            //     // Positive angle rotates clockwise.
+                            //     angle:
+                            //         -math.pi /
+                            //         4, // for up-left, use math.pi / 4 for up-right if starting from horizontal
+                            //     child: Icon(
+                            //       Icons
+                            //           .arrow_upward, // This icon points straight up by default
+                            //       size: 22.r,
+                            //     ),
+                            //   ),
+                            // ),
+                            onTap: () => _selectSearchResult(result),
+                          );
+                        },
+                      ),
                     ),
+
+                    // Column(
+                    //   children: [
+                    //     if (searchState.status == Status.completed)
+                    //       ListTile(
+                    //         leading: Transform.rotate(
+                    //           angle: 45,
+                    //           child: Icon(Icons.navigation, color: Colors.teal),
+                    //         ),
+                    //         visualDensity: VisualDensity(
+                    //           horizontal: -4.0,
+                    //           vertical: -4.0,
+                    //         ),
+                    //         contentPadding: EdgeInsets.symmetric(
+                    //           horizontal: AppTheme.horizontalPadding,
+                    //         ),
+                    //         title: Text(context.tr('use_my_current_location')),
+                    //         onTap: () async {
+                    //           final user = ref.watch(
+                    //             authProvider.select((e) => e.userData),
+                    //           );
+                    //           double? lat = double.tryParse(
+                    //             "${user?.latitude}",
+                    //           );
+                    //           double? lon = double.tryParse(
+                    //             "${user?.longitude}",
+                    //           );
+                    //           if (lat == 0.0 && lon == 0.0 ) {
+                    //             ref
+                    //                 .read(geolocatorProvider.notifier)
+                    //                 .getCurrentLocation()
+                    //                 .whenComplete(() {
+                    //                   if (user?.latitude != null &&
+                    //                       user?.longitude != null) {
+                    //                     final double la =
+                    //                         double.tryParse(
+                    //                           user!.latitude!.toString(),
+                    //                         ) ??
+                    //                         0.0;
+                    //                     final double ln =
+                    //                         double.tryParse(
+                    //                           user!.longitude.toString(),
+                    //                         ) ??
+                    //                         0.0;
+
+                    //                     // Reverse geocode to get city, state, country
+
+                    //                     _selectSearchResult(
+                    //                       LocationDataModel(
+                    //                         latitude: la,
+                    //                         longitude: ln,
+                    //                       ),
+                    //                     );
+                    //                   }
+                    //                 });
+                    //           } else {
+                    //             // Reverse geocode to get city, state, country
+
+                    //             _selectSearchResult(
+                    //               LocationDataModel(
+                    //                 latitude: lat!,
+                    //                 longitude: lon!,
+                    //               ),
+                    //             );
+                    //           }
+                    //         },
+                    //       ),
+                    //   ],
+                    // ),
                   ),
                 ),
             ],

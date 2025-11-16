@@ -192,7 +192,7 @@ class _CategoryProductViewState extends State<CategoryProductView> {
                           spacing: 10,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Image.asset(Assets.groceryBag, width: 57.w),
+                            DisplayNetworkImage(imageUrl: product.image, width: 57.r, height: 73.r ,),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

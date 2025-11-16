@@ -107,7 +107,8 @@ class _CartViewState extends ConsumerState<CartView> {
                         spacing: 10,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Image.asset(Assets.groceryBag, width: 57.w),
+                          DisplayNetworkImage(imageUrl: product.image, width: 57.r, height: 73.r ,),
+                        
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +277,7 @@ class _CartViewState extends ConsumerState<CartView> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             spacing: 3,
                             children: [
-                              Image.asset(Assets.groceryBag, width: 40.r),
+                              DisplayNetworkImage(imageUrl: product.image, width: 49.r, height: 61.r ,),
                               5.ph,
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,

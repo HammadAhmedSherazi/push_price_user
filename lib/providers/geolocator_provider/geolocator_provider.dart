@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
 
@@ -27,16 +28,16 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
 
 
 
-  Future<void> getCurrentLocation() async {
-    if (!ref.mounted) return;
+  Future<LatLng?> getCurrentLocation() async {
+    if (!ref.mounted) return null;
     try {
-      state = state.copyWith(getLocationApiResponse: ApiResponse.loading());
+      // state = state.copyWith(getLocationApiResponse: ApiResponse.loading());
       final locationData = await _geolocatorService.getCurrentLocation();
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        getLocationApiResponse: ApiResponse.completed(locationData),
-        // locationData: locationData,
-      );
+      if (!ref.mounted) return null;
+      // state = state.copyWith(
+      //   getLocationApiResponse: ApiResponse.completed(locationData),
+      //   // locationData: locationData,
+      // );
       
       final user = ref.read(authProvider.select((e)=>e.userData));
       if(user != null){
@@ -48,18 +49,20 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
       ));
       }
       }
-
+      return LatLng(locationData.latitude, locationData.latitude);
 
     } catch (e) {
       
       
-      if (!ref.mounted) return;
+      if (!ref.mounted) return null;
       Helper.showMessage(
         AppRouter.navKey.currentContext!,
         message: e.toString(),
       );
-      state = state.copyWith(getLocationApiResponse: ApiResponse.error());
+      // state = state.copyWith(getLocationApiResponse: ApiResponse.error());
     }
+    return null;
+    
   }
 
   void toggleTravelMode(bool enabled) async {

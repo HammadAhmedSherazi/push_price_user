@@ -231,7 +231,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                       child: Container(
                         padding: EdgeInsets.symmetric(
                           vertical: 10.r,
-                          horizontal: 20.r,
+                          horizontal: 15.r,
                         ),
                         decoration:widget.productId != null ?AppTheme.productBoxDecoration.copyWith(
                           color: widget.productId== product.id? AppColors.secondaryColor.withValues(alpha: 0.1) : null
@@ -310,7 +310,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                               spacing: 10,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Image.asset(Assets.groceryBag, width: 57.w),
+                                DisplayNetworkImage(imageUrl: product.image, width: 57.r, height: 70.r,),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
