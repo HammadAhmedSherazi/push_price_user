@@ -152,17 +152,17 @@ class _LoginViewState extends State<LoginView> {
               ),
               Text(context.tr("remember_me"), style: context.textStyle.displayMedium),
               Spacer(),
-              // TextButton(
-              //   onPressed: () {
-              //     AppRouter.push(ForgotPasswordView());
-              //   },
-              //   child: Text(
-              //     "Forgot Password?",
-              //     style: context.textStyle.displayMedium!.copyWith(
-              //       color: context.colors.primary,
-              //     ),
-              //   ),
-              // ),
+              TextButton(
+                onPressed: () {
+                  AppRouter.push(ForgotPasswordView());
+                },
+                child: Text(
+                  context.tr("forgot_password"),
+                  style: context.textStyle.displayMedium!.copyWith(
+                    color: context.colors.primary,
+                  ),
+                ),
+              ),
             ],
           ),
           20.ph,

@@ -16,6 +16,8 @@ class AuthProvider  extends Notifier<AuthState> {
       verifyOtpApiResponse: ApiResponse.undertermined(),
       resendOtpApiResponse: ApiResponse.undertermined(),
       completeProfileApiResponse: ApiResponse.undertermined(),
+      forgotPasswordApiResponse: ApiResponse.undertermined(),
+      resetPasswordApiResponse: ApiResponse.undertermined(),
       getUserApiResponse: ApiResponse.undertermined(),
       getStoresApiRes: ApiResponse.undertermined(),
       getCategoriesApiResponse: ApiResponse.undertermined(),
@@ -150,10 +152,10 @@ class AuthProvider  extends Notifier<AuthState> {
     }
   }
 
-  FutureOr<void> verifyOtp({required String otp})async{
+  FutureOr<void> verifyOtp({required String otp, bool isForgot = false})async{
     imageUnset();
      Helper.showFullScreenLoader(AppRouter.navKey.currentContext!, dismissible: false);
-     
+
     if (!ref.mounted) return;
     try {
       state = state.copyWith(verifyOtpApiResponse: ApiResponse.loading());
@@ -169,8 +171,12 @@ class AuthProvider  extends Notifier<AuthState> {
 
         state = state.copyWith(verifyOtpApiResponse: ApiResponse.completed(response['data']));
         // Navigate to complete profile or next step
-        await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
-        AppRouter.push(CreateProfileView());
+        if(isForgot){
+          AppRouter.push(NewPasswordView(code: otp,));
+        } else {
+          await SecureStorageManager.sharedInstance.storeToken(response['access_token'] ?? "");
+          AppRouter.push(CreateProfileView());
+        }
 
       }
       else{
@@ -231,7 +237,7 @@ class AuthProvider  extends Notifier<AuthState> {
   }
 
   FutureOr<void> completeProfile({required Map<String, dynamic> profileData})async{
-    
+
     if (!ref.mounted) return;
     try {
       state = state.copyWith(completeProfileApiResponse: ApiResponse.loading());
@@ -265,6 +271,75 @@ class AuthProvider  extends Notifier<AuthState> {
         message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
       );
       state = state.copyWith(completeProfileApiResponse: ApiResponse.error());
+    }
+  }
+
+  FutureOr<void> forgotPassword({required String email})async{
+    emailText = email;
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(forgotPasswordApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.post(ApiEndpoints.forgotPassword, {
+        "email": email
+      }, isToken: false);
+      if (!ref.mounted) return;
+
+      if(response != null && !(response is Map && response.containsKey('detail'))){
+        Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("otp_sent_to_email"));
+
+        state = state.copyWith(forgotPasswordApiResponse: ApiResponse.completed(response['data']));
+        AppRouter.push(OtpView(isForgot: true));
+
+      }
+      else{
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+        );
+        state = state.copyWith(forgotPasswordApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+      );
+      state = state.copyWith(forgotPasswordApiResponse: ApiResponse.error());
+    }
+  }
+
+  FutureOr<void> resetPassword({required String password, required String otp})async{
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(resetPasswordApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.post(ApiEndpoints.resetPassword, {
+        "email": emailText,
+        "otp_code": otp,
+        "new_password": password
+      }, isToken: false);
+      if (!ref.mounted) return;
+
+      if(response != null && !(response is Map && response.containsKey('detail'))){
+        Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("password_reset_successfully"));
+
+        state = state.copyWith(resetPasswordApiResponse: ApiResponse.completed(response['data']));
+        AppRouter.pushAndRemoveUntil(LoginView());
+
+      }
+      else{
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_reset_password"),
+        );
+        state = state.copyWith(resetPasswordApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
+      );
+      state = state.copyWith(resetPasswordApiResponse: ApiResponse.error());
     }
   }
 

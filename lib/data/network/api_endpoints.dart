@@ -12,6 +12,8 @@ class ApiEndpoints {
   static const String verifyOtp = "${userAuth}verify-otp";
   static const String resendOtp = "${userAuth}resend-otp";
   static const String completeProfile = "${userAuth}complete-profile";
+  static const String forgotPassword = "${userAuth}forgot-password";
+  static const String resetPassword = "${userAuth}reset-password";
   static const String refresh = "${userAuth}refresh";
   static const String register = "${userAuth}register";
   static const String getUser = "${userAuth}me";

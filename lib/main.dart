@@ -151,7 +151,7 @@ Future<bool> onIosBackground(ServiceInstance service) async {
     }
 
     // Schedule next update after 60 seconds
-    Future.delayed(const Duration(seconds: 60), performLocationUpdate);
+    Future.delayed(const Duration(seconds: 15), performLocationUpdate);
   }
 
   // Start the first update

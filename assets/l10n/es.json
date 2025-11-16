@@ -13,7 +13,7 @@
   "enter_password": "Ingrese la contraseña",
   "remember_me": "Recuérdame",
   "forgot_password": "¿Olvidó su contraseña?",
-  "you_already_have_an_account": "¿Ya tienes una cuenta?",
+  "you_already_have_an_account?": "¿Ya tienes una cuenta?",
   "terms_conditions": "Términos y condiciones",
   "privacy_policy": "Política de privacidad",
   "sign_up": "Regístrate",
@@ -304,5 +304,15 @@
   "failed_to_get_store_products": "Error al obtener productos de la tienda",
   "failed_to_get_product_detail": "Error al obtener detalle del producto",
   "failed_to_get_promotional_products": "Error al obtener productos promocionales",
-  "failed_to_get_nearby_stores": "Error al obtener tiendas cercanas"
+  "failed_to_get_nearby_stores": "Error al obtener tiendas cercanas",
+  "otp_sent_to_email": "OTP enviado al correo electrónico",
+  "password_reset_successfully": "Contraseña restablecida exitosamente",
+  "failed_to_reset_password": "Error al restablecer la contraseña",
+  "email_required": "El correo electrónico es obligatorio",
+  "enter_valid_email": "Ingrese un correo electrónico válido",
+  "password_required": "La contraseña es obligatoria",
+  "password_too_short": "La contraseña debe tener al menos 6 caracteres",
+  "confirm_password_required": "Confirmar contraseña es obligatorio",
+  "passwords_do_not_match": "Las contraseñas no coinciden",
+  "reset_password": "Restablecer contraseña"
 }

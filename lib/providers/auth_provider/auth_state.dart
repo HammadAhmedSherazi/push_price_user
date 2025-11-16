@@ -8,6 +8,8 @@ class AuthState {
   final ApiResponse verifyOtpApiResponse;
   final ApiResponse resendOtpApiResponse;
   final ApiResponse completeProfileApiResponse;
+  final ApiResponse forgotPasswordApiResponse;
+  final ApiResponse resetPasswordApiResponse;
   final ApiResponse getUserApiResponse;
   final ApiResponse getStoresApiRes;
   final ApiResponse getCategoriesApiResponse;
@@ -26,6 +28,8 @@ class AuthState {
     required this.verifyOtpApiResponse,
     required this.resendOtpApiResponse,
     required this.completeProfileApiResponse,
+    required this.forgotPasswordApiResponse,
+    required this.resetPasswordApiResponse,
     required this.getUserApiResponse,
     required this.getStoresApiRes,
     required this.getCategoriesApiResponse,
@@ -46,6 +50,8 @@ class AuthState {
     ApiResponse? verifyOtpApiResponse,
     ApiResponse? resendOtpApiResponse,
     ApiResponse? completeProfileApiResponse,
+    ApiResponse? forgotPasswordApiResponse,
+    ApiResponse? resetPasswordApiResponse,
     ApiResponse? getUserApiResponse,
     ApiResponse? getStoresApiRes,
     ApiResponse? getCategoriesApiResponse,
@@ -65,6 +71,8 @@ class AuthState {
     verifyOtpApiResponse: verifyOtpApiResponse ?? this.verifyOtpApiResponse,
     resendOtpApiResponse: resendOtpApiResponse ?? this.resendOtpApiResponse,
     completeProfileApiResponse: completeProfileApiResponse ?? this.completeProfileApiResponse,
+    forgotPasswordApiResponse: forgotPasswordApiResponse ?? this.forgotPasswordApiResponse,
+    resetPasswordApiResponse: resetPasswordApiResponse ?? this.resetPasswordApiResponse,
     getUserApiResponse: getUserApiResponse ?? this.getUserApiResponse,
     getStoresApiRes:  getStoresApiRes ?? this.getStoresApiRes,
     getCategoriesApiResponse: getCategoriesApiResponse ?? this.getCategoriesApiResponse,
