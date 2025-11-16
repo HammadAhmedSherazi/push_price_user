@@ -40,6 +40,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
   ];
   Future.microtask((){
     ref.read(notificationProvider.notifier).getUnreadNotificationCount();
+    ref.read(geolocatorProvider.notifier).getCurrentLocation();
   });
   }
 

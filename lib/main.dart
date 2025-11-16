@@ -21,14 +21,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
+   
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferenceManager.init();
-
   Stripe.publishableKey = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM';
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(
     const ProviderScope(child: MyApp()),
         );
@@ -36,7 +35,6 @@ void main() async {
   // Run heavy stuff AFTER UI built
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     try {
-      
       await Future.wait([
       NotificationService.initNotifications(),
       FirebaseService.firebaseTokenInitial(),
@@ -45,26 +43,14 @@ void main() async {
     if (Platform.isIOS) {
       SecureStorageManager.sharedInstance.deletePreviousStorage();
     }
-
     initializeService(); // if safe
 
-    // Initialize unread notification count
-    // if (AppRouter.navKey.currentContext != null) {
-    //   final container = ProviderScope.containerOf(AppRouter.navKey.currentContext!);
-    //   container.read(notificationProvider.notifier).getUnreadNotificationCount();
-    // }
     } catch (e) {
       if (Platform.isIOS) {
       SecureStorageManager.sharedInstance.deletePreviousStorage();
     }
 
     initializeService(); // if safe
-
-    // Initialize unread notification count
-    // if (AppRouter.navKey.currentContext != null) {
-    //   final container = ProviderScope.containerOf(AppRouter.navKey.currentContext!);
-    //   container.read(notificationProvider.notifier).getUnreadNotificationCount();
-    // }
     }
   });
 }

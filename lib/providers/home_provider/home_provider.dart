@@ -29,6 +29,9 @@ class HomeProvider extends Notifier<HomeState> {
       getNearbyStoresApiResponse: ApiResponse.undertermined(),
       nearbyStores: [],
       nearbyStoresSkip: 0,
+      getCategoryStoresApiResponse: ApiResponse.undertermined(),
+      categoryStores: [],
+      categoryStoresSkip: 0,
       cartList: cartList,
     );
   }
@@ -434,6 +437,64 @@ class HomeProvider extends Notifier<HomeState> {
       );
     }
   }
+  FutureOr<void> getCategoryStores({
+    required int categoryId,
+    required int limit,
+    required int skip,
+  }) async {
+    if (!ref.mounted) return;
+    if (skip == 0 && state.categoryStores!.isNotEmpty) {
+      state = state.copyWith(categoryStores: [], categoryStoresSkip: 0);
+    }
+    Map<String, dynamic> params = {'limit': limit, 'skip': skip};
+
+
+    try {
+      state = state.copyWith(
+        getCategoryStoresApiResponse: skip == 0
+            ? ApiResponse.loading()
+            : ApiResponse.loadingMore(),
+      );
+      final response = await MyHttpClient.instance.get(
+        ApiEndpoints.getCategoryStores(categoryId),
+        params: params,
+      );
+
+      if (!ref.mounted) return;
+
+      if (response != null && !(response is Map && response.containsKey('detail'))) {
+        List temp = response['stores'] ?? [];
+        final List<StoreDataModel> list = List.from(
+          temp.map((e) => StoreDataModel.fromJson(e)),
+        );
+        state = state.copyWith(
+          getCategoryStoresApiResponse: ApiResponse.completed(response),
+          categoryStores: skip == 0 && state.categoryStores!.isEmpty
+              ? list
+              : [...state.categoryStores!, ...list],
+          categoryStoresSkip: list.length >= limit ? skip + limit : 0,
+        );
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail')) ? response['detail'] as String : AppRouter.navKey.currentContext!.tr("failed_to_get_category_stores"),
+        );
+        state = state.copyWith(
+          getCategoryStoresApiResponse: skip == 0
+              ? ApiResponse.error()
+              : ApiResponse.undertermined(),
+        );
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        getCategoryStoresApiResponse: skip == 0
+            ? ApiResponse.error()
+            : ApiResponse.undertermined(),
+      );
+    }
+  }
+
   void clearCartList()
   {
     SharedPreferenceManager.sharedInstance.clearCartList();

@@ -30,7 +30,7 @@ class _AllCategoryViewState extends ConsumerState<AllCategoryView> {
           final category = categories[index];
           return ListTile(
             onTap: () {
-              AppRouter.push(CategoryProductView(title: category.title));
+              AppRouter.push(CategoryStoreView(title: category.title, categoryId: category.id!,));
             },
             contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
             leading: CircleAvatar(

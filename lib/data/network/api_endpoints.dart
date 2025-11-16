@@ -25,6 +25,7 @@ class ApiEndpoints {
   static String getStoreProducts(int id)=> "$getStores/$id/products";
   static String getProductDetail(int productId)=> "${user}products/$productId";
   static const String getNearbyStores = "${user}nearby-stores";
+  static String getCategoryStores(int categoryId) => "${user}categories/$categoryId/stores";
   static const String getAddresses = "${user}addresses";
   static String activateAddress(int addressId) => "$getAddresses/$addressId/activate";
   static String address(int addressId) => "$getAddresses/$addressId";

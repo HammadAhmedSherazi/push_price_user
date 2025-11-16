@@ -21,7 +21,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
       ref.read(homeProvider.notifier).getCategories();
       ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
       ref.read(homeProvider.notifier).getNearbyStores(limit: 10, skip: 0);
-      // ref.read(geolocatorProvider.notifier).getCurrentLocation();
+      
       ref.read(geolocatorProvider.notifier).getAddresses();
 
     });
@@ -351,16 +351,16 @@ class StoreCardWidget extends StatelessWidget {
             Image.asset(Assets.store, width: 50.r, height: 50.r),
             Text(data.title!, maxLines: 1, style: context.textStyle.bodySmall, textAlign: TextAlign.center,),
             Text(data.address!, style: context.textStyle.titleSmall, maxLines: 1, textAlign: TextAlign.center,),
-            Row(
+            // Row(
               
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.star, color: Color.fromRGBO(255, 144, 28, 1), size: 22.r,),
-                Text(data.rating.toString()),
-              ],
-            ),
+            //   mainAxisSize: MainAxisSize.min,
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   crossAxisAlignment: CrossAxisAlignment.center,
+            //   children: [
+            //     Icon(Icons.star, color: Color.fromRGBO(255, 144, 28, 1), size: 22.r,),
+            //     Text(data.rating.toString()),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -486,7 +486,7 @@ class CategoriesSection extends StatelessWidget {
                       width: context.screenwidth * 0.17,
                       child: GestureDetector(
                         onTap: () {
-                          AppRouter.push(CategoryProductView(title: category.title));
+                          AppRouter.push(CategoryStoreView(title: category.title, categoryId: category.id!));
                         },
                         child: Column(
                           spacing: 10,

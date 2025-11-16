@@ -19,6 +19,9 @@ class HomeState {
   final ApiResponse getNearbyStoresApiResponse;
   final List<StoreDataModel>? nearbyStores;
   final int nearbyStoresSkip;
+  final ApiResponse getCategoryStoresApiResponse;
+  final List<StoreDataModel>? categoryStores;
+  final int categoryStoresSkip;
   final List<ProductPurchasingDataModel> cartList;
 
   HomeState({
@@ -39,6 +42,9 @@ class HomeState {
     required this.getNearbyStoresApiResponse,
     this.nearbyStores,
     this.nearbyStoresSkip = 0,
+    required this.getCategoryStoresApiResponse,
+    this.categoryStores,
+    this.categoryStoresSkip = 0,
     this.cartList = const [],
   });
 
@@ -60,6 +66,9 @@ class HomeState {
     ApiResponse? getNearbyStoresApiResponse,
     List<StoreDataModel>? nearbyStores,
     int? nearbyStoresSkip,
+    ApiResponse? getCategoryStoresApiResponse,
+    List<StoreDataModel>? categoryStores,
+    int? categoryStoresSkip,
     List<ProductPurchasingDataModel>? cartList,
   }) => HomeState(
     getCategoriesApiResponse: getCategoriesApiResponse ?? this.getCategoriesApiResponse,
@@ -79,6 +88,9 @@ class HomeState {
     getNearbyStoresApiResponse: getNearbyStoresApiResponse ?? this.getNearbyStoresApiResponse,
     nearbyStores: nearbyStores ?? this.nearbyStores,
     nearbyStoresSkip: nearbyStoresSkip ?? this.nearbyStoresSkip,
+    getCategoryStoresApiResponse: getCategoryStoresApiResponse ?? this.getCategoryStoresApiResponse,
+    categoryStores: categoryStores ?? this.categoryStores,
+    categoryStoresSkip: categoryStoresSkip ?? this.categoryStoresSkip,
     cartList: cartList ?? this.cartList,
   );
 }
