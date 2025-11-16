@@ -122,32 +122,6 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
   @override
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final user = ref.watch(authProvider.select((e) => e.userData));
-          double? lat = double.tryParse("${user?.latitude}");
-          double? lon = double.tryParse("${user?.longitude}");
-          if (lat == 0.0 && lon == 0.0) {
-            ref.read(geolocatorProvider.notifier).getCurrentLocation().then((
-              value,
-            ) {
-              if (value != null) {
-                _selectSearchResult(
-                  LocationDataModel(
-                    latitude: value.latitude,
-                    longitude: value.longitude,
-                  ),
-                );
-              }
-            });
-          } else {
-            _selectSearchResult(
-              LocationDataModel(latitude: lat!, longitude: lon!),
-            );
-          }
-        },
-        child: const Icon(Icons.my_location),
-      ),
       showBottomButton: _selectedLocationData != null,
       customBottomWidget: Padding(
         padding: EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding),
@@ -164,10 +138,10 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
               isLoad: isLoad,
               onPressed: () {
                 final labelController = TextEditingController(
-  text: widget.addressToEdit?.label ?? "",
-);
-final formKey = GlobalKey<FormState>();
-final FocusNode focusNode = FocusNode();
+                  text: widget.addressToEdit?.label ?? "",
+                );
+                final formKey = GlobalKey<FormState>();
+                final FocusNode focusNode = FocusNode();
                 showModalBottomSheet(
                   context: context,
                   shape: RoundedRectangleBorder(
@@ -267,7 +241,8 @@ final FocusNode focusNode = FocusNode();
                                               .addAddress(updatedData.toJson());
                                         }
                                         // close bottom sheet
-                                      } else if (_selectedLocationData == null) {
+                                      } else if (_selectedLocationData ==
+                                          null) {
                                         // Handle case where location data is not available
                                         ScaffoldMessenger.of(
                                           context,
@@ -366,9 +341,45 @@ final FocusNode focusNode = FocusNode();
                 onTap: null,
                 myLocationEnabled: true,
 
-                // myLocationButtonEnabled: true,
+                myLocationButtonEnabled: false,
               ),
-
+              Positioned(
+                bottom: 20.r,
+                right: 20.r,
+                child: FloatingActionButton(
+                  backgroundColor: Colors.white,
+                  onPressed: () async {
+                    final user = ref.watch(
+                      authProvider.select((e) => e.userData),
+                    );
+                    double? lat = double.tryParse("${user?.latitude}");
+                    double? lon = double.tryParse("${user?.longitude}");
+                    if (lat == 0.0 && lon == 0.0) {
+                      ref
+                          .read(geolocatorProvider.notifier)
+                          .getCurrentLocation()
+                          .then((value) {
+                            if (value != null) {
+                              _selectSearchResult(
+                                LocationDataModel(
+                                  latitude: value.latitude,
+                                  longitude: value.longitude,
+                                ),
+                              );
+                            }
+                          });
+                    } else {
+                      _selectSearchResult(
+                        LocationDataModel(latitude: lat!, longitude: lon!),
+                      );
+                    }
+                  },
+                  child: const Icon(
+                    Icons.my_location,
+                    color: AppColors.secondaryColor,
+                  ),
+                ),
+              ),
               // Search Bar on top
               Positioned(
                 top: 16,
@@ -426,56 +437,54 @@ final FocusNode focusNode = FocusNode();
                         ),
                       ],
                     ),
-                    child: Expanded(
-                      child: AsyncStateHandler(
-                        dataList: searchResults,
-
-                        status: searchState.status,
-                        onRetry: () {},
-                        itemBuilder: (context, index) {
-                          final result = searchResults[index];
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            visualDensity: VisualDensity(
-                              horizontal: -4.0,
-                              vertical: -3.0,
-                            ),
-                            minLeadingWidth: 10,
-                            leading: Icon(
-                              Icons.location_pin,
-                              color: Colors.red,
-                            ),
-                            title: Text(
-                              result.addressLine1 ??
-                                  '${result.city}, ${result.state}',
-                            ),
-
-                            // trailing: GestureDetector(
-                            //   onTap: () {
-                            //     searchTextController.text =
-                            //         result.address ??
-                            //         '${result.city}, ${result.state}';
-                            //     setState(() {
-                            //       showSearchDialog = false;
-                            //     });
-                            //   },
-                            //   child: Transform.rotate(
-                            //     // The angle is in radians. math.pi / 4 is 45 degrees.
-                            //     // Positive angle rotates clockwise.
-                            //     angle:
-                            //         -math.pi /
-                            //         4, // for up-left, use math.pi / 4 for up-right if starting from horizontal
-                            //     child: Icon(
-                            //       Icons
-                            //           .arrow_upward, // This icon points straight up by default
-                            //       size: 22.r,
-                            //     ),
-                            //   ),
-                            // ),
-                            onTap: () => _selectSearchResult(result),
-                          );
-                        },
-                      ),
+                    child: AsyncStateHandler(
+                      dataList: searchResults,
+                    
+                      status: searchState.status,
+                      onRetry: () {},
+                      itemBuilder: (context, index) {
+                        final result = searchResults[index];
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          visualDensity: VisualDensity(
+                            horizontal: -4.0,
+                            vertical: -3.0,
+                          ),
+                          minLeadingWidth: 10,
+                          leading: Icon(
+                            Icons.location_pin,
+                            color: Colors.red,
+                          ),
+                          title: Text(
+                            result.addressLine1 ??
+                                '${result.city}, ${result.state}',
+                          ),
+                    
+                          // trailing: GestureDetector(
+                          //   onTap: () {
+                          //     searchTextController.text =
+                          //         result.address ??
+                          //         '${result.city}, ${result.state}';
+                          //     setState(() {
+                          //       showSearchDialog = false;
+                          //     });
+                          //   },
+                          //   child: Transform.rotate(
+                          //     // The angle is in radians. math.pi / 4 is 45 degrees.
+                          //     // Positive angle rotates clockwise.
+                          //     angle:
+                          //         -math.pi /
+                          //         4, // for up-left, use math.pi / 4 for up-right if starting from horizontal
+                          //     child: Icon(
+                          //       Icons
+                          //           .arrow_upward, // This icon points straight up by default
+                          //       size: 22.r,
+                          //     ),
+                          //   ),
+                          // ),
+                          onTap: () => _selectSearchResult(result),
+                        );
+                      },
                     ),
 
                     // Column(
