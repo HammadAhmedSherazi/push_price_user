@@ -133,7 +133,9 @@ class _StoreViewState extends ConsumerState<StoreView> {
               centerTitle: true,
               title: GestureDetector(
                 onTap: (){
-                  AppRouter.push(StoreDetailView());
+                  AppRouter.push(StoreDetailView(
+                    storeData: widget.storeData,
+                  ));
                 },
                 child: Text(widget.storeData.storeName, style: context.textStyle.displayMedium)),
               actions: [

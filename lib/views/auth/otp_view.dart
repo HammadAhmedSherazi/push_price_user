@@ -5,8 +5,8 @@ import '../../export_all.dart';
 
 class OtpView extends StatefulWidget {
   final bool isSignup;
-  final bool isForgot;
-  const OtpView({super.key, this.isSignup = false, this.isForgot = false});
+  final String? passWord;
+  const OtpView({super.key, this.isSignup = false, this.passWord});
 
   @override
   State<OtpView> createState() => _OtpViewState();
@@ -63,7 +63,13 @@ class _OtpViewState extends State<OtpView> {
           numberOfFields: 6,
           
           onSubmit: (value) {
-            ref.read(authProvider.notifier).verifyOtp(otp: value, isForgot: widget.isForgot);
+            if(widget.passWord != null){
+              ref.read(authProvider.notifier).resetPassword(password: widget.passWord!, otp: value);
+            }
+            else{
+            ref.read(authProvider.notifier).verifyOtp(otp: value);
+
+            }
           },
           fieldWidth: (context.screenwidth / 6) * 0.75,
           keyboardType: TextInputType.number,

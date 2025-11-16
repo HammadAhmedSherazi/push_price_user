@@ -14,9 +14,9 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
   void showReasonDialog(BuildContext context) {
   int selectedIndex = 0;
   List<String> reasons = [
-    "Product not available",
-    "Lorem ipsum dolor sit amet consectetur.",
-    "Lorem ipsum dolor sit amet consectetur.",
+   "I placed the order by mistake",
+"I found a better price elsewhere"
+"I no longer need the product",
   ];
 
   showDialog(

@@ -295,7 +295,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                               visualDensity: VisualDensity(horizontal: -4.0),
                               padding: EdgeInsets.zero,
                               onPressed: () {
-                                // TODO: Add to cart logic
+                                ref.read(homeProvider.notifier).addQuantity(product);
                               },
                               icon: SvgPicture.asset(Assets.addCircleIcon),
                             ),

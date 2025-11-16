@@ -189,7 +189,7 @@ class AuthProvider extends Notifier<AuthState> {
     }
   }
 
-  FutureOr<void> verifyOtp({required String otp, bool isForgot = false}) async {
+  FutureOr<void> verifyOtp({required String otp}) async {
     imageUnset();
     Helper.showFullScreenLoader(
       AppRouter.navKey.currentContext!,
@@ -218,14 +218,12 @@ class AuthProvider extends Notifier<AuthState> {
           verifyOtpApiResponse: ApiResponse.completed(response['data']),
         );
         // Navigate to complete profile or next step
-        if (isForgot) {
-          AppRouter.push(NewPasswordView(code: otp));
-        } else {
+      
           await SecureStorageManager.sharedInstance.storeToken(
             response['access_token'] ?? "",
           );
           AppRouter.push(CreateProfileView());
-        }
+        
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
@@ -356,7 +354,7 @@ class AuthProvider extends Notifier<AuthState> {
     }
   }
 
-  FutureOr<void> forgotPassword({required String email}) async {
+  FutureOr<void> forgotPassword({required String email, required String password}) async {
     emailText = email;
     if (!ref.mounted) return;
     try {
@@ -378,7 +376,7 @@ class AuthProvider extends Notifier<AuthState> {
         state = state.copyWith(
           forgotPasswordApiResponse: ApiResponse.completed(response['data']),
         );
-        AppRouter.push(OtpView(isForgot: true));
+        AppRouter.push(OtpView(passWord: password));
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
@@ -428,7 +426,7 @@ class AuthProvider extends Notifier<AuthState> {
         state = state.copyWith(
           resetPasswordApiResponse: ApiResponse.completed(response['data']),
         );
-        AppRouter.pushAndRemoveUntil(LoginView());
+        AppRouter.customback(times: 2);
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,

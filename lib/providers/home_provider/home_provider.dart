@@ -321,7 +321,7 @@ class HomeProvider extends Notifier<HomeState> {
       SharedPreferenceManager.sharedInstance.storeCartList(updatedCartList);
     }
   }
-
+  
   FutureOr<void> getPromotionalProducts({
     required int storeId,
     required int skip,
