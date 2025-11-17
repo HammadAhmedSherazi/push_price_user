@@ -10,10 +10,105 @@ import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/firebase_options.dart';
 
 import 'export_all.dart';
-import 'providers/notification_provider/notification_provider.dart';
 // import 'firebase_options.dart';
 
+Timer? _locationTimer;
 
+Future<void> performLocationUpdate(ServiceInstance service) async {
+  try {
+    bool isServiceRunning = false;
+
+    if (service is AndroidServiceInstance) {
+      isServiceRunning = await service.isForegroundService();
+    } else {
+      isServiceRunning = true; // iOS fallback
+    }
+
+    if (isServiceRunning) {
+      final hasToken = await SecureStorageManager.sharedInstance.hasToken() ;
+      final userJsonData = await SecureStorageManager.sharedInstance.getUserData();
+
+      if (userJsonData != null) {
+        final userData = UserDataModel.fromJson(jsonDecode(userJsonData));
+   
+
+        final shouldUpdate =  hasToken && userData.isTravelMode ;
+
+        if (shouldUpdate) {
+          LocationDataModel locationData;
+          if (service is AndroidServiceInstance) {
+            locationData = await GeolocatorService.geolocatorInstance
+                .getCurrentLocation(skipPermissions: true);
+          } else {
+            // iOS logic with timeout and fallback
+            try {
+              locationData = await GeolocatorService.geolocatorInstance
+                  .getCurrentLocation(skipPermissions: true)
+                  .timeout(const Duration(seconds: 15));
+            } catch (e) {
+              Position? lastPosition = await Geolocator.getLastKnownPosition();
+              if (lastPosition != null) {
+                locationData = LocationDataModel(
+                  latitude: lastPosition.latitude,
+                  longitude: lastPosition.longitude,
+                  addressLine1: '',
+                  city: '',
+                  state: '',
+                  country: '',
+                );
+              } else {
+                throw Exception('Unable to get location: ${e.toString()}');
+              }
+            }
+          }
+
+          final locationString =
+              'Lat: ${locationData.latitude.toStringAsFixed(6)}, Long: ${locationData.longitude.toStringAsFixed(6)}';
+
+          if (service is AndroidServiceInstance) {
+            service.setForegroundNotificationInfo(
+              title: "Travel Mode Active",
+              content: locationString,
+            );
+          }
+
+          await AuthProvider().updateProfile(
+            userDataModel: userData.copyWith(
+              latitude: locationData.latitude,
+              longitude: locationData.longitude,
+            ),
+            onBackground: true,
+          );
+          // print("Update Location ${_locationTimer}");
+        } else {
+          if (service is AndroidServiceInstance) {
+            service.setForegroundNotificationInfo(
+              title: "Background Location Service",
+              content: "Travel mode is off",
+            );
+          }
+        }
+      }
+    }
+  } catch (e) {
+    if (service is AndroidServiceInstance) {
+      service.setForegroundNotificationInfo(
+        title: "Location Error",
+        content: "Error: $e",
+      );
+    }
+    // For iOS, handle errors silently
+  }
+}
+
+void startLocationUpdates(ServiceInstance service) {
+  _locationTimer?.cancel();
+
+  _locationTimer = Timer.periodic(
+    const Duration(seconds: 15),
+    (timer) => performLocationUpdate(service),
+  );
+}
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -87,60 +182,15 @@ Future<bool> onIosBackgroundWrapper(ServiceInstance service) async {
 @pragma('vm:entry-point')
 Future<bool> onIosBackground(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
-  final hasToken = await SecureStorageManager.sharedInstance.hasToken();
-  final user = await SecureStorageManager.sharedInstance.getUserData();
- 
   
+
+
   // Start location tracking for iOS background
 
   // Note: iOS has strict limitations - background location may not work when app is completely killed
-  
-  // Recursive location fetch to prevent overlaps for iOS
-  Future<void> performLocationUpdate() async {
-    try {
-      if (user != null) {
-        final userData = UserDataModel.fromJson(jsonDecode(user));
 
-        if (hasToken && userData.isTravelMode) {
-          // Fetch current location with retry logic for iOS
-          LocationDataModel? locationData;
-          try {
-            locationData = await GeolocatorService.geolocatorInstance
-                .getCurrentLocation(skipPermissions: true)
-                .timeout(const Duration(seconds: 15));
-          } catch (e) {
-            // Try to get last known position if current fails
-            Position? lastPosition = await Geolocator.getLastKnownPosition();
-            if (lastPosition != null) {
-              locationData = LocationDataModel(
-                latitude: lastPosition.latitude,
-                longitude: lastPosition.longitude,
-                addressLine1: '',
-                city: '',
-                state: '',
-                country: '',
-              );
-            } else {
-              throw Exception('Unable to get location: ${e.toString()}');
-            }
-          }
+  startLocationUpdates(service,);
 
-          // Update profile if location changed
-          await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: locationData.latitude, longitude: locationData.longitude), onBackground: true);
-
-        }
-      }
-    } catch (e) {
-      // Handle errors silently in background
-    }
-
-    // Schedule next update after 60 seconds
-    Future.delayed(const Duration(seconds: 15), performLocationUpdate);
-  }
-
-  // Start the first update
-  performLocationUpdate();
-  
   return true;
 }
 
@@ -149,9 +199,10 @@ void onStart(ServiceInstance service) async {
   // Set the service as foreground immediately to avoid timeout
   service.invoke('setAsForeground');
 
-  WidgetsFlutterBinding.ensureInitialized();
 
-  
+ WidgetsFlutterBinding.ensureInitialized();
+ 
+
 
   // Note: Permissions should be requested in the foreground UI before starting the background service
   // Do not check permissions here as Geolocator.checkPermission() may return denied in background context
@@ -161,69 +212,8 @@ void onStart(ServiceInstance service) async {
   // In production, use a longer interval (e.g., 20-30 seconds) to save battery
   // Recursive location fetch to prevent overlaps
   // Note: Interval set to 60 seconds to reduce frequency and prevent ANR
-  Future<void> performLocationUpdate() async {
-    try {
-      // Check if service is still running (works for both Android and iOS)
-      bool isServiceRunning = false;
-      if (service is AndroidServiceInstance) {
-        isServiceRunning = await service.isForegroundService();
-      } else {
-        // iOS service is always running if we're in this callback
-        isServiceRunning = true;
-      }
 
-      if (isServiceRunning) {
-        // Re-check travel mode status on each iteration
-        final user = await SecureStorageManager.sharedInstance.getUserData();
-        if (user != null) {
-          final userData = UserDataModel.fromJson(jsonDecode(user));
-
-          if (userData.isTravelMode) {
-            // Fetch current location
-            final position = await GeolocatorService.geolocatorInstance
-                .getCurrentLocation(skipPermissions: true);
-
-            // Format location string for notification
-            final locationString =
-                'Lat: ${position.latitude.toStringAsFixed(6)}, Long: ${position.longitude.toStringAsFixed(6)}';
-
-            // Update foreground notification with location (Android only)
-            if (service is AndroidServiceInstance) {
-              service.setForegroundNotificationInfo(
-                title: "Travel Mode Active",
-                content: locationString,
-              );
-            }
-
-           await AuthProvider().updateProfile(userDataModel: userData.copyWith(latitude: position.latitude, longitude: position.longitude), onBackground: true);
-
-          } else {
-            // Travel mode is off, update notification (Android only)
-            if (service is AndroidServiceInstance) {
-              service.setForegroundNotificationInfo(
-                title: "Background Location Service",
-                content: "Travel mode is off",
-              );
-            }
-          }
-        }
-      }
-    } catch (e) {
-      // Handle errors - update notification with error
-      if (service is AndroidServiceInstance) {
-        service.setForegroundNotificationInfo(
-          title: "Location Error",
-          content: "Error: ${e.toString()}",
-        );
-      }
-    }
-
-    // Schedule next update after 60 seconds
-    Future.delayed(const Duration(seconds: 60), performLocationUpdate);
-  }
-
-  // Start the first update
-  performLocationUpdate();
+  startLocationUpdates(service);
 }
 
 class MyApp extends ConsumerWidget {

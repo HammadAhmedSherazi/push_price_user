@@ -15,7 +15,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
   int selectedIndex = 0;
   List<String> reasons = [
    "I placed the order by mistake",
-"I found a better price elsewhere"
+"I found a better price elsewhere",
 "I no longer need the product",
   ];
 
@@ -298,7 +298,8 @@ class OrderItemCardWidget extends StatelessWidget {
       child: Row(
         spacing: 10,
         children: [
-          Image.asset(Assets.groceryBag, width: 50.w, height: 70.h),
+          DisplayNetworkImage(imageUrl: order.listingData.product?.image ?? "", width: 50.r, height: 70.r),
+   
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

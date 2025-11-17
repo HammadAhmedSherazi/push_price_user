@@ -30,12 +30,12 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
     if (widget.addressToEdit != null) {
       _selectSearchResult(widget.addressToEdit!);
     }
-    // final locationData = ref.read(geolocatorProvider.select((e)=>e.locationData));
-    //  if (locationData == null) {
-    //   Future.microtask((){
-    //     ref.read(geolocatorProvider.notifier).getCurrentLocation();
-    //   });
-    //       }
+    final locationData = ref.read(geolocatorProvider.select((e)=>e.locationData));
+     if (locationData == null) {
+      Future.microtask((){
+        ref.read(geolocatorProvider.notifier).getCurrentLocation();
+      });
+          }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -302,9 +302,9 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
             37.7749,
             -122.4194,
           ); // Default to San Francisco
-          if (locationData != null) {
+          if (_selectedLocation == null && locationData != null ) {
             initialPosition = LatLng(
-              locationData.latitude,
+             locationData.latitude,
               locationData.longitude,
             );
             // Always show current location marker

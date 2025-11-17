@@ -10,7 +10,7 @@ class FirebaseService {
 
   static FirebaseService get firebaseInstance => _singleton;
 
-  static late final String? fcmToken;
+  static  String fcmToken = ""; 
 
   //helper method to get token
   //CREATE AN INSTANCE OF FIREBASE MESSAGING
@@ -63,6 +63,8 @@ class FirebaseService {
     //   NotificationService.showNotification(title: message.notification?.title ?? "", body: message.notification?.body ?? "");
     // });
       } catch (e) {
+
+       
         throw Exception(e); 
       }
     

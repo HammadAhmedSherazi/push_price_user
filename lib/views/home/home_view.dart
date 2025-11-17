@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:push_price_user/views/home/search_store_view.dart';
+
 import '../../export_all.dart';
 import '../../utils/extension.dart';
 
@@ -179,12 +181,46 @@ class _HomeViewState extends ConsumerState<HomeView>  {
         height: context.screenheight * 0.21,
         title: "Home",
         children: [
-          CustomSearchBarWidget(
-            hintText: "Hinted search text",
-            suffixIcon: SvgPicture.asset(Assets.filterIcon),
-            onTapOutside: (c){
-               FocusScope.of(context).unfocus();
+          // CustomSearchBarWidget(
+          //   hintText: "Hinted search text",
+            
+          //   suffixIcon: SvgPicture.asset(Assets.filterIcon),
+          //   // onTapOutside: (c){
+          //   //    FocusScope.of(context).unfocus();
+          //   // },
+          // ),
+          GestureDetector(
+            onTap: (){
+              AppRouter.push(SearchStoreView(), fun: (){
+                ref.read(homeProvider.notifier).getStores(limit: 10, skip: 0);
+              });
             },
+            child: Container(
+              height: 35.h,
+              width: double.infinity,
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(
+                horizontal: 17.r,
+              ),
+              decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: AppColors.borderColor),
+            borderRadius: BorderRadius.horizontal(
+                left: Radius.circular(500.r), right: Radius.circular(500.r))),
+            child: Row(
+              spacing: 20,
+              children: [
+                SvgPicture.asset(
+            Assets.searchIcon,
+            colorFilter: ColorFilter.mode(
+                Colors.black.withValues(alpha: 0.6), BlendMode.srcIn),
+                    ),
+                    Expanded(child: Text("Hinted search text", style: context.textStyle.titleMedium!
+              .copyWith(color: Colors.black.withValues(alpha: 0.6), fontSize: context.textStyle.titleMedium?.fontSize ),))
+            
+              ],
+            ),
+            ),
           ),
           Row(
             children: [

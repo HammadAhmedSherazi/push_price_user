@@ -16,7 +16,7 @@ class Helper {
   String day = date.day.toString();
   String year = date.year.toString();
 
-  return '$month $day, $year';
+  return '$day $month $year';
   }
   else{
     return '';

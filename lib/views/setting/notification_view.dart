@@ -122,7 +122,7 @@ class NotificationTile extends StatelessWidget {
               ),
               child: SvgPicture.asset(Assets.notificationWhiteIcon),
             ),
-            title: Text(notification.product?.title ?? notification.title, style: context.textStyle.displayMedium!.copyWith(
+            title: Text( notification.title, style: context.textStyle.displayMedium!.copyWith(
               color: AppColors.secondaryColor,
               height: 1.0,
               fontSize: 16.sp
@@ -131,7 +131,7 @@ class NotificationTile extends StatelessWidget {
             subtitle: Row(
               children: [
                 Expanded(
-                  child: Text("${notification.store?.storeName}\n${notification.store?.address}", 
+                  child: Text(notification.body, 
                   maxLines: 3,
                   style: context.textStyle.displayMedium!.copyWith(
                     color: Color(0xff5B5B5B)

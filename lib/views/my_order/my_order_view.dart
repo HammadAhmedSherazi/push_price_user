@@ -104,7 +104,7 @@ class OrderCardWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Expanded(child: Text("Store Name",style: context.textStyle.displayMedium,)),
+                Expanded(child: Text(order.store.storeName,style: context.textStyle.displayMedium, maxLines: 1,)),
                 Text("\$${order.finalAmount}", style: context.textStyle.titleSmall!.copyWith(
                   color: AppColors.secondaryColor
                 ),)

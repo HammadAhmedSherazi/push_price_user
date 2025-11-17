@@ -10,6 +10,7 @@ class CustomSearchBarWidget extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onTap;
   final Widget? suffixIcon;
+  final bool? readOnly, autoFocus;
   final void Function(PointerDownEvent)? onTapOutside;
   final void Function(String)? onChanged;
   const CustomSearchBarWidget(
@@ -22,6 +23,8 @@ class CustomSearchBarWidget extends StatefulWidget {
       this.focusNode,
       this.isArabic = false,
       this.suffixIcon,
+      this.readOnly = false,
+      this.autoFocus = false,
       required this.hintText});
 
   @override
@@ -57,7 +60,8 @@ class _CustomSearchBarWidgetState extends State<CustomSearchBarWidget> {
           // )
           SearchBar(
             focusNode: widget.focusNode,
-            
+            autoFocus: widget.autoFocus!,
+          
         onTapOutside: widget.onTapOutside ,
         elevation: const WidgetStatePropertyAll(0.0),
         onTap: widget.onTap,
@@ -67,6 +71,7 @@ class _CustomSearchBarWidgetState extends State<CustomSearchBarWidget> {
         hintText: widget.hintText,
         onChanged: widget.onChanged,
         controller: widget.controller,
+        
         
         leading: SvgPicture.asset(
           Assets.searchIcon,

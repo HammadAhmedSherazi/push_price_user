@@ -16,6 +16,7 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
   void initState() {
     super.initState();
     modifiedOrder = OrderModel(
+      store: widget.orderData.store,
       orderId: widget.orderData.orderId,
       userId: widget.orderData.userId,
       storeId: widget.orderData.storeId,
@@ -55,6 +56,7 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
         listingData: modifiedOrder.items[index].listingData,
       );
       modifiedOrder = OrderModel(
+        store: widget.orderData.store,
         orderId: modifiedOrder.orderId,
         userId: modifiedOrder.userId,
         storeId: modifiedOrder.storeId,
@@ -87,6 +89,7 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
           listingData: modifiedOrder.items[index].listingData,
         );
         modifiedOrder = OrderModel(
+          store: widget.orderData.store,
           orderId: modifiedOrder.orderId,
           userId: modifiedOrder.userId,
           storeId: modifiedOrder.storeId,

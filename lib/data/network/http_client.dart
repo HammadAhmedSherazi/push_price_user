@@ -473,8 +473,11 @@ class MyHttpClient extends BaseApiServices {
          
          
           AuthProvider().refreshToken();
-           return null;
+           
            }
+        else if(msg.contains("Invalid")){
+          return json.decode(response.body.toString());
+        }
         else {
           SecureStorageManager.sharedInstance.clearAll();
 
@@ -482,10 +485,11 @@ class MyHttpClient extends BaseApiServices {
           Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("please_login_again"));
         }
         
-        throw BadRequestException(
-          response.statusCode,
-          response.body.toString(),
-        );
+        return null;
+        // throw BadRequestException(
+        //   response.statusCode,
+        //   response.body.toString(),
+        // );
       case 403:
         Helper.showMessage(
            AppRouter.navKey.currentContext!,message: 

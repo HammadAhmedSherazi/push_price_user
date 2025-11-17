@@ -16,8 +16,9 @@ class OrderModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<OrderItem> items;
-  final Address shippingAddress;
+  final LocationDataModel? shippingAddress;
   final String? paymentIntentId;
+  final StoreDataModel  store;
   
 
   const OrderModel({
@@ -29,13 +30,14 @@ class OrderModel {
     required this.totalAmount,
     required this.discountAmount,
     required this.finalAmount,
+    required this.store,
     this.voucherCode,
     this.notes,
     this.paymentIntentId,
     required this.createdAt,
     required this.updatedAt,
     required this.items,
-    required this.shippingAddress,
+    this.shippingAddress,
 
   });
 
@@ -57,9 +59,10 @@ class OrderModel {
           ? (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList()
           : [],
       shippingAddress: json['shipping_address'] != null
-          ? Address.fromJson(json['shipping_address'])
-          : Address(),
-      paymentIntentId: json['payment_intent_id'] ?? ""
+          ? LocationDataModel.fromJson(json['shipping_address'])
+          : null,
+      paymentIntentId: json['payment_intent_id'] ?? "",
+      store: StoreDataModel.fromJson(json['store'])
       
     );
   }
@@ -79,7 +82,8 @@ class OrderModel {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'items': items.map((e) => e.toJson()).toList(),
-      'shipping_address': shippingAddress.toJson(),
+      'shipping_address': shippingAddress?.toJson(),
+      'store' : store.toJson()
     };
   }
 }
@@ -132,58 +136,3 @@ class OrderItem {
   }
 }
 
-class Address {
-  final int addressId;
-  final String label;
-  final String addressLine1;
-  final String? addressLine2;
-  final String city;
-  final String state;
-  final String postalCode;
-  final String country;
-  final num latitude;
-  final num longitude;
-
-  const Address({
-    this.addressId = 0,
-    this.label = '',
-    this.addressLine1 = '',
-    this.addressLine2,
-    this.city = '',
-    this.state = '',
-    this.postalCode = '',
-    this.country = '',
-    this.latitude = 0,
-    this.longitude = 0,
-  });
-
-  factory Address.fromJson(Map<String, dynamic> json) {
-    return Address(
-      addressId: json['address_id'] ?? 0,
-      label: json['label'] ?? '',
-      addressLine1: json['address_line1'] ?? '',
-      addressLine2: json['address_line2'],
-      city: json['city'] ?? '',
-      state: json['state'] ?? '',
-      postalCode: json['postal_code'] ?? '',
-      country: json['country'] ?? '',
-      latitude: json['latitude'] ?? 0,
-      longitude: json['longitude'] ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'address_id': addressId,
-      'label': label,
-      'address_line1': addressLine1,
-      'address_line2': addressLine2,
-      'city': city,
-      'state': state,
-      'postal_code': postalCode,
-      'country': country,
-      'latitude': latitude,
-      'longitude': longitude,
-    };
-  }
-}

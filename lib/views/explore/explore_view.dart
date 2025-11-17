@@ -145,6 +145,7 @@ class NearbyStoreGirdViewSection extends StatelessWidget {
             return AsyncStateHandler(
               status: response.status,
               dataList: list,
+              boxHeight: context.screenheight * 0.35,
               customSuccessWidget: GridView.builder(
           // padding: const EdgeInsets.all(12),
           controller: scrollController,
@@ -199,6 +200,7 @@ class DisplaySearchStore extends StatelessWidget {
                 child: AsyncStateHandler(
               status: homeState.$1.status,
               dataList: stores,
+              
               customSuccessWidget: GridView.builder(
           // padding: const EdgeInsets.all(12),
           controller: scrollController,

@@ -18,6 +18,7 @@ class AsyncStateHandler<T> extends StatelessWidget {
   final Widget ? customSuccessWidget;
   final T? data;
   final Axis scrollDirection;
+  final double ? boxHeight;
 
   const AsyncStateHandler({
     super.key,
@@ -26,6 +27,7 @@ class AsyncStateHandler<T> extends StatelessWidget {
     required this.itemBuilder,
     required this.onRetry,
     this.emptyMessage,
+    this.boxHeight,
     this.scrollDirection = Axis.vertical,
     this.scrollController,
     this.padding,
@@ -42,12 +44,26 @@ class AsyncStateHandler<T> extends StatelessWidget {
     }
 
     if (status == Status.loading && data == null) {
-      return loadingWidget ?? const CustomLoadingWidget();
+      return loadingWidget ??( boxHeight != null ?Container(
+        height: boxHeight,
+        width: double.infinity,
+        alignment: Alignment.center,
+        child: CustomLoadingWidget(),
+      ) : const CustomLoadingWidget());
     }
 
     if (status == Status.completed || status == Status.loadingMore ) {
       if (dataList.isEmpty ) {
-        return Column(
+        return boxHeight != null ? SizedBox(
+          width: double.infinity,
+          height: boxHeight,
+          child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ShowEmptyItemDisplayWidget(message: emptyMessage ?? context.tr('no_item_found')),
+          ],
+        ),
+        ) :  Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ShowEmptyItemDisplayWidget(message: emptyMessage ?? context.tr('no_item_found')),
