@@ -215,7 +215,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
             colorFilter: ColorFilter.mode(
                 Colors.black.withValues(alpha: 0.6), BlendMode.srcIn),
                     ),
-                    Expanded(child: Text("Hinted search text", style: context.textStyle.titleMedium!
+                    Expanded(child: Text(context.tr("hinted_search_text"), style: context.textStyle.titleMedium!
               .copyWith(color: Colors.black.withValues(alpha: 0.6), fontSize: context.textStyle.titleMedium?.fontSize ),))
             
               ],
@@ -240,7 +240,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                         spacing: 5,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(location== null || location.label == null ? "Select Location" :location.label ?? "" , style: context.textStyle.headlineMedium, maxLines: 1,),
+                          Text(location== null || location.label == null ? context.tr("select_location") :location.label ?? "" , style: context.textStyle.headlineMedium, maxLines: 1,),
                           if(location != null && location.addressLine1 != null)...[
                             Text(
                             location.addressLine1 ?? "",

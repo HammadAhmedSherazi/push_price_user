@@ -60,11 +60,18 @@ class FirebaseService {
     // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     //   // debugPrint('A new onMessageOpenedApp event was published!');
     //   // Handle navigation or other actions here
-    //   NotificationService.showNotification(title: message.notification?.title ?? "", body: message.notification?.body ?? "");
-    // });
+    //   final int ? storeId = message.data['store_id'];
+    //   final int? productId = message.data['product_id'];
+    //   if(storeId != null && productId != null){
+    //     AppRouter.push(StoreView(storeData: StoreDataModel(
+    //       storeId: storeId
+    //     ), productId: productId,));
+    //   }
+      
+    //   NotificationService.handleBackgroundMessage(message); });
       } catch (e) {
 
-       
+        // fcmToken = await firebaseMessaging.getToken() ?? "";
         throw Exception(e); 
       }
     

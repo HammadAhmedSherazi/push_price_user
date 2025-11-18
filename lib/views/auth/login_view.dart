@@ -29,9 +29,9 @@ class _LoginViewState extends State<LoginView> {
   Future<void> _initializeLoginData() async {
     
     final secureStorage = SecureStorageManager.sharedInstance;
-    final token = await secureStorage.getToken();
+    final token = await secureStorage.hasToken();
     final user = await secureStorage.getUserData();
-    if(token != null && token != "" && user != null){
+    if(token  && user != null){
       AppRouter.pushAndRemoveUntil(NavigationView());
     }
     else{

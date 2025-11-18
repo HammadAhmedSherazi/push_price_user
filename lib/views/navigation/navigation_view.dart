@@ -1,5 +1,4 @@
 
-import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 import 'package:push_price_user/providers/notification_provider/notification_provider.dart';
 import 'package:push_price_user/utils/extension.dart';
 
@@ -31,17 +30,11 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     //     setState(() => _isBottomBarVisible = true);
     //   }
     // });
-    
-    bottomNavItems = [
-    BottomDataModel(title: "Home", icon: Assets.home, child: HomeView(scrollController: scrollController ,)),
-    BottomDataModel(title: "Explore", icon: Assets.explore, child: ExploreView(scrollController: scrollController,)),
-    BottomDataModel(title: "Favourite", icon: Assets.heart, child: FavouriteView(scrollController: scrollController,)),
-    BottomDataModel(title: "Profile", icon: Assets.profile, child: ProfileView()),
-  ];
-  Future.microtask((){
-    ref.read(notificationProvider.notifier).getUnreadNotificationCount();
-    ref.read(geolocatorProvider.notifier).getCurrentLocation();
-  });
+
+    Future.microtask((){
+      ref.read(notificationProvider.notifier).getUnreadNotificationCount();
+      ref.read(geolocatorProvider.notifier).getCurrentLocation();
+    });
   }
 
   void showLogoutDialog(BuildContext context) {
@@ -101,23 +94,34 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
  
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    bottomNavItems = [
+      BottomDataModel(title: context.tr("home"), icon: Assets.home, child: HomeView(scrollController: scrollController ,)),
+      BottomDataModel(title: context.tr("explore"), icon: Assets.explore, child: ExploreView(scrollController: scrollController,)),
+      BottomDataModel(title: context.tr("favorite"), icon: Assets.heart, child: FavouriteView(scrollController: scrollController,)),
+      BottomDataModel(title: context.tr("profile"), icon: Assets.profile, child: ProfileView()),
+    ];
+  }
+
+  @override
   Widget build(BuildContext context) {
      final List<MenuDataModel> menuData = [
-    MenuDataModel(title: "My Favorites", icon: Assets.menuFavouritIcon, onTap: () {
+    MenuDataModel(title: context.tr("my_favorites"), icon: Assets.menuFavouritIcon, onTap: () {
       AppRouter.back();
       ref.read(navigationProvider.notifier).setIndex(2);
       // setState(() {
       //   selectIndex = 2;
       // });
-      
+
     }),
-    MenuDataModel(title: "My Orders", icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
-    MenuDataModel(title: "My Locations", icon: Assets.menuLocationIcon, onTap: () => AppRouter.push(MyLocationView())),
+    MenuDataModel(title: context.tr("my_orders"), icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
+    MenuDataModel(title: context.tr("my_locations"), icon: Assets.menuLocationIcon, onTap: () => AppRouter.push(MyLocationView())),
     // MenuDataModel(title: "Subscription & Savings", icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
     // MenuDataModel(title: "Vouchers", icon: Assets.menuVoucherIcon, onTap: () => AppRouter.push(VoucherView())),
     // MenuDataModel(title: "Payment Methods", icon: Assets.menuPaymentIcon, onTap: () => AppRouter.push(MyPaymentMethodView())),
-    MenuDataModel(title: "Settings", icon: Assets.menuSettingIcon, onTap: () => AppRouter.push(SettingView())),
-    MenuDataModel(title: "Help & Feedback", icon: Assets.menuHelpIcon, onTap: () => AppRouter.push(HelpFeedbackView())),
+    MenuDataModel(title: context.tr("settings"), icon: Assets.menuSettingIcon, onTap: () => AppRouter.push(SettingView())),
+    MenuDataModel(title: context.tr("help_feedback"), icon: Assets.menuHelpIcon, onTap: () => AppRouter.push(HelpFeedbackView())),
   ];
     return Scaffold(
       key: AppRouter.scaffoldkey,

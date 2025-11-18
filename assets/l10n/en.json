@@ -318,5 +318,13 @@
   "password_too_short": "Password must be at least 6 characters",
   "confirm_password_required": "Confirm password is required",
   "passwords_do_not_match": "Passwords do not match",
-  "reset_password": "Reset Password"
+  "reset_password": "Reset Password",
+  "select_location": "Select Location",
+  "hinted_search_text": "Hinted search text",
+  "please_first_add_location": "Please first add location",
+  "please_set_a_distance": "Please set a distance",
+  "please_select_a_location": "Please select a location",
+  "my_location": "My Location",
+  "add_favorite": "add favorite",
+  "help_feedback": "Help & Feedback"
 }

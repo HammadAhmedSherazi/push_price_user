@@ -99,10 +99,10 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
         postalCode: postalCode,
         state: state,
         addressLine1: location.addressLine1 == ""
-            ? place?.street ?? ""
+            ? place?.street == null || place?.street == "" ? "$state, $city $country" : place?.street
             : location.addressLine1,
         addressLine2: location.addressLine2 == ""
-            ? place?.street ?? ""
+            ? place?.street == null || place?.street == "" ? "$state, $city $country" : place?.street
             : location.addressLine2,
       );
       searchTextController.text = _selectedLocationData?.addressLine1 ?? "";
@@ -302,7 +302,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
             37.7749,
             -122.4194,
           ); // Default to San Francisco
-          if (_selectedLocation == null && locationData != null ) {
+          if (_selectedLocation == null && locationData != null && locationData.latitude != 0.0 && locationData.longitude != 0.0 ) {
             initialPosition = LatLng(
              locationData.latitude,
               locationData.longitude,
@@ -487,75 +487,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                       },
                     ),
 
-                    // Column(
-                    //   children: [
-                    //     if (searchState.status == Status.completed)
-                    //       ListTile(
-                    //         leading: Transform.rotate(
-                    //           angle: 45,
-                    //           child: Icon(Icons.navigation, color: Colors.teal),
-                    //         ),
-                    //         visualDensity: VisualDensity(
-                    //           horizontal: -4.0,
-                    //           vertical: -4.0,
-                    //         ),
-                    //         contentPadding: EdgeInsets.symmetric(
-                    //           horizontal: AppTheme.horizontalPadding,
-                    //         ),
-                    //         title: Text(context.tr('use_my_current_location')),
-                    //         onTap: () async {
-                    //           final user = ref.watch(
-                    //             authProvider.select((e) => e.userData),
-                    //           );
-                    //           double? lat = double.tryParse(
-                    //             "${user?.latitude}",
-                    //           );
-                    //           double? lon = double.tryParse(
-                    //             "${user?.longitude}",
-                    //           );
-                    //           if (lat == 0.0 && lon == 0.0 ) {
-                    //             ref
-                    //                 .read(geolocatorProvider.notifier)
-                    //                 .getCurrentLocation()
-                    //                 .whenComplete(() {
-                    //                   if (user?.latitude != null &&
-                    //                       user?.longitude != null) {
-                    //                     final double la =
-                    //                         double.tryParse(
-                    //                           user!.latitude!.toString(),
-                    //                         ) ??
-                    //                         0.0;
-                    //                     final double ln =
-                    //                         double.tryParse(
-                    //                           user!.longitude.toString(),
-                    //                         ) ??
-                    //                         0.0;
-
-                    //                     // Reverse geocode to get city, state, country
-
-                    //                     _selectSearchResult(
-                    //                       LocationDataModel(
-                    //                         latitude: la,
-                    //                         longitude: ln,
-                    //                       ),
-                    //                     );
-                    //                   }
-                    //                 });
-                    //           } else {
-                    //             // Reverse geocode to get city, state, country
-
-                    //             _selectSearchResult(
-                    //               LocationDataModel(
-                    //                 latitude: lat!,
-                    //                 longitude: lon!,
-                    //               ),
-                    //             );
-                    //           }
-                    //         },
-                    //       ),
-                    //   ],
-                    // ),
-                  ),
+                                      ),
                 ),
             ],
           );

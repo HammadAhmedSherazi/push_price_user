@@ -131,13 +131,18 @@ class _StoreViewState extends ConsumerState<StoreView> {
                 ],
               ),
               centerTitle: true,
-              title: GestureDetector(
-                onTap: (){
-                  AppRouter.push(StoreDetailView(
-                    storeData: widget.storeData,
-                  ));
-                },
-                child: Text(widget.storeData.storeName, style: context.textStyle.displayMedium)),
+              title: Consumer(
+                builder: (context, ref, child) {
+                  final StoreDataModel store = widget.storeData.storeName == ''? ref.watch(homeProvider.select((e)=>e.products!.first.store))! : widget.storeData;
+                  return GestureDetector(
+                    onTap: (){
+                      AppRouter.push(StoreDetailView(
+                        storeData: store,
+                      ));
+                    },
+                    child: Text(store.storeName, style: context.textStyle.displayMedium));
+                }
+              ),
               actions: [
                 Consumer(
                   builder: (context, ref, child) {

@@ -22,6 +22,14 @@ import GoogleMaps
     locationManager?.pausesLocationUpdatesAutomatically = false
     locationManager?.requestAlwaysAuthorization()
     locationManager?.startUpdatingLocation()
+//      if #available(iOS 10.0, *) {
+//     UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+//     }
+// func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+//                      completionHandler([.alert, .badge, .sound])
+//       }
+  
+
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

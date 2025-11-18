@@ -33,8 +33,23 @@ class NotificationService {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
+      onDidReceiveBackgroundNotificationResponse: (payload) {
+           final int ? storeId = payload.data['store_id'];
+      final int? productId = payload.data['product_id'];
+      if(storeId != null && productId != null){
+        AppRouter.push(StoreView(storeData: StoreDataModel(
+          storeId: storeId
+        ), productId: productId,));
+      }
+      },
       onDidReceiveNotificationResponse: (payload) {
-        // Handle notification tap
+         final int ? storeId = payload.data['store_id'];
+      final int? productId = payload.data['product_id'];
+      if(storeId != null && productId != null){
+        AppRouter.push(StoreView(storeData: StoreDataModel(
+          storeId: storeId
+        ), productId: productId,));
+      }
       },
     );
 

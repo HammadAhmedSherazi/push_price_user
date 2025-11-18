@@ -118,6 +118,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
    
   WidgetsFlutterBinding.ensureInitialized();
+  initializeService();
   await SharedPreferenceManager.init();
   Stripe.publishableKey = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM';
   await Firebase.initializeApp(
@@ -130,15 +131,12 @@ void main() async {
   // Run heavy stuff AFTER UI built
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     try {
-      await Future.wait([
-      NotificationService.initNotifications(),
-      FirebaseService.firebaseTokenInitial(),
-    ]);
-
+    await NotificationService.initNotifications();
+    await  FirebaseService.firebaseTokenInitial();
     if (Platform.isIOS) {
       SecureStorageManager.sharedInstance.deletePreviousStorage();
     }
-    initializeService(); // if safe
+    // initializeService(); // if safe
 
     } catch (e) {
       if (Platform.isIOS) {
@@ -201,17 +199,17 @@ void onStart(ServiceInstance service) async {
 
 
  WidgetsFlutterBinding.ensureInitialized();
+ // MUST RUN IMMEDIATELY — avoid FGS timeout
+  if (service is AndroidServiceInstance) {
+    service.setForegroundNotificationInfo(
+      title: "Background Location Service",
+      content: "Initializing...",
+    );
+  }
+
+  // Optional but supported by plugin
+  service.invoke('setAsForeground');
  
-
-
-  // Note: Permissions should be requested in the foreground UI before starting the background service
-  // Do not check permissions here as Geolocator.checkPermission() may return denied in background context
-
-  // Periodic location fetch
-  // Note: For testing, you can reduce the interval (e.g., Duration(seconds: 10))
-  // In production, use a longer interval (e.g., 20-30 seconds) to save battery
-  // Recursive location fetch to prevent overlaps
-  // Note: Interval set to 60 seconds to reduce frequency and prevent ANR
 
   startLocationUpdates(service);
 }

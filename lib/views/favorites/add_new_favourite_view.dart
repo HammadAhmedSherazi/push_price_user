@@ -88,10 +88,14 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
             ),
             child: CustomButtonWidget(
               isLoad: isLoad,
-              title: widget.data != null ? "save" : "add favorite",
+              title: widget.data != null ? context.tr("save") : context.tr("add_favorite"),
               onPressed: () {
               if(myLocation.isEmpty){
-                Helper.showMessage(context, message: "Please first add location");
+                Helper.showMessage(context, message: context.tr("please_first_add_location"));
+                return;
+              }
+              else if(radius == 0.0){
+Helper.showMessage(context, message: context.tr("please_set_a_distance"));
                 return;
               }
                List<int> addressIds = [];
@@ -104,7 +108,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
                     if (addressIds.isEmpty) {
                       Helper.showMessage(
                         context,
-                        message: "Please select a location",
+                        message: context.tr("please_select_a_location"),
                       );
                       return;
                     }
@@ -128,9 +132,9 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
           );
         },
       ),
-      bottomButtonText:  widget.data != null ? "save" : "add favorite",
+      bottomButtonText:  widget.data != null ? context.tr("save") : context.tr("add_favorite"),
 
-      title:  widget.data != null ? "Edit" : "Add New Favorite",
+      title:  widget.data != null ? context.tr("edit") : context.tr("add_new_favorite"),
       child: ListView(
         padding: EdgeInsets.symmetric(vertical: AppTheme.horizontalPadding),
         children: [
@@ -199,7 +203,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
             padding: EdgeInsets.symmetric(
               horizontal: AppTheme.horizontalPadding,
             ),
-            child: Text("My Location", style: context.textStyle.displayMedium),
+            child: Text(context.tr("my_location"), style: context.textStyle.displayMedium),
           ),
           10.ph,
           Consumer(

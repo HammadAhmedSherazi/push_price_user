@@ -316,5 +316,13 @@
   "password_too_short": "La contraseña debe tener al menos 6 caracteres",
   "confirm_password_required": "Confirmar contraseña es obligatorio",
   "passwords_do_not_match": "Las contraseñas no coinciden",
-  "reset_password": "Restablecer contraseña"
+  "reset_password": "Restablecer contraseña",
+  "select_location": "Seleccionar ubicación",
+  "hinted_search_text": "Texto de búsqueda sugerido",
+  "please_first_add_location": "Por favor, primero agrega una ubicación",
+  "please_set_a_distance": "Por favor, establece una distancia",
+  "please_select_a_location": "Por favor, selecciona una ubicación",
+  "my_location": "Mi ubicación",
+  "add_favorite": "agregar favorito",
+  "help_feedback": "Ayuda y Comentarios"
 }
