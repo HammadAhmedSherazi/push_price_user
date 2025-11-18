@@ -14,9 +14,9 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
   void showReasonDialog(BuildContext context) {
   int selectedIndex = 0;
   List<String> reasons = [
-   "I placed the order by mistake",
-"I found a better price elsewhere",
-"I no longer need the product",
+   context.tr("placed_order_by_mistake"),
+context.tr("found_better_price"),
+context.tr("no_longer_need_product"),
   ];
 
   showDialog(
@@ -38,7 +38,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Reason",
+                    context.tr("reason"),
                     style: context.textStyle.bodyMedium!.copyWith(
                       fontSize: 18.sp
                     ),
@@ -76,7 +76,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                       final isLoad = ref.watch(orderProvider.select((e)=>e.cancelOrderApiResponse.status)) == Status.loading;
                       return  CustomButtonWidget(
                         isLoad: isLoad,
-                        title: "next", onPressed: (){
+                        title: context.tr("next"), onPressed: (){
                           ref.read(orderProvider.notifier).cancelOrder(orderId: widget.orderId);
                   });
                     },
@@ -104,7 +104,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
     final order = orderState.orderDetail;
    
     return CustomScreenTemplate(
-      title: "Order details",
+      title: context.tr("order_details"),
       bottomButtonText:  widget.afterPayment!?"back to home" : null,
       onButtonTap: (){
         AppRouter.customback(times: 6);
@@ -114,12 +114,12 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
       Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: Column(
         spacing: 15,
         children: [
-          CustomOutlineButtonWidget(title: "modify order", onPressed: (){
+          CustomOutlineButtonWidget(title: context.tr("modify_order"), onPressed: (){
             AppRouter.push(ModifyOrderView(
               orderData: orderState.orderDetail!,
             ));
           }),
-          CustomButtonWidget(title: "make payment", onPressed: (){
+          CustomButtonWidget(title: context.tr("make_payment"), onPressed: (){
             AppRouter.push(StoreCodeView(
               orderId: order!.orderId,
             ));
@@ -141,7 +141,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                     padding: WidgetStatePropertyAll(EdgeInsets.zero),
                   ),
                   child: Text(
-                    "Cancel Order",
+                    context.tr("cancel_order"),
                     style: context.textStyle.displayMedium!.copyWith(
                       color: AppColors.primaryColor,
                       decoration: TextDecoration.underline,
@@ -163,7 +163,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
             padding: EdgeInsets.all(AppTheme.horizontalPadding),
             children: [
               Text(
-                "Order Details",
+                context.tr("order_details"),
                 style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
               ),
               10.ph,
@@ -179,8 +179,8 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    
-                    setTitle(order.status),
+
+                    setTitle(context, order.status),
                     style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
                   ),
                   // Text("Today 3:45pm", style: context.textStyle.bodySmall,)
@@ -188,17 +188,17 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
               ),
               Divider(),
               OrderDetailTitleWidget(
-                title: "Order ID",
+                title: context.tr("order_id"),
                 value: "#${order.orderId}" ,
               ),
               10.ph,
               OrderDetailTitleWidget(
-                title: "Date",
+                title: context.tr("date"),
                 value: "${order.createdAt.month}/${order.createdAt.day}/${order.createdAt.year}" ,
               ),
               10.ph,
               OrderDetailTitleWidget(
-                title: "Total",
+                title: context.tr("total"),
                 value: "\$${order.finalAmount}" ,
               ),
               if(order.status == "COMPLETED")...[
@@ -234,17 +234,17 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
   }
 }
 
-String setTitle(String status){
+String setTitle(BuildContext context, String status){
   switch (status) {
     case "IN_PROCESS":
-      return "Order In-Process";
+      return context.tr("order_in_process");
     case "COMPLETED":
-      return "Order Completed";
+      return context.tr("order_completed");
     case "CANCELLED":
-      return "Order Cancelled";   
+      return context.tr("order_cancelled");
     default:
       return "";
-   
+
   }
 }
 

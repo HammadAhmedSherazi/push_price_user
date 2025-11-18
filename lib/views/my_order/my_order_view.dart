@@ -10,10 +10,10 @@ class MyOrderView extends ConsumerStatefulWidget {
 
 class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProviderStateMixin {
    late TabController tabController;
-   final List<Widget> tabs = [
-    Tab(text: "In Process",),
-    Tab(text: "Completed",),
-    Tab(text: "Cancelled",),
+    final List<Widget> tabs  = [
+    Tab(text: AppRouter.navKey.currentContext!.tr("in_process"),),
+    Tab(text: AppRouter.navKey.currentContext!.tr("completed"),),
+    Tab(text: AppRouter.navKey.currentContext!.tr("cancelled"),),
    ];
   @override
   void initState() {
@@ -33,6 +33,7 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
     super.initState();
 
   }
+  
   void fetchOrder(int index){
     String type = getTabType(index);
     ref.read(orderProvider.notifier).getOrders(type: type);
@@ -54,7 +55,7 @@ class _MyOrderViewState extends ConsumerState<MyOrderView> with SingleTickerProv
     final orders = orderState.orders ?? [];
 
     return CustomScreenTemplate(
-      title: "My Orders", child: Column(
+      title: context.tr("my_orders"), child: Column(
       children: [
 
         CustomTabBarWidget(tabController: tabController, tabs: tabs,),

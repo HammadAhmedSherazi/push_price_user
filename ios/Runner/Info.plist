@@ -36,6 +36,8 @@
 	<string>This app needs access to location to provide location-based services.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to your photo library to select product images.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>This app needs access to notifications to keep you updated with important alerts and messages.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

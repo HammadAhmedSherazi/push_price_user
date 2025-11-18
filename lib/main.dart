@@ -79,6 +79,7 @@ Future<void> performLocationUpdate(ServiceInstance service) async {
             ),
             onBackground: true,
           );
+          // NotificationService.showNotification(title: "Test Notification", body: "testing....");
           // print("Update Location ${_locationTimer}");
         } else {
           if (service is AndroidServiceInstance) {

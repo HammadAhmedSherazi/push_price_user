@@ -121,7 +121,7 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
             horizontal: AppTheme.horizontalPadding
           ), child: CustomButtonWidget(
             isLoad: isLoad,
-            title: "save", onPressed: (){
+            title: context.tr("save"), onPressed: (){
             final items = modifiedOrder.items.map((item) => {
           "listing_id": item.listingId,
           "quantity": item.quantity,
@@ -131,7 +131,7 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
           }),);
         },
       ),
-      title: "Modify Order",
+      title: context.tr("modify_order"),
       child: ListView(
         padding: EdgeInsets.all(AppTheme.horizontalPadding),
         children: [
@@ -252,17 +252,17 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
 
          
           Text(
-            "Order Summary",
+            context.tr("order_summary"),
             style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
           ),
           Divider(),
           OrderDetailTitleWidget(
-            title: "Item Total",
+            title: context.tr("item_total"),
             value: "\$${modifiedOrder.totalAmount}",
           ),
           10.ph,
           OrderDetailTitleWidget(
-            title: "Total",
+            title: context.tr("total"),
             value: "\$${modifiedOrder.totalAmount}",
           ),
         ],

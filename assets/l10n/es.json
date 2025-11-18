@@ -354,5 +354,9 @@
   "align_barcode_within_the_frame_to_scan": "Alinee el código de barras dentro del marco para escanear",
   "categories": "Categorías",
   "view_details": "Ver detalles",
-  "my_favourite": "Mi favorito"
+  "my_favourite": "Mi favorito",
+  "in_process" : "En proceso",
+  "save": "Guardar",
+  "view_order": "Ver pedido",
+  "back_to_home": "Volver al inicio"
 }

@@ -356,5 +356,7 @@
   "align_barcode_within_the_frame_to_scan": "Align Barcode Within The Frame To Scan",
   "categories": "Categories",
   "view_details": "View Details",
-  "my_favourite": "My Favourite"
+  "my_favourite": "My Favourite",
+  "in_process" : "In Process",
+  "save": "Save"
 }

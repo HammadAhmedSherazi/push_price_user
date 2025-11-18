@@ -27,16 +27,18 @@ class FirebaseService {
       badge: true,
       sound: true,
     );
-
+   
     await FirebaseMessaging.instance.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
       carPlay: false,
       criticalAlert: false,
-      provisional: true,
+      provisional: false,
       sound: true,
     );
+
+
 
     // fetch the FCM token for this device
 
@@ -57,18 +59,18 @@ class FirebaseService {
     });
 
     // Handle when app is opened from notification
-    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    //   // debugPrint('A new onMessageOpenedApp event was published!');
-    //   // Handle navigation or other actions here
-    //   final int ? storeId = message.data['store_id'];
-    //   final int? productId = message.data['product_id'];
-    //   if(storeId != null && productId != null){
-    //     AppRouter.push(StoreView(storeData: StoreDataModel(
-    //       storeId: storeId
-    //     ), productId: productId,));
-    //   }
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      // debugPrint('A new onMessageOpenedApp event was published!');
+      // Handle navigation or other actions here
+      final int ? storeId = message.data['store_id'];
+      final int? productId = message.data['product_id'];
+      if(storeId != null && productId != null){
+        AppRouter.push(StoreView(storeData: StoreDataModel(
+          storeId: storeId
+        ), productId: productId,));
+      }
       
-    //   NotificationService.handleBackgroundMessage(message); });
+      NotificationService.handleBackgroundMessage(message); });
       } catch (e) {
 
         // fcmToken = await firebaseMessaging.getToken() ?? "";

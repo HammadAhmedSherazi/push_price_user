@@ -40,7 +40,7 @@ class OrderSuccessModifiedView extends StatelessWidget {
               }
               
             }),
-            CustomOutlineButtonWidget(title: "back to home", onPressed: (){
+            CustomOutlineButtonWidget(title: context.tr("back_to_home"), onPressed: (){
               AppRouter.customback(
                 times: message.contains("Modified")? 4 : count ?? 2
               );
