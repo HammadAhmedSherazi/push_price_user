@@ -10,7 +10,7 @@ class SettingView extends StatefulWidget {
 }
 
 class _SettingViewState extends State<SettingView> {
-  bool notificationOn = false;
+  bool? notificationOn ;
   bool travelModeOn = false;
   
   List<MenuDataModel> _getMenuList(BuildContext context) {
@@ -82,19 +82,26 @@ class _SettingViewState extends State<SettingView> {
               leading: SvgPicture.asset(menu.icon),
               title: Text(menu.title, style: context.textStyle.bodyMedium),
               trailing: isNotification || isTravelMode
-                  ? CustomSwitchWidget(
-                      scale: 0.7,
-                      value: isNotification ? notificationOn : travelModeOn,
-                      onChanged: (val) {
-                        setState(() {
-                          if (isNotification) {
-                            notificationOn = val;
-                          } else {
-                            travelModeOn = val;
-                          }
-                        });
-                      },
-                    )
+                  ? Consumer(
+                    builder: (context, ref, child) {
+                      final user = ref.watch(authProvider.select((e)=>e.userData))!;
+                      notificationOn ??= user.isEnableNotification;
+                      return CustomSwitchWidget(
+                          scale: 0.7,
+                          value: isNotification ? notificationOn! : travelModeOn,
+                          onChanged: (val) {
+                            setState(() {
+                              if (isNotification) {
+                                notificationOn = val;
+                                ref.read(authProvider.notifier).updateProfile(userDataModel: user.copyWith(isEnableNotification: notificationOn) );
+                              } else {
+                                travelModeOn = val;
+                              }
+                            });
+                          },
+                        );
+                    }
+                  )
                   : null,
             ),
           );

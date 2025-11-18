@@ -11,6 +11,7 @@ class UserDataModel {
   final String createdAt;
   final String updatedAt;
   final num latitude, longitude;
+  final bool isEnableNotification;
 
   const UserDataModel({
     required this.userId,
@@ -27,6 +28,7 @@ class UserDataModel {
     required this.isTravelMode,
     required this.latitude,
     required this.longitude,
+    required this.isEnableNotification,
   });
 
   factory UserDataModel.fromJson(Map<String, dynamic> json) {
@@ -44,7 +46,8 @@ class UserDataModel {
       isTravelMode: json['is_travel_enabled'] ?? false,
       longitude: json['longitude'] ?? 0,
       latitude: json['latitude'] ?? 0,
-      deviceToken: json['device_token'] ?? ""
+      deviceToken: json['device_token'] ?? "",
+      isEnableNotification: json['enable_notification'] ?? false
     );
   }
 
@@ -63,7 +66,8 @@ class UserDataModel {
       'is_travel_enabled' : isTravelMode,
       'longitude' : longitude,
       'latitude' : latitude,
-      'device_token' : deviceToken
+      'device_token' : deviceToken,
+      'enable_notification' : isEnableNotification
     };
     
   }
@@ -83,7 +87,8 @@ class UserDataModel {
     String? updatedAt,
     num? latitude, longitude,
     bool? isTravelMode,
-    String? deviceToken
+    String? deviceToken,
+    bool? isEnableNotification,
   }) {
     return UserDataModel(
       userId: userId ?? this.userId,
@@ -99,13 +104,14 @@ class UserDataModel {
       isTravelMode: isTravelMode ?? this.isTravelMode,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
-      deviceToken: deviceToken ?? this.deviceToken
+      deviceToken: deviceToken ?? this.deviceToken,
+      isEnableNotification: isEnableNotification ?? this.isEnableNotification
     );
   }
 
-  @override
-  String toString() {
-    return 'UserDataModel(userId: $userId, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, address: $address, profileImage: $profileImage, isVerified: $isVerified, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt, deviceToken : $deviceToken)';
-  }
+  // @override
+  // String toString() {
+  //   return 'UserDataModel(userId: $userId, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, address: $address, profileImage: $profileImage, isVerified: $isVerified, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt, deviceToken : $deviceToken)';
+  // }
 }
   
