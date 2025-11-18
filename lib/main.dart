@@ -131,8 +131,9 @@ void main() async {
   // Run heavy stuff AFTER UI built
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     try {
-    await NotificationService.initNotifications();
-    await  FirebaseService.firebaseTokenInitial();
+     await  Future.wait([ NotificationService.initNotifications(),FirebaseService.firebaseTokenInitial()]);
+   
+    
     if (Platform.isIOS) {
       SecureStorageManager.sharedInstance.deletePreviousStorage();
     }

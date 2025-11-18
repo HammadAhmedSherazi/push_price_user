@@ -146,7 +146,7 @@ class _FavouriteViewState extends ConsumerState<FavouriteView> {
                 }
               ),
             ),
-            Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: "add new favorite", onPressed: (){
+            Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: context.tr("add_new_favorite"), onPressed: (){
               AppRouter.push(SearchProductView());
             }),),
            ],

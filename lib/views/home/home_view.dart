@@ -59,7 +59,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       24.pw, // Placeholder for alignment
-                      Text('Location', style: context.textStyle.bodyMedium!.copyWith(
+                      Text(context.tr('location'), style: context.textStyle.bodyMedium!.copyWith(
                         fontSize: 16.sp
                       )),
                       InkWell(
@@ -152,7 +152,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                       },
                       icon: Icon(Icons.add, color: AppColors.secondaryColor),
                       label: Text(
-                        "Add New Address",
+                        context.tr("add_new_address"),
                         style: context.textStyle.displayMedium!.copyWith(
                           color: AppColors.primaryColor
                         ),

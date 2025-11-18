@@ -7,76 +7,111 @@ import '../../utils/extension.dart';
 class ScanProductView extends StatelessWidget {
   final bool isSignUp;
   final ProductDataModel product;
-  const ScanProductView({super.key, required this.isSignUp, required this.product});
+  const ScanProductView({
+    super.key,
+    required this.isSignUp,
+    required this.product,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return CustomScreenTemplate(title: context.tr("barcode"), child: SizedBox(
-      height: double.infinity,
-      child: Column(
-        children: [
-          Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: DisplayNetworkImage(imageUrl: product.image, width: 150.r, height: 150.r,)),
-          ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              horizontal: AppTheme.horizontalPadding,
-              vertical: 30.r
-            ),
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(242, 248, 254, 1)
-            ),
-            child: Column(
-              spacing: 15,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(product.title, style: context.textStyle.bodyMedium!.copyWith(
-                  fontSize: 18.sp
-                ),),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(context.tr('category'), style: context.textStyle.bodyMedium!.copyWith(
-                      color: Colors.grey
-                    ),),
-                    Text(product.category?.title ?? "", style: context.textStyle.bodyMedium!,),
-                  ],
+    return CustomScreenTemplate(
+      title: context.tr("barcode"),
+      child: SizedBox(
+        height: double.infinity,
+        child: Column(
+          children: [
+            Expanded(
+              child: Align(
+                alignment: Alignment.center,
+                child: DisplayNetworkImage(
+                  imageUrl: product.image,
+                  width: 150.r,
+                  height: 150.r,
                 ),
-                SizedBox(
-  width: double.infinity,
-  height: 1,
-  child: CustomPaint(
-    painter: DottedLinePainter(),
-  ),
-),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(context.tr('price'), style: context.textStyle.bodyMedium!.copyWith(
-                      color: Colors.grey
-                    ),),
-                    Text("\$${product.price}", style: context.textStyle.bodyMedium!,),
-                  ],
-                ),
-                5.ph,
-                Consumer(
-                  builder: (context, ref, child) {
-                    return CustomButtonWidget(title: context.tr("select_product"), onPressed: (){
-                      ref.read(favouriteProvider.notifier).addProduct(product);
-                      
-                      AppRouter.push(AddNewFavouriteView(isSignUp: isSignUp,isScan: true,));
-                    });
-                  }
-                )
-              ],
+              ),
             ),
-          )
-        ],
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppTheme.horizontalPadding,
+                vertical: 30.r,
+              ),
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(242, 248, 254, 1),
+              ),
+              child: Column(
+                spacing: 15,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.title,
+                    style: context.textStyle.bodyMedium!.copyWith(
+                      fontSize: 18.sp,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        context.tr('category'),
+                        style: context.textStyle.bodyMedium!.copyWith(
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        product.category?.title ?? "",
+                        style: context.textStyle.bodyMedium!,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 1,
+                    child: CustomPaint(painter: DottedLinePainter()),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        context.tr('price'),
+                        style: context.textStyle.bodyMedium!.copyWith(
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        "\$${product.price}",
+                        style: context.textStyle.bodyMedium!,
+                      ),
+                    ],
+                  ),
+                  5.ph,
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return CustomButtonWidget(
+                        title: context.tr("select_product"),
+                        onPressed: () {
+                          ref
+                              .read(favouriteProvider.notifier)
+                              .addProduct(product);
+
+                          AppRouter.push(
+                            AddNewFavouriteView(
+                              isSignUp: isSignUp,
+                              isScan: true,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }
 
