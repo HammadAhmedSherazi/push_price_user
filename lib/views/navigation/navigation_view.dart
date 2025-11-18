@@ -35,6 +35,12 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
       ref.read(notificationProvider.notifier).getUnreadNotificationCount();
       ref.read(geolocatorProvider.notifier).getCurrentLocation();
     });
+    bottomNavItems = [
+      BottomDataModel(title: "home", icon: Assets.home, child: HomeView(scrollController: scrollController ,)),
+      BottomDataModel(title:"explore", icon: Assets.explore, child: ExploreView(scrollController: scrollController,)),
+      BottomDataModel(title: "favorite", icon: Assets.heart, child: FavouriteView(scrollController: scrollController,)),
+      BottomDataModel(title: "profile", icon: Assets.profile, child: ProfileView()),
+    ];
   }
 
   void showLogoutDialog(BuildContext context) {
@@ -96,12 +102,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    bottomNavItems = [
-      BottomDataModel(title: context.tr("home"), icon: Assets.home, child: HomeView(scrollController: scrollController ,)),
-      BottomDataModel(title: context.tr("explore"), icon: Assets.explore, child: ExploreView(scrollController: scrollController,)),
-      BottomDataModel(title: context.tr("favorite"), icon: Assets.heart, child: FavouriteView(scrollController: scrollController,)),
-      BottomDataModel(title: context.tr("profile"), icon: Assets.profile, child: ProfileView()),
-    ];
+    
   }
 
   @override

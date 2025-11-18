@@ -52,7 +52,7 @@ class CustomBottomNavBarWidget extends ConsumerWidget {
               children: [
                 SvgPicture.asset(item.icon,  colorFilter: ColorFilter.mode(selectColor, BlendMode.srcIn),),
                   Expanded(
-                    child: Text(item.title,
+                    child: Text(context.tr(item.title),
                     maxLines: 2,
                     textAlign: TextAlign.center,
                     style: context.textStyle.displaySmall!.copyWith(
