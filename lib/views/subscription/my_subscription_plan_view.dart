@@ -1,6 +1,5 @@
-import '../../utils/extension.dart';
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class MySubscriptionPlanView extends StatefulWidget {
   const MySubscriptionPlanView({super.key});
@@ -103,14 +102,14 @@ class _MySubscriptionPlanViewState extends State<MySubscriptionPlanView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Price Plan", style: context.textStyle.bodySmall,),
-              Text("\$14.99 every 1 month", style: context.textStyle.bodySmall,),
+              Text(context.tr("price_plan"), style: context.textStyle.bodySmall,),
+              Text(context.tr("price_per_month").replaceFirst("%s", "14.99"), style: context.textStyle.bodySmall,),
             ],
           ),
            Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Subscription ends on", style: context.textStyle.bodySmall,),
+              Text(context.tr("subscription_ends_on"), style: context.textStyle.bodySmall,),
               Text("April 25, 2025", style: context.textStyle.bodySmall,),
             ],
           ),
@@ -127,7 +126,7 @@ class _MySubscriptionPlanViewState extends State<MySubscriptionPlanView> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Terms and Conditions", style: context.textStyle.displayMedium,),
+          Text(context.tr("terms_and_conditions"), style: context.textStyle.displayMedium,),
           SvgPicture.asset(Assets.forwardIcon)
         ],
       )

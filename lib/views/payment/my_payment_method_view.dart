@@ -1,6 +1,5 @@
-import '../../utils/extension.dart';
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class MyPaymentMethodView extends StatefulWidget {
   const MyPaymentMethodView({super.key});
@@ -47,7 +46,7 @@ class _MyPaymentMethodViewState extends State<MyPaymentMethodView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.add),
-                    Text("ADD A NEW PAYMENT METHOD", style: context.textStyle.displayMedium!.copyWith(
+                    Text(context.tr("add_a_new_payment_method"), style: context.textStyle.displayMedium!.copyWith(
                       color: Colors.white
                     ),)
                   ],
@@ -102,7 +101,7 @@ class CardTitleWidget extends StatelessWidget {
           Row(
             children: [
 
-             card.isPrimary!? Text("(Primary)", style: context.textStyle.bodyMedium!.copyWith(
+             card.isPrimary!? Text(context.tr("primary"), style: context.textStyle.bodyMedium!.copyWith(
                 color: AppColors.secondaryColor
               ),) : TextButton(
                 style: ButtonStyle(
@@ -111,7 +110,7 @@ class CardTitleWidget extends StatelessWidget {
                     vertical: -4.0
                   )
                 ),
-                onPressed: setPrimaryFun, child: Text("Set as Primary", style: context.textStyle.bodyMedium!.copyWith(
+                onPressed: setPrimaryFun, child: Text(context.tr("set_as_primary"), style: context.textStyle.bodyMedium!.copyWith(
                 color: AppColors.primaryColor,
                 decoration: TextDecoration.underline
               ),)),

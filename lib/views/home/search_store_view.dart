@@ -47,7 +47,7 @@ class _SearchStoreViewState extends ConsumerState<SearchStoreView> {
           children: [
 
             CustomSearchBarWidget(
-              hintText: "Hinted search text",
+              hintText: context.tr('hinted_search_text'),
               autoFocus: true,
               controller: _searchTextController,
               onChanged:(value){

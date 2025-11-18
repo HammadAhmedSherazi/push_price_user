@@ -123,7 +123,7 @@ class OrderCardWidget extends StatelessWidget {
                 ),
                 onPressed: (){
                   AppRouter.push(OrderDetailView(orderId: order.orderId),fun:fun);
-                }, child: Text("View Details", style: context.textStyle.bodyMedium!.copyWith(
+                }, child: Text(context.tr("view_details"), style: context.textStyle.bodyMedium!.copyWith(
                 color: AppColors.primaryColor,
                 decoration: TextDecoration.underline
                ),))

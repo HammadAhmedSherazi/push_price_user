@@ -89,7 +89,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                 color: Colors.white
               ),),
             ),
-            Text("View Your Cart", style: context.textStyle.bodyMedium!.copyWith(
+            Text(context.tr("view_your_cart"), style: context.textStyle.bodyMedium!.copyWith(
               color: Colors.white
             ),),
             Text("\$$price", style: context.textStyle.bodySmall!.copyWith(

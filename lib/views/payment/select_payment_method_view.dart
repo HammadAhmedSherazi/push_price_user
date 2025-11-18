@@ -1,6 +1,5 @@
-import '../../utils/extension.dart';
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class SelectPaymentMethodView extends StatefulWidget {
   const SelectPaymentMethodView({super.key});
@@ -35,7 +34,7 @@ class _SelectPaymentMethodViewState extends State<SelectPaymentMethodView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.add),
-                    Text("ADD A NEW PAYMENT METHOD", style: context.textStyle.displayMedium!.copyWith(
+                    Text(context.tr("add_a_new_payment_method"), style: context.textStyle.displayMedium!.copyWith(
                       color: Colors.white
                     ),)
                   ],

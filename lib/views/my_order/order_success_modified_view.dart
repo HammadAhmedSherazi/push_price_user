@@ -21,7 +21,7 @@ class OrderSuccessModifiedView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(Assets.checkCircleIcon),
-            Text("Thankyou!", style: context.textStyle.displayMedium!.copyWith(
+            Text(context.tr("thankyou"), style: context.textStyle.displayMedium!.copyWith(
               color: AppColors.secondaryColor
             ),),
             Text(message, style: context.textStyle.displayMedium!.copyWith(

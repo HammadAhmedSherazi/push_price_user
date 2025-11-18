@@ -215,7 +215,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                       decoration: BoxDecoration(
                         color: AppColors.secondaryColor
                       ),
-                      child: Text("PAID", style: context.textStyle.headlineMedium!.copyWith(
+                      child: Text(context.tr("paid"), style: context.textStyle.headlineMedium!.copyWith(
                         color: Colors.white,
                         fontSize: 16.sp
                       ),),

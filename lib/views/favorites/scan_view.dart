@@ -1,7 +1,7 @@
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 
-import '../../utils/extension.dart';
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class ScanView extends StatelessWidget {
   final bool isSignUp;
@@ -58,7 +58,7 @@ class ScanView extends StatelessWidget {
           Padding(padding: EdgeInsets.symmetric(
             vertical: 20.r,
             horizontal: 50.r
-          ), child: Text("Align Barcode Within The Frame To Scan", textAlign: TextAlign.center, style: context.textStyle.displayMedium!.copyWith(
+          ), child: Text(context.tr("align_barcode_within_the_frame_to_scan"), textAlign: TextAlign.center, style: context.textStyle.displayMedium!.copyWith(
             fontSize: 16.sp
           ),),)
 

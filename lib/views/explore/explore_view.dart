@@ -44,11 +44,11 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBarWidget(
         height: context.screenheight * 0.15,
-        title: "Explore",
+        title: context.tr("explore"),
         children: [
           CustomSearchBarWidget(
             controller: _searchTextEditController,
-            hintText: "Hinted search text",
+            hintText: context.tr('hinted_search_text'),
             onTapOutside: (v) {
               FocusScope.of(context).unfocus();
             },
@@ -120,7 +120,7 @@ class NearbyStoreGirdViewSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Nearby Stores", style: context.textStyle.displayMedium),
+            Text(context.tr("nearby_stores"), style: context.textStyle.displayMedium),
             // TextButton(
             //   style: ButtonStyle(
             //     padding: WidgetStatePropertyAll(EdgeInsets.zero),
@@ -193,7 +193,7 @@ class DisplaySearchStore extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Search Result", style: context.textStyle.displayMedium),
+                  Text(context.tr("search_result"), style: context.textStyle.displayMedium),
                 ],
               ),
               Expanded(

@@ -159,7 +159,7 @@ class NotificationTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.r),
                       color: AppColors.primaryColor
                     ),
-                    child: Text("Visit Store", style: context.textStyle.displayMedium!.copyWith(
+                    child: Text(context.tr("visit_store"), style: context.textStyle.displayMedium!.copyWith(
                       color: Colors.white
                     ),),
                   ),

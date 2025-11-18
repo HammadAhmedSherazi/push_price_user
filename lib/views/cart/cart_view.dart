@@ -57,7 +57,7 @@ class _CartViewState extends ConsumerState<CartView> {
             ),
             child: CustomButtonWidget(
               isLoad: isLoad,
-              title: "place order",
+              title: context.tr("place_order"),
               onPressed: () {
                 
                 final cartItems = ref.read(homeProvider.select((e)=>e.cartList));
@@ -80,8 +80,8 @@ class _CartViewState extends ConsumerState<CartView> {
       onButtonTap: () {
         
       },
-      bottomButtonText: "place order",
-      title: "Cart",
+      bottomButtonText: context.tr("place_order"),
+      title: context.tr("cart"),
       child: Column(
         children: [
           Expanded(
@@ -227,7 +227,7 @@ class _CartViewState extends ConsumerState<CartView> {
                 10.ph,
                 
                   Text(
-                    "Promotional Products",
+                    context.tr("promotional_products"),
                     style: context.textStyle.headlineMedium,
                   ),
                   10.ph,
@@ -322,22 +322,22 @@ class _CartViewState extends ConsumerState<CartView> {
                 
 
                 Text(
-                  "Order Summary",
+                  context.tr("order_summary"),
                   style: context.textStyle.bodyMedium!.copyWith(
                     fontSize: 18.sp,
                   ),
                 ),
                 Divider(),
-                OrderDetailTitleWidget(title: "Item Total", value: "\$$total"),
+                OrderDetailTitleWidget(title: context.tr("item_total"), value: "\$$total"),
                 if(voucherRes.status == Status.completed && voucherRes.data != null &&voucherRes.data!.discountValue != 0)...[
                 10.ph,
-                OrderDetailTitleWidget(title: "Voucher Discount", value: "\$${voucherRes.data!.discountValue}"),
+                OrderDetailTitleWidget(title: context.tr("voucher_discount"), value: "\$${voucherRes.data!.discountValue}"),
 
                 ],
                 10.ph,
             
 
-                OrderDetailTitleWidget(title: "Total", value: "\$$total"),
+                OrderDetailTitleWidget(title: context.tr("total"), value: "\$$total"),
                 
                 // if()
                 if(voucherRes.status != Status.completed)...[
@@ -351,7 +351,7 @@ class _CartViewState extends ConsumerState<CartView> {
                     children: [
                       SvgPicture.asset(Assets.voucherOutlineIcon),
                       Text(
-                        "Apply Voucher",
+                        context.tr("apply_voucher"),
                         style: context.textStyle.displayMedium,
                       ),
                     ],
@@ -371,7 +371,7 @@ class _CartViewState extends ConsumerState<CartView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Total", style: context.textStyle.displayMedium),
+                    Text(context.tr("total"), style: context.textStyle.displayMedium),
                     Text(
                       "\$$total",
                       style: context.textStyle.displayMedium!.copyWith(

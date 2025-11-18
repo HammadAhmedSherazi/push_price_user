@@ -96,7 +96,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         ),
                       ),
                       Text(
-                        "View Your Cart",
+                        context.tr("view_your_cart"),
                         style: context.textStyle.bodyMedium!.copyWith(
                           color: Colors.white,
                         ),
@@ -254,7 +254,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
           ),
          10.ph,
            Text(
-                    "Promotional Products",
+                    context.tr("promotional_products"),
                     style: context.textStyle.headlineMedium,
                   ),
                   10.ph,

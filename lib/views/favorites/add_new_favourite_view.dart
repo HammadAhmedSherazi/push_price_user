@@ -160,13 +160,13 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
             ),
             child: Row(
               children: [
-                Text("Distance", style: context.textStyle.displayMedium),
+                Text(context.tr("distance"), style: context.textStyle.displayMedium),
                 const Spacer(),
                 DropdownButton<String>(
                   value: distanceUnit,
-                  items: const [
-                    DropdownMenuItem(value: "METERS", child: Text("Meters")),
-                    DropdownMenuItem(value: "KILOMETERS", child: Text("Kilometers")),
+                  items: [
+                    DropdownMenuItem(value: "METERS", child: Text(context.tr("meters"))),
+                    DropdownMenuItem(value: "KILOMETERS", child: Text(context.tr("kilometers"))),
                   ],
                   onChanged: (value) {
                     if(value == null) return;
@@ -234,7 +234,7 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
                         },
                         icon: Icon(Icons.add, color: AppColors.primaryColor),
                         label: Text(
-                          "Add Address",
+                         context.tr("add_address"),
                           style: context.textStyle.displayMedium!.copyWith(
                             color: AppColors.primaryColor
                           ),
@@ -270,7 +270,7 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
             padding: EdgeInsets.symmetric(
               horizontal: AppTheme.horizontalPadding,
             ),
-            child: Text("Travel Mode", style: context.textStyle.displayMedium),
+            child: Text(context.tr("travel_mode"), style: context.textStyle.displayMedium),
           ),
           10.ph,
           Padding(

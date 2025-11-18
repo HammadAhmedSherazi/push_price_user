@@ -46,7 +46,7 @@ class StoreDetailView extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(AppTheme.horizontalPadding),
         children: [
-          Text("Store Information", style: context.textStyle.displayMedium!.copyWith(
+          Text(context.tr("store_information"), style: context.textStyle.displayMedium!.copyWith(
             fontSize: 16.sp
           ),),
           10.ph,

@@ -116,7 +116,7 @@ class _SearchProductViewState extends ConsumerState<SearchProductView> {
           //     .watch(favouriteProvider.select((e) => e.products ?? []))
           //     .indexWhere((item) => item.isSelect) !=
           // -1,
-      bottomButtonText: "next",
+      bottomButtonText: context.tr("next"),
       onButtonTap: () {
          ref
                                     .read(favouriteProvider.notifier)
@@ -125,7 +125,7 @@ class _SearchProductViewState extends ConsumerState<SearchProductView> {
           fetchProducts(skip: 0, limit: 10);
          });
       },
-      title: "Search",
+      title: context.tr("search"),
       actionWidget: Row(
         children: [
           GestureDetector(
@@ -145,7 +145,7 @@ class _SearchProductViewState extends ConsumerState<SearchProductView> {
                 children: [
                   SvgPicture.asset(Assets.menuScanBarIcon),
                   Text(
-                    "Scan",
+                    context.tr("scan"),
                     style: context.textStyle.displayMedium!.copyWith(
                       color: Colors.white,
                     ),
@@ -167,7 +167,7 @@ class _SearchProductViewState extends ConsumerState<SearchProductView> {
                 horizontal: AppTheme.horizontalPadding,
               ),
               child: CustomSearchBarWidget(
-                hintText: "Hinted search text",
+                hintText: context.tr('hinted_search_text'),
                 onChanged:(value){
                   if (_searchDebounce?.isActive ?? false) {
                         _searchDebounce!.cancel();

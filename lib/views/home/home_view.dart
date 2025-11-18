@@ -179,10 +179,10 @@ class _HomeViewState extends ConsumerState<HomeView>  {
     Scaffold(
       appBar: CustomAppBarWidget(
         height: context.screenheight * 0.21,
-        title: "Home",
+        title: context.tr("home"),
         children: [
           // CustomSearchBarWidget(
-          //   hintText: "Hinted search text",
+          //   hintText: context.tr('hinted_search_text'),
             
           //   suffixIcon: SvgPicture.asset(Assets.filterIcon),
           //   // onTapOutside: (c){
@@ -257,7 +257,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                 }
               ),
               30.pw,
-              Text("Travel Mode", style: context.textStyle.displayMedium),
+              Text(context.tr("travel_mode"), style: context.textStyle.displayMedium),
               10.pw,
               Consumer(
                 builder: (context,ref, child) {
@@ -315,7 +315,7 @@ class PopularStoresSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Popular Stores", style: context.textStyle.displayMedium),
+                  Text(context.tr("popular_stores"), style: context.textStyle.displayMedium),
                   TextButton(
                     style: ButtonStyle(
                       padding: WidgetStatePropertyAll(EdgeInsets.zero),
@@ -328,7 +328,7 @@ class PopularStoresSection extends StatelessWidget {
                       AppRouter.push(AllStoreView(title: "Popular Stores"));
                     },
                     child: Text(
-                      "See All",
+                      context.tr('see_all'),
                       style: context.textStyle.bodySmall!.copyWith(
                         color: context.colors.primary,
                         decoration: TextDecoration.underline,
@@ -422,7 +422,7 @@ class NearbyStoresSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Nearby Stores", style: context.textStyle.displayMedium),
+                  Text(context.tr('nearby_stores'), style: context.textStyle.displayMedium),
                   TextButton(
                     style: ButtonStyle(
                       padding: WidgetStatePropertyAll(EdgeInsets.zero),
@@ -435,7 +435,7 @@ class NearbyStoresSection extends StatelessWidget {
                       AppRouter.push(NearbyStoreView(title: "Nearby Stores"));
                     },
                     child: Text(
-                      "See All",
+                      context.tr('see_all'),
                       style: context.textStyle.bodySmall!.copyWith(
                         color: context.colors.primary,
                         decoration: TextDecoration.underline,
@@ -488,7 +488,7 @@ class CategoriesSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Categories", style: context.textStyle.displayMedium),
+                  Text(context.tr("categories"), style: context.textStyle.displayMedium),
                   TextButton(
                     style: ButtonStyle(
                       padding: WidgetStatePropertyAll(EdgeInsets.zero),
@@ -571,7 +571,7 @@ class SpecialOfferBannerSection extends StatelessWidget {
         spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Special Offers", style: context.textStyle.displayMedium),
+          Text(context.tr('special_offers'), style: context.textStyle.displayMedium),
           Expanded(
             child:AdSliderWidget(images: ["", "", "", "", ""]),
             //  ClipRRect(

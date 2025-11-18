@@ -1,6 +1,5 @@
-import '../../utils/extension.dart';
-
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class SubscriptionPlanView extends StatelessWidget {
   final bool? isPro;
@@ -48,7 +47,7 @@ class SubscriptionPlanView extends StatelessWidget {
         children: [
           Center(
             child: Text(
-              isPro! ? "Push Price Pro" : "Push Price Free",
+              isPro! ? context.tr("push_price_pro") : context.tr("push_price_free"),
               style: context.textStyle.displayMedium!.copyWith(fontSize: 20.sp),
             ),
           ),
@@ -62,8 +61,8 @@ class SubscriptionPlanView extends StatelessWidget {
             ),
             child: Text(
               isPro!
-                  ? "People usually save 3x of subscription fees"
-                  : "People usually save 30% on grocery",
+                  ? context.tr("people_usually_save_3x_the_subscription_fees")
+                  : context.tr("people_usually_save_30_percent_on_grocery"),
               textAlign: TextAlign.center,
               style: context.textStyle.displayLarge!.copyWith(
                 fontSize: 18.sp,
@@ -73,7 +72,7 @@ class SubscriptionPlanView extends StatelessWidget {
           ),
           20.ph,
           Text(
-            isPro! ? "Pro Perks" : "Free Perks",
+            isPro! ? context.tr("pro_perks") : context.tr("free_perks"),
             style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp),
           ),
           15.ph,

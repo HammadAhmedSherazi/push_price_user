@@ -98,9 +98,9 @@ class _FavouriteViewState extends ConsumerState<FavouriteView> {
       top: false,
       child: Scaffold(
         
-        appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: "My Favorites", children: [
+        appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: context.tr("my_favourite"), children: [
           CustomSearchBarWidget(
-            hintText: "Hinted search text",
+            hintText: context.tr('hinted_search_text'),
              onTapOutside: (x){
              FocusScope.of(context).unfocus();
           }, onChanged:(value){
