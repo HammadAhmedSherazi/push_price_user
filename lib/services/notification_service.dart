@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -34,23 +35,11 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveBackgroundNotificationResponse: (payload) {
-           final int ? storeId = payload.data['store_id'];
-      final int? productId = payload.data['product_id'];
-      if(storeId != null && productId != null){
-        AppRouter.push(StoreView(storeData: StoreDataModel(
-          storeId: storeId
-        ), productId: productId,));
-      }
+       _handleNotificationTap(payload);
       },
       onDidReceiveNotificationResponse: (payload) {
-         final int ? storeId = payload.data['store_id'];
-      final int? productId = payload.data['product_id'];
-      if(storeId != null && productId != null){
-        AppRouter.push(StoreView(storeData: StoreDataModel(
-          storeId: storeId
-        ), productId: productId,));
-      }
-      },
+        _handleNotificationTap(payload);
+        }
     );
 
     // Request permissions for Firebase Messaging
@@ -81,7 +70,23 @@ class NotificationService {
       body: message.notification?.body ?? '',
     );
   }
+  static void _handleNotificationTap(NotificationResponse response) {
+  if (response.payload == null) return;
 
+  final data = jsonDecode(response.payload!);
+
+  final int? storeId = data["store_id"];
+  final int? productId = data["product_id"];
+
+  if (storeId != null && productId != null) {
+    AppRouter.push(
+      StoreView(
+        storeData: StoreDataModel(storeId: storeId),
+        productId: productId,
+      ),
+    );
+  }
+}
   // Unified method to show notifications
   static Future<void> showNotification({
     required String title,
