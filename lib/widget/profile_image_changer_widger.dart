@@ -97,7 +97,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
         widget.onImageSelected?.call(compressedFile);
       } else {
         // Handle compression failure, e.g., show a message
-        if(!context.mounted) return;
+        if(!mounted) return;
         Helper.showMessage(context, message: context.tr('failed_to_compress_image'));
       }
     }

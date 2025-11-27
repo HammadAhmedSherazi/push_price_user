@@ -279,9 +279,6 @@ class OrderProvider extends Notifier<OrderState> {
       if (intentResponse != null &&
           !(intentResponse is Map && intentResponse.containsKey('detail'))) {
         String clientSecret = intentResponse['client_secret'];
-        num amount = intentResponse['amount'];
-        String currency = intentResponse['currency'];
-        String status = intentResponse['status'];
         paymentIntentId = intentResponse['payment_intent_id'];
 
         // Make payment with Stripe
@@ -359,9 +356,7 @@ class OrderProvider extends Notifier<OrderState> {
       // Present the payment sheet
       await Stripe.instance.presentPaymentSheet();
 
-      print('✅ Payment successful');
     } catch (e) {
-      print('❌ Payment failed: $e');
       rethrow; // Rethrow to handle in payNow
     }
   }

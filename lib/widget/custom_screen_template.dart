@@ -26,7 +26,7 @@ class CustomScreenTemplate extends StatelessWidget {
       ),
       child: Scaffold(
         floatingActionButton: floatingActionButton,
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         // bottomSheet: (showBottomButton ?? false)? customBottomWidget ?? Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),) : null,
 
         appBar:AppBar(

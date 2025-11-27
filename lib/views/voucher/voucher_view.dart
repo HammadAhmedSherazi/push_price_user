@@ -8,7 +8,7 @@ class VoucherView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        ;
+        
         final voucher = ref.watch(orderProvider.select((e)=>e.validateVoucherApiResponse.data));
 
         if (voucher == null) {

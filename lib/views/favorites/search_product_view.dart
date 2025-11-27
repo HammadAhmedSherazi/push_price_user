@@ -111,16 +111,16 @@ class _SearchProductViewState extends ConsumerState<SearchProductView> {
   Widget build(BuildContext context) {
     return CustomScreenTemplate(
       showBottomButton:
-      selectProductIndex != -1,
-          // ref
-          //     .watch(favouriteProvider.select((e) => e.products ?? []))
-          //     .indexWhere((item) => item.isSelect) !=
-          // -1,
+      // selectProductIndex != -1,
+          ref
+              .watch(favouriteProvider.select((e) => e.products ?? []))
+              .indexWhere((item) => item.isSelect) !=
+          -1,
       bottomButtonText: context.tr("next"),
       onButtonTap: () {
-         ref
-                                    .read(favouriteProvider.notifier)
-                                    .selectProduct(selectProductIndex);
+        //  ref
+        //                             .read(favouriteProvider.notifier)
+        //                             .selectProduct(selectProductIndex);
          AppRouter.push(AddNewFavouriteView(isSignUp: widget.isSignUp!),fun: (){
           fetchProducts(skip: 0, limit: 10);
          });
@@ -214,20 +214,20 @@ class _SearchProductViewState extends ConsumerState<SearchProductView> {
                             right: 15.r,
                             child: IconButton(
                               onPressed: () {
-                                // ref
-                                //     .read(favouriteProvider.notifier)
-                                //     .selectProduct(index);
-                                setState(() {
-                                  if(selectProductIndex == index){
-                                    selectProductIndex = -1;
-                                  }
-                                  else{
-                                    selectProductIndex = index;
-                                  }
-                                });
+                                ref
+                                    .read(favouriteProvider.notifier)
+                                    .selectProduct(index);
+                                // setState(() {
+                                //   if(selectProductIndex == index){
+                                //     selectProductIndex = -1;
+                                //   }
+                                //   else{
+                                //     selectProductIndex = index;
+                                //   }
+                                // });
                               },
                               icon: Icon(
-                                selectProductIndex == index
+                                product.isSelect
                                     ?Icons.check_box: 
                                     Icons.check_box_outline_blank
                                      ,

@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/models/favourite_data_model.dart';
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 
@@ -32,7 +33,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
   void initState() {
     Future.microtask(() {
       ref.read(geolocatorProvider.notifier).getAddresses();
-      products = widget.data != null ?widget.data!.products! : List.from(
+      products = widget.data != null ?widget.data!.products : List.from(
         ref.watch(favouriteProvider).products!.where((e) => e.isSelect),
       );
       if(widget.data != null)
@@ -228,9 +229,42 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
                 child: Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton.icon(
-                        onPressed: () {
-                          // Handle adding new address
-                          AppRouter.push(AddNewAddressView());
+                        onPressed: () async {
+                          LocationPermission permission = await Geolocator.checkPermission();
+                         
+                          if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+                             if(!context.mounted) return;
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  padding: EdgeInsets.all(16),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(context.tr('location_permission_required')),
+                                      SizedBox(height: 16),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          LocationPermission newPermission = await Geolocator.requestPermission();
+                                          AppRouter.back();
+                                          if (newPermission == LocationPermission.whileInUse || newPermission == LocationPermission.always) {
+                                            AppRouter.push(AddNewAddressView());
+                                          } else {
+                                             if(!context.mounted) return;
+                                            Helper.showMessage(context, message: context.tr('location_permission_denied'));
+                                          }
+                                        },
+                                        child: Text(context.tr('enable_location')),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            AppRouter.push(AddNewAddressView());
+                          }
                         },
                         icon: Icon(Icons.add, color: AppColors.primaryColor),
                         label: Text(

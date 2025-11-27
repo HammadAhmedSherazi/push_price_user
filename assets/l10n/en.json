@@ -358,5 +358,8 @@
   "view_details": "View Details",
   "my_favourite": "My Favourite",
   "in_process" : "In Process",
-  "save": "Save"
+  "save": "Save",
+  "location_permission_required": "Location permission is required to add a new address.",
+  "enable_location": "Enable Location",
+  "location_permission_denied": "Location permission denied. Please enable it to proceed."
 }

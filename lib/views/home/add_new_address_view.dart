@@ -42,44 +42,44 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
     _mapController = controller;
   }
 
-  void _onMapTap(LatLng position) async {
-    setState(() {
-      _selectedLocation = position;
-      _markers.clear();
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('selected_location'),
-          position: position,
-        ),
-      );
-    });
+  // void _onMapTap(LatLng position) async {
+  //   setState(() {
+  //     _selectedLocation = position;
+  //     _markers.clear();
+  //     _markers.add(
+  //       Marker(
+  //         markerId: const MarkerId('selected_location'),
+  //         position: position,
+  //       ),
+  //     );
+  //   });
 
-    // Reverse geocode the selected location
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
+  //   // Reverse geocode the selected location
+  //   try {
+  //     List<Placemark> placemarks = await placemarkFromCoordinates(
+  //       position.latitude,
+  //       position.longitude,
+  //     );
 
-      if (placemarks.isNotEmpty) {
-        Placemark place = placemarks[0];
-        _selectedLocationData = LocationDataModel(
-          addressLine1: place.street ?? '',
-          city: place.locality ?? '',
-          state: place.administrativeArea ?? '',
-          country: place.country ?? '',
-          latitude: position.latitude,
-          longitude: position.longitude,
-        );
-      }
-    } catch (e) {
-      // Handle error silently
-      _selectedLocationData = LocationDataModel(
-        latitude: position.latitude,
-        longitude: position.longitude,
-      );
-    }
-  }
+  //     if (placemarks.isNotEmpty) {
+  //       Placemark place = placemarks[0];
+  //       _selectedLocationData = LocationDataModel(
+  //         addressLine1: place.street ?? '',
+  //         city: place.locality ?? '',
+  //         state: place.administrativeArea ?? '',
+  //         country: place.country ?? '',
+  //         latitude: position.latitude,
+  //         longitude: position.longitude,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     // Handle error silently
+  //     _selectedLocationData = LocationDataModel(
+  //       latitude: position.latitude,
+  //       longitude: position.longitude,
+  //     );
+  //   }
+  // }
 
   Future<void> _selectSearchResult(LocationDataModel location) async {
     final latLng = LatLng(location.latitude, location.longitude);
@@ -431,7 +431,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: Offset(0, 2),
                         ),
