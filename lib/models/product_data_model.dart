@@ -250,6 +250,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
     base.addAll({
       'select_quantity': quantity,
       'discountAmount': discount,
+      'store' : store?.toJson()
     });
     return base;
   }

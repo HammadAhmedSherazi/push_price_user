@@ -466,17 +466,18 @@ class MyHttpClient extends BaseApiServices {
         
         Helper.showMessage( AppRouter.navKey.currentContext!,message: msg);
         
-        if(msg == "Invalid token"){
-          // Note: Since this is in a synchronous context, we can't await.
-          // For now, we'll skip refresh token logic and clear all.
-          // Ideally, make this async
-         
+       
+        if(msg.contains("Invalid")){
+           if(msg == "Invalid token"){
+        
          
           AuthProvider().refreshToken();
            
            }
-        else if(msg.contains("Invalid")){
-          return json.decode(response.body.toString());
+           else{
+              return json.decode(response.body.toString());
+           }
+          
         }
         else {
           SecureStorageManager.sharedInstance.clearAll();
@@ -496,6 +497,11 @@ class MyHttpClient extends BaseApiServices {
           json.decode(response.body.toString())['detail'] ??
               AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again"),
         );
+        SecureStorageManager.sharedInstance.clearAll();
+
+          AppRouter.pushAndRemoveUntil(const LoginView());
+          Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("please_login_again"));
+       
         throw UnauthorisedException(
           response.statusCode,
           response.body.toString(),
