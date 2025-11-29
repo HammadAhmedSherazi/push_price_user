@@ -98,7 +98,8 @@ class ProductDataModel {
     num? price,
     num? discountedPrice,
     String? type,
-    int? quantity
+    int? quantity,
+    StoreDataModel ? store
 
 
   }) {
@@ -109,7 +110,8 @@ class ProductDataModel {
       price: price ?? this.price,
       discountedPrice: discountedPrice ?? this.discountedPrice,
       type: type ??this.type,
-      quantity: quantity ?? this.quantity
+      quantity: quantity ?? this.quantity,
+      store: store ?? this.store
     );
   }
 }
@@ -130,6 +132,7 @@ class ProductSelectionDataModel extends ProductDataModel {
     super.quantity,
     super.id,
     super.listingId,
+    super.store,
     required this.isSelect,
   });
 
@@ -170,7 +173,8 @@ class ProductSelectionDataModel extends ProductDataModel {
     DateTime? goLiveDate,
     int ? quantity,
     int? id,
-    int? listingId
+    int? listingId,
+    StoreDataModel ? store
 
 
   }) {
@@ -186,7 +190,8 @@ class ProductSelectionDataModel extends ProductDataModel {
       goLiveDate: goLiveDate ?? this.goLiveDate,
       quantity: quantity ?? this.quantity,
       id: id ?? this.id,
-      listingId: listingId ?? this.listingId
+      listingId: listingId ?? this.listingId,
+      store: store ?? this.store
 
     );
   }
@@ -206,6 +211,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
     super.goLiveDate,
     super.listingId,
     super.id,
+    super.store,
    this.selectQuantity = 0,
     required this.discount,
     super.discountedPrice,
@@ -215,7 +221,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
   });
 
   factory ProductPurchasingDataModel.fromJson(Map<String, dynamic> json,
-      {int quantity = 1, num discount = 0}) {
+      {int quantity = 1, num discount = 0, required StoreDataModel store}) {
     final base = ProductDataModel.fromJson(json);
     return ProductPurchasingDataModel(
       title: base.title,
@@ -230,7 +236,10 @@ class ProductPurchasingDataModel extends ProductDataModel {
       bestByDate: base.bestByDate,
       goLiveDate: base.goLiveDate,
       listingId: base.listingId,
-      id: base.id
+      id: base.id,
+      store: store
+      
+      
       
     );
   }
@@ -258,7 +267,8 @@ class ProductPurchasingDataModel extends ProductDataModel {
     String? type,
     DateTime? bestByDate,
     DateTime? goLiveDate,
-    int? listingId, id
+    int? listingId, id,
+    StoreDataModel? store
   }) {
     return ProductPurchasingDataModel(
       title: title ?? this.title,
@@ -273,7 +283,9 @@ class ProductPurchasingDataModel extends ProductDataModel {
       goLiveDate: goLiveDate ?? this.goLiveDate,
       selectQuantity: selectQuantity ?? this.selectQuantity,
       listingId: listingId ?? this.listingId,
-      id: id ?? id
+      id: id ?? id,
+      store: store ?? this.store
+      
     );
   }
 }

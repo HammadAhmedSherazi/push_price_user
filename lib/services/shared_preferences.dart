@@ -78,7 +78,7 @@ class SharedPreferenceManager {
     final cartJson = instance.getStringList(cartListKey) ?? [];
     return cartJson.map((e) {
       final json = jsonDecode(e);
-      return ProductPurchasingDataModel.fromJson(json,quantity: json['select_quantity'] ?? 0, discount: json['discountAmount'] ?? 0 );
+      return ProductPurchasingDataModel.fromJson(json,quantity: json['select_quantity'] ?? 0, discount: json['discountAmount'] ?? 0,store:  json['store']);
     }).toList();
   }
 

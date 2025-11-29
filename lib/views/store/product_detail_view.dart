@@ -3,7 +3,7 @@ import '../../utils/extension.dart';
 
 class ProductDetailView extends ConsumerStatefulWidget {
   final int quatity;
-  final ProductDataModel product;
+  final ProductPurchasingDataModel product;
   final int storeId;
   final num discount;
   final bool? isFavourite;
@@ -25,6 +25,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
   int quantity = 0;
   int count = 0;
   void addQuantity() {
+    ref.read(homeProvider.notifier).addQuantity(widget.product);
     setState(() {
       quantity++;
       count++;
@@ -33,6 +34,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
 
   void removeQuantity() {
     if (quantity > 0) {
+      ref.read(homeProvider.notifier).removeQuantity(widget.product);
       setState(() {
         quantity--;
         count--;

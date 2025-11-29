@@ -184,9 +184,9 @@ class HomeProvider extends Notifier<HomeState> {
         List temp = response['products'] ?? [];
         final List<ProductPurchasingDataModel> list = List.from(
           temp.map((e) {
-            final cartIndex = state.cartList.indexWhere((cart) => cart.title == e['product_name']);
+            final cartIndex = state.cartList.indexWhere((cart) => cart.listingId == e['listing_id']);
             final selectQty = cartIndex != -1 ? state.cartList[cartIndex].selectQuantity : 0;
-            return ProductPurchasingDataModel.fromJson(e, quantity: selectQty, discount: e['current_discount_percent'] ?? 0);
+            return ProductPurchasingDataModel.fromJson(e, quantity: selectQty, discount: e['current_discount_percent'] ?? 0, store: StoreDataModel.fromJson(response['store']));
           }),
         );
         state = state.copyWith(
@@ -351,7 +351,7 @@ class HomeProvider extends Notifier<HomeState> {
           temp.map((e) {
             final cartIndex = state.cartList.indexWhere((cart) => cart.title == e['product_name']);
             final selectQty = cartIndex != -1 ? state.cartList[cartIndex].selectQuantity : 0;
-            return ProductPurchasingDataModel.fromJson(e, quantity: selectQty, discount: e['current_discount_percent'] ?? 0);
+            return ProductPurchasingDataModel.fromJson(e, quantity: selectQty, discount: e['current_discount_percent'] ?? 0, store: StoreDataModel.fromJson(response['store']));
           }),
         );
         state = state.copyWith(

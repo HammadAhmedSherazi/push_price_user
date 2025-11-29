@@ -33,7 +33,8 @@ class _StoreViewState extends ConsumerState<StoreView> {
 
   void loadCartData() {
     ref.read(orderProvider.notifier).voucherApiUnset();
-    final List<ProductPurchasingDataModel> cartList = ref.read(homeProvider.select((e) => e.cartList));
+    final List<ProductPurchasingDataModel> allCartList = ref.read(homeProvider.select((e) => e.cartList));
+    final List<ProductPurchasingDataModel> cartList = allCartList.where((item) => item.store?.storeId == widget.storeData.storeId).toList();
     setState(() {
       count = cartList.fold(0, (sum, item) => sum + item.selectQuantity);
       price = cartList.fold(0.0, (sum, item) => sum + (item.discountedPrice! * item.selectQuantity));
@@ -233,7 +234,9 @@ class _StoreViewState extends ConsumerState<StoreView> {
                           product: product,
                           discount: product.discount,
                           storeId: widget.storeData.storeId,
-                        ));
+                        ), fun: (){
+                          loadCartData();
+                        });
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(

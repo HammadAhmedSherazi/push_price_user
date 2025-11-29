@@ -117,9 +117,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
-   
+
   WidgetsFlutterBinding.ensureInitialized();
-  initializeService();
   await SharedPreferenceManager.init();
   Stripe.publishableKey = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM';
   await Firebase.initializeApp(
@@ -133,19 +132,44 @@ void main() async {
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     try {
      await  Future.wait([ NotificationService.initNotifications(),FirebaseService.firebaseTokenInitial()]);
-   
-    
+
+
     if (Platform.isIOS) {
       SecureStorageManager.sharedInstance.deletePreviousStorage();
     }
-    // initializeService(); // if safe
+
+    // Request location permissions before starting background service
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.whileInUse) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.always) {
+      await initializeService();
+    }
 
     } catch (e) {
       if (Platform.isIOS) {
       SecureStorageManager.sharedInstance.deletePreviousStorage();
     }
 
-    initializeService(); // if safe
+    // Request location permissions before starting background service
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.whileInUse) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.always) {
+      await initializeService();
+    }
     }
   });
 }
@@ -157,7 +181,7 @@ Future<void> initializeService() async {
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
       isForegroundMode: true,
-      autoStart: true,
+      autoStart: false,
       notificationChannelId: 'my_foreground',
       initialNotificationTitle: 'Background Location Service',
       initialNotificationContent: 'Fetching location...',

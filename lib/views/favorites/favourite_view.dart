@@ -6,6 +6,7 @@ import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 import '../../export_all.dart';
 import '../../models/favourite_data_model.dart';
 import '../../utils/extension.dart';
+import '../../widget/overlapping_images_widget.dart';
 
 class FavouriteView extends ConsumerStatefulWidget {
   final ScrollController scrollController;
@@ -181,23 +182,19 @@ class FavouriteTitleWidget extends StatelessWidget {
       color: Color.fromRGBO(243, 243, 243, 1)
     ),
     child: Row(
-      spacing: 10,
+      // spacing: 10,
       children: [
         // Image.asset(Assets.groceryBag,width: 57.w, height: 70.h,),
-        DisplayNetworkImage(imageUrl:  favourite.products.first.image, width: 57.r, height: 70.r,),
+        if(favourite.products.length > 1)...[
+          OverlappingImages(images: favourite.products.map((p) => p.image).toList())
+        ]
+        else ...[
+          DisplayNetworkImage(imageUrl: favourite.products.first.image,width: 57.r, height: 70.r,)
+        ],
+        20.pw,
+        
         Expanded(
-          child: Column(
-            spacing: 12,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(favourite.products.first.title, style: context.textStyle.bodyMedium),
-              Text(favourite.products.first.category?.title ?? favourite.products.first.description, style: context.textStyle.bodySmall!.copyWith(
-                color: AppColors.primaryTextColor.withValues(alpha: 0.7),
-    
-              )),
-    
-            ],
-          ),
+          child: Text(favourite.products.length > 1 ? favourite.products.map((p) => p.title).join(', ')  : favourite.products.first.title, style: context.textStyle.bodyMedium, maxLines: 2, overflow: TextOverflow.ellipsis,),
         ),
         if(onEditCall == null)
         20.pw,
