@@ -1,3 +1,5 @@
+import 'package:push_price_user/models/product_data_model.dart';
+
 class CategoryDataModel {
   final int? id;
   final String title;
@@ -6,6 +8,7 @@ class CategoryDataModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool isSelect;
+  final List<TaxesDataModel> ? taxes;
   const CategoryDataModel({
     required this.title,
     required this.icon,
@@ -13,7 +16,8 @@ class CategoryDataModel {
     this.chainId,
     this.createdAt,
     this.updatedAt,
-    this.isSelect = false
+    this.isSelect = false,
+    this.taxes
   });
 
   factory CategoryDataModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +28,7 @@ class CategoryDataModel {
       chainId: json['chain_id'],
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      taxes: json['taxes'] != null ? (json['taxes'] as List).map((e)=>TaxesDataModel.fromJson(e)).toList() : null,
       isSelect: false
     );
   }

@@ -18,6 +18,7 @@ class ProductDataModel {
   final DateTime? goLiveDate;
   final List<double>? weightedItemsPrices;
   final int? listingId;
+  final List<TaxesDataModel>? taxes;
 
   const ProductDataModel({
     required this.title,
@@ -36,7 +37,8 @@ class ProductDataModel {
     this.bestByDate,
     this.goLiveDate,
     this.weightedItemsPrices,
-    this.listingId
+    this.listingId,
+    this.taxes
   });
 
   factory ProductDataModel.fromJson(Map<String, dynamic> json) {
@@ -65,6 +67,7 @@ class ProductDataModel {
           ? List.from(
               (json['weighted_items_prices'] as List).map((e) => e.toDouble()))
           : [],
+      taxes: json['taxes'] != null ? (json['taxes'] as List).map((e)=>TaxesDataModel.fromJson(e)).toList() : null
       
     );
   }
@@ -88,6 +91,7 @@ class ProductDataModel {
     'store': store?.toJson(),
     'stores': stores?.map((e) => e.toJson()).toList(),
     'weighted_items_prices': weightedItemsPrices,
+    'taxes' : taxes?.map((e)=> e.toJson()).toList()
   };
 }
 
@@ -99,7 +103,8 @@ class ProductDataModel {
     num? discountedPrice,
     String? type,
     int? quantity,
-    StoreDataModel ? store
+    StoreDataModel ? store,
+    List<TaxesDataModel>? taxes
 
 
   }) {
@@ -111,7 +116,8 @@ class ProductDataModel {
       discountedPrice: discountedPrice ?? this.discountedPrice,
       type: type ??this.type,
       quantity: quantity ?? this.quantity,
-      store: store ?? this.store
+      store: store ?? this.store,
+      taxes: taxes ?? this.taxes
     );
   }
 }
@@ -133,6 +139,7 @@ class ProductSelectionDataModel extends ProductDataModel {
     super.id,
     super.listingId,
     super.store,
+    super.taxes,
     required this.isSelect,
   });
 
@@ -149,7 +156,8 @@ class ProductSelectionDataModel extends ProductDataModel {
       isSelect: isSelect,
       type: base.type,
       bestByDate: base.bestByDate,
-      goLiveDate: base.goLiveDate
+      goLiveDate: base.goLiveDate,
+      taxes: base.taxes
     );
   }
 
@@ -174,8 +182,8 @@ class ProductSelectionDataModel extends ProductDataModel {
     int ? quantity,
     int? id,
     int? listingId,
-    StoreDataModel ? store
-
+    StoreDataModel ? store,
+    List<TaxesDataModel>? taxes
 
   }) {
     return ProductSelectionDataModel(
@@ -191,7 +199,9 @@ class ProductSelectionDataModel extends ProductDataModel {
       quantity: quantity ?? this.quantity,
       id: id ?? this.id,
       listingId: listingId ?? this.listingId,
-      store: store ?? this.store
+      store: store ?? this.store,
+      taxes: taxes ?? this.taxes
+      
 
     );
   }
@@ -212,6 +222,7 @@ class ProductPurchasingDataModel extends ProductDataModel {
     super.listingId,
     super.id,
     super.store,
+    super.taxes,
    this.selectQuantity = 0,
     required this.discount,
     super.discountedPrice,
@@ -269,7 +280,8 @@ class ProductPurchasingDataModel extends ProductDataModel {
     DateTime? bestByDate,
     DateTime? goLiveDate,
     int? listingId, id,
-    StoreDataModel? store
+    StoreDataModel? store,
+    List<TaxesDataModel>? taxes
   }) {
     return ProductPurchasingDataModel(
       title: title ?? this.title,
@@ -285,9 +297,38 @@ class ProductPurchasingDataModel extends ProductDataModel {
       selectQuantity: selectQuantity ?? this.selectQuantity,
       listingId: listingId ?? this.listingId,
       id: id ?? id,
-      store: store ?? this.store
+      store: store ?? this.store,
+      taxes: taxes ?? this.taxes
+      
       
     );
   }
 }
 
+class TaxesDataModel {
+  final String? taxKey;
+  final String? taxName;
+  final num? taxPer;
+
+  TaxesDataModel({
+    this.taxKey,
+    this.taxName,
+    this.taxPer,
+  });
+
+  factory TaxesDataModel.fromJson(Map<String, dynamic> json) {
+    return TaxesDataModel(
+      taxKey: json['tax_key'] ?? "",
+      taxName: json['tax_name'] ?? "",
+      taxPer: json['tax_percent'] ?? 0.0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tax_key': taxKey,
+      'tax_name': taxName,
+      'tax_percent': taxPer,
+    };
+  }
+}
