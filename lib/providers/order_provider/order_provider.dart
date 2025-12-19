@@ -19,6 +19,7 @@ class OrderProvider extends Notifier<OrderState> {
       cancelOrderApiResponse: ApiResponse.undertermined(),
       updateOrderApiResponse: ApiResponse.undertermined(),
       payNowApiResponse: ApiResponse.undertermined(),
+      calculatePricingApiResponse: ApiResponse.undertermined(),
       validateVoucherApiResponse: ApiResponse.undertermined(),
     );
   }
@@ -358,6 +359,45 @@ class OrderProvider extends Notifier<OrderState> {
 
     } catch (e) {
       rethrow; // Rethrow to handle in payNow
+    }
+  }
+
+  FutureOr<void> calculatePricing({
+    required List<Map<String, dynamic>> items,
+    String? voucherCode,
+  }) async {
+    if (!ref.mounted) return;
+
+    try {
+      state = state.copyWith(calculatePricingApiResponse: ApiResponse.loading());
+      final requestBody = {
+        "items": items,
+        if (voucherCode != null) "voucher_code": voucherCode,
+      };
+      final response = await MyHttpClient.instance.post(
+        ApiEndpoints.calculatePricing,
+        requestBody,
+      );
+
+      if (!ref.mounted) return;
+
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
+        state = state.copyWith(
+          calculatePricingApiResponse: ApiResponse.completed(response),
+        );
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr("failed_to_calculate_pricing"),
+        );
+        state = state.copyWith(calculatePricingApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(calculatePricingApiResponse: ApiResponse.error());
     }
   }
 

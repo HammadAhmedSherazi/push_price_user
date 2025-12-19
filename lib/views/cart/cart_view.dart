@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../export_all.dart';
 import '../../utils/extension.dart';
 
@@ -11,18 +13,66 @@ class CartView extends ConsumerStatefulWidget {
 }
 
 class _CartViewState extends ConsumerState<CartView> {
+  Timer? _debounceTimer;
+
   void addQuantity(ProductPurchasingDataModel product) {
     ref.read(homeProvider.notifier).addQuantity(product);
+    _debouncedCalculatePricing();
   }
 
   void removeQuantity(ProductPurchasingDataModel product) {
     ref.read(homeProvider.notifier).removeQuantity(product);
+    _debouncedCalculatePricing();
+  }
+
+  void _debouncedCalculatePricing() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _calculatePricing();
+    });
+  }
+
+  void _calculatePricing() {
+    final List<ProductPurchasingDataModel> allCartList = ref.read(
+      homeProvider.select((e) => e.cartList),
+    );
+    final List<ProductPurchasingDataModel> cartList = allCartList
+        .where((item) => item.store?.storeId == widget.storeId)
+        .toList();
+
+    Map<String, dynamic> data = {
+      "items": List.generate(
+        cartList.length,
+        (index) => {
+          "listing_id": cartList[index].listingId,
+          "quantity": cartList[index].selectQuantity,
+        },
+      ),
+    };
+
+    final voucherRes = ref.read(
+      orderProvider.select((e) => e.validateVoucherApiResponse),
+    );
+    if (voucherRes.status == Status.completed && voucherRes.data != null) {
+      data["voucher_code"] = voucherRes.data!.code;
+    }
+
+    ref.read(orderProvider.notifier).calculatePricing(items: data["items"], voucherCode: data["voucher_code"]);
   }
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {});
+
+    Future.microtask(() {
+      _calculatePricing();
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
   }
 
   void fetchProducts() {
@@ -33,6 +83,12 @@ class _CartViewState extends ConsumerState<CartView> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(orderProvider.select((e) => e.validateVoucherApiResponse), (previous, next) {
+      if (next.status == Status.completed && next.data != null) {
+        _calculatePricing();
+      }
+    });
+
     final List<ProductPurchasingDataModel> allCartList = ref.watch(
       homeProvider.select((e) => e.cartList),
     );
@@ -44,13 +100,18 @@ class _CartViewState extends ConsumerState<CartView> {
       orderProvider.select((e) => e.validateVoucherApiResponse),
     );
 
+    final calculatePricingRes = ref.watch(
+      orderProvider.select((e) => e.calculatePricingApiResponse),
+    );
+
     final itemTotal = cartList.fold(
       0.0,
       (sum, item) => sum + item.discountedPrice! * item.selectQuantity,
     );
-    final total =
-        voucherRes.status == Status.completed && voucherRes.data != null
-        ? voucherRes.data!.finalAmount
+
+    // Use API response for total if available, otherwise fallback to local calculation
+    final total = calculatePricingRes.status == Status.completed && calculatePricingRes.data != null
+        ? (calculatePricingRes.data as Map<String, dynamic>)['total_amount'] ?? itemTotal
         : itemTotal;
     return CustomScreenTemplate(
       showBottomButton: total > 0.0,
@@ -372,25 +433,31 @@ class _CartViewState extends ConsumerState<CartView> {
                   ),
                 ),
                 Divider(),
-                OrderDetailTitleWidget(
-                  title: context.tr("item_total"),
-                  value: "\$$total",
-                ),
-                if (voucherRes.status == Status.completed &&
-                    voucherRes.data != null &&
-                    voucherRes.data!.discountValue != 0) ...[
-                  10.ph,
+                if (calculatePricingRes.status == Status.loading) ...[
+                  Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ] else ...[
                   OrderDetailTitleWidget(
-                    title: context.tr("voucher_discount"),
-                    value: "\$${voucherRes.data!.discountValue}",
+                    title: context.tr("item_total"),
+                    value: "\$${(calculatePricingRes.data as Map<String, dynamic>?)?['item_total'] ?? itemTotal}",
+                  ),
+                  if (voucherRes.status == Status.completed &&
+                      voucherRes.data != null &&
+                      voucherRes.data!.discountValue != 0) ...[
+                    10.ph,
+                    OrderDetailTitleWidget(
+                      title: context.tr("voucher_discount"),
+                      value: "\$${voucherRes.data!.discountValue}",
+                    ),
+                  ],
+                  10.ph,
+
+                  OrderDetailTitleWidget(
+                    title: context.tr("total"),
+                    value: "\$$total",
                   ),
                 ],
-                10.ph,
-
-                OrderDetailTitleWidget(
-                  title: context.tr("total"),
-                  value: "\$$total",
-                ),
 
                 // if()
                 if (voucherRes.status != Status.completed) ...[

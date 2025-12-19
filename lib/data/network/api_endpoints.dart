@@ -35,6 +35,7 @@ class ApiEndpoints {
   static String updateOrder(int orderId) => "$orders/$orderId";
   static String paymentIntent(int orderId) => "$orders/$orderId/payment-intent";
   static String confirmPayment(int orderId) => "$orders/$orderId/confirm-payment";
+  static const String calculatePricing = "$orders/calculate-pricing";
   static const String validateVoucher = "${user}vouchers/validate";
   static const String products = "${user}products";
   static String getFavouriteProductDetail(int productId) => "$products/$productId";
