@@ -104,7 +104,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         ),
                       ),
                       Text(
-                        "\$${count * 80}",
+                        "\$${(count * widget.product.discountedPrice!).toStringAsFixed(2)}",
                         style: context.textStyle.bodySmall!.copyWith(
                           color: Colors.white,
                         ),

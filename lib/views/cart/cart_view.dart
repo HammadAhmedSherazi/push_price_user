@@ -111,7 +111,7 @@ class _CartViewState extends ConsumerState<CartView> {
 
     // Use API response for total if available, otherwise fallback to local calculation
     final total = calculatePricingRes.status == Status.completed && calculatePricingRes.data != null
-        ? (calculatePricingRes.data as Map<String, dynamic>)['total_amount'] ?? itemTotal
+        ? (calculatePricingRes.data as Map<String, dynamic>)['final_amount'] ?? itemTotal
         : itemTotal;
     return CustomScreenTemplate(
       showBottomButton: total > 0.0,
@@ -162,323 +162,332 @@ class _CartViewState extends ConsumerState<CartView> {
       child: Column(
         children: [
           Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(AppTheme.horizontalPadding),
-              children: [
-                Consumer(
-                  builder: (context, ref, child) {
-                    
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final product = cartList[index];
-                        return Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10.r,
-                            vertical: 15.r,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.r),
-                            color: Color.fromRGBO(243, 243, 243, 1),
-                          ),
-                          child: Row(
-                            spacing: 10,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              DisplayNetworkImage(
-                                imageUrl: product.image,
-                                width: 57.r,
-                                height: 73.r,
-                              ),
-
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: "${product.title} ",
-                                            style:
-                                                context.textStyle.displayMedium,
-                                          ),
-                                          TextSpan(
-                                            text: " ${product.discount}% Off",
-                                            style: context.textStyle.titleSmall!
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.secondaryColor,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    8.ph,
-                                    Text.rich(
-                                      textAlign: TextAlign.end,
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text:
-                                                "\$${product.discountedPrice} ",
-                                            style: context
-                                                .textStyle
-                                                .displayMedium!
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.secondaryColor,
-                                                ),
-                                          ),
-                                          TextSpan(
-                                            text: "\$${product.price}",
-                                            style: context
-                                                .textStyle
-                                                .displayMedium!
-                                                .copyWith(
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
-                                                  color: Color.fromRGBO(
-                                                    91,
-                                                    91,
-                                                    91,
-                                                    1,
-                                                  ),
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    8.ph,
-                                    Text(
-                                      Helper.getTypeTitle(product.type!) ==
-                                              "Best By Products"
-                                          ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
-                                          : product.description,
-                                      style: context.textStyle.bodySmall!
-                                          .copyWith(
-                                            color: AppColors.primaryTextColor
-                                                .withValues(alpha: 0.7),
-                                          ),
-                                    ),
-
-                                    // 2.ph,
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                // height: 30.h,
-                                padding: EdgeInsets.all(5.r),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.horizontal(
-                                    left: Radius.circular(30.r),
-                                    right: Radius.circular(30.r),
-                                  ),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: AppColors.borderColor,
-                                  ),
-                                ),
-                                child: Row(
-                                  spacing: 10,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        removeQuantity(product);
-                                      },
-                                      child: SvgPicture.asset(
-                                        product.quantity == 1
-                                            ? Assets.deleteIcon
-                                            : Assets.minusSquareIcon,
-                                      ),
-                                    ),
-                                    Text(
-                                      "${product.selectQuantity}",
-                                      style: context.textStyle.displayMedium,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        addQuantity(product);
-                                      },
-                                      child: SvgPicture.asset(
-                                        Assets.plusSquareIcon,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) => 10.ph,
-                      itemCount: cartList.length,
-                    );
-                  },
-                ),
-                10.ph,
-
-                Text(
-                  context.tr("promotional_products"),
-                  style: context.textStyle.headlineMedium,
-                ),
-                10.ph,
-                SizedBox(
-                  height: 125.h,
-                  child: Consumer(
+            child: Scrollbar(
+              thumbVisibility: true,
+              trackVisibility: true,
+              child: ListView(
+                padding: EdgeInsets.all(AppTheme.horizontalPadding),
+                children: [
+                  Consumer(
                     builder: (context, ref, child) {
-                      final promotionalState = ref.watch(
-                        homeProvider.select(
-                          (e) => (
-                            e.getPromotionalProductsApiResponse,
-                            e.promotionalProducts,
-                          ),
-                        ),
-                      );
-                      final promotionalProducts = promotionalState.$2 ?? [];
-                      return AsyncStateHandler(
-                        status: promotionalState.$1.status,
-                        dataList: promotionalProducts,
-
+                      
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          final product = promotionalProducts[index];
+                          final product = cartList[index];
                           return Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 10.r,
                               vertical: 15.r,
                             ),
-                            height: double.infinity,
-                            width: context.screenwidth * 0.35,
-                            decoration: AppTheme.productBoxDecoration,
-                            child: Stack(
-                              clipBehavior: Clip.none,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.r),
+                              color: Color.fromRGBO(243, 243, 243, 1),
+                            ),
+                            child: Row(
+                              spacing: 10,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Positioned(
-                                  right: 0,
-                                  bottom: -13.r,
-                                  child: IconButton(
-                                    visualDensity: VisualDensity(
-                                      horizontal: -4.0,
-                                    ),
-                                    padding: EdgeInsets.zero,
-                                    onPressed: () {
-                                      // TODO: Add to cart logic
-                                      addQuantity(product);
-                                    },
-                                    icon: SvgPicture.asset(
-                                      Assets.addCircleIcon,
-                                    ),
+                                DisplayNetworkImage(
+                                  imageUrl: product.image,
+                                  width: 57.r,
+                                  height: 73.r,
+                                ),
+              
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: "${product.title} ",
+                                              style:
+                                                  context.textStyle.displayMedium,
+                                            ),
+                                            TextSpan(
+                                              text: " ${product.discount}% Off",
+                                              style: context.textStyle.titleSmall!
+                                                  .copyWith(
+                                                    color:
+                                                        AppColors.secondaryColor,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      8.ph,
+                                      Text.rich(
+                                        textAlign: TextAlign.end,
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  "\$${product.discountedPrice} ",
+                                              style: context
+                                                  .textStyle
+                                                  .displayMedium!
+                                                  .copyWith(
+                                                    color:
+                                                        AppColors.secondaryColor,
+                                                  ),
+                                            ),
+                                            TextSpan(
+                                              text: "\$${product.price}",
+                                              style: context
+                                                  .textStyle
+                                                  .displayMedium!
+                                                  .copyWith(
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                    color: Color.fromRGBO(
+                                                      91,
+                                                      91,
+                                                      91,
+                                                      1,
+                                                    ),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      8.ph,
+                                      Text(
+                                        Helper.getTypeTitle(product.type!) ==
+                                                "Best By Products"
+                                            ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
+                                            : product.description,
+                                        style: context.textStyle.bodySmall!
+                                            .copyWith(
+                                              color: AppColors.primaryTextColor
+                                                  .withValues(alpha: 0.7),
+                                            ),
+                                      ),
+              
+                                      // 2.ph,
+                                    ],
                                   ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  spacing: 3,
-                                  children: [
-                                    DisplayNetworkImage(
-                                      imageUrl: product.image,
-                                      width: 49.r,
-                                      height: 61.r,
+                                Container(
+                                  // height: 30.h,
+                                  padding: EdgeInsets.all(5.r),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.horizontal(
+                                      left: Radius.circular(30.r),
+                                      right: Radius.circular(30.r),
                                     ),
-                                    5.ph,
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          product.title,
-                                          style: context.textStyle.displaySmall,
+                                    border: Border.all(
+                                      width: 1,
+                                      color: AppColors.borderColor,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    spacing: 10,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          removeQuantity(product);
+                                        },
+                                        child: SvgPicture.asset(
+                                          product.quantity == 1
+                                              ? Assets.deleteIcon
+                                              : Assets.minusSquareIcon,
                                         ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          product.category?.title ?? "Category",
-                                          style: context.textStyle.bodySmall,
+                                      ),
+                                      Text(
+                                        "${product.selectQuantity}",
+                                        style: context.textStyle.displayMedium,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          addQuantity(product);
+                                        },
+                                        child: SvgPicture.asset(
+                                          Assets.plusSquareIcon,
                                         ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "\$${(product.discountedPrice as num).toStringAsFixed(2)}",
-                                            style: context.textStyle.titleSmall,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           );
                         },
-                        onRetry: () => fetchProducts(), // TODO: Get storeId
+                        separatorBuilder: (context, index) => 10.ph,
+                        itemCount: cartList.length,
                       );
                     },
                   ),
-                ),
-
-                10.ph,
-
-                Text(
-                  context.tr("order_summary"),
-                  style: context.textStyle.bodyMedium!.copyWith(
-                    fontSize: 18.sp,
+                  10.ph,
+              
+                  Text(
+                    context.tr("promotional_products"),
+                    style: context.textStyle.headlineMedium,
                   ),
-                ),
-                Divider(),
-                if (calculatePricingRes.status == Status.loading) ...[
-                  Center(
-                    child: CircularProgressIndicator(),
+                  10.ph,
+                  SizedBox(
+                    height: 125.h,
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        final promotionalState = ref.watch(
+                          homeProvider.select(
+                            (e) => (
+                              e.getPromotionalProductsApiResponse,
+                              e.promotionalProducts,
+                            ),
+                          ),
+                        );
+                        final promotionalProducts = promotionalState.$2 ?? [];
+                        return AsyncStateHandler(
+                          status: promotionalState.$1.status,
+                          dataList: promotionalProducts,
+              
+                          itemBuilder: (context, index) {
+                            final product = promotionalProducts[index];
+                            return Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10.r,
+                                vertical: 15.r,
+                              ),
+                              height: double.infinity,
+                              width: context.screenwidth * 0.35,
+                              decoration: AppTheme.productBoxDecoration,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Positioned(
+                                    right: 0,
+                                    bottom: -13.r,
+                                    child: IconButton(
+                                      visualDensity: VisualDensity(
+                                        horizontal: -4.0,
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        // TODO: Add to cart logic
+                                        addQuantity(product);
+                                      },
+                                      icon: SvgPicture.asset(
+                                        Assets.addCircleIcon,
+                                      ),
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    spacing: 3,
+                                    children: [
+                                      DisplayNetworkImage(
+                                        imageUrl: product.image,
+                                        width: 49.r,
+                                        height: 61.r,
+                                      ),
+                                      5.ph,
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            product.title,
+                                            style: context.textStyle.displaySmall,
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            product.category?.title ?? "Category",
+                                            style: context.textStyle.bodySmall,
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              "\$${(product.discountedPrice as num).toStringAsFixed(2)}",
+                                              style: context.textStyle.titleSmall,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          onRetry: () => fetchProducts(), // TODO: Get storeId
+                        );
+                      },
+                    ),
                   ),
-                ] else ...[
-                  OrderDetailTitleWidget(
-                    title: context.tr("item_total"),
-                    value: "\$${(calculatePricingRes.data as Map<String, dynamic>?)?['item_total'] ?? itemTotal}",
+              
+                  10.ph,
+              
+                  Text(
+                    context.tr("order_summary"),
+                    style: context.textStyle.bodyMedium!.copyWith(
+                      fontSize: 18.sp,
+                    ),
                   ),
-                  if (voucherRes.status == Status.completed &&
-                      voucherRes.data != null &&
-                      voucherRes.data!.discountValue != 0) ...[
-                    10.ph,
+                  Divider(),
+                  if (calculatePricingRes.status == Status.loading) ...[
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ] else ...[
                     OrderDetailTitleWidget(
-                      title: context.tr("voucher_discount"),
-                      value: "\$${voucherRes.data!.discountValue}",
+                      title: context.tr("item_total"),
+                      value: "\$${(calculatePricingRes.data as Map<String, dynamic>?)?['subtotal'] ?? itemTotal}",
+                    ),
+                    10.ph,
+                     OrderDetailTitleWidget(
+                      title: context.tr("tax_amount"),
+                      value: "\$${(calculatePricingRes.data as Map<String, dynamic>?)?['total_tax_amount'] ?? 0.0}",
+                    ),
+                    if (voucherRes.status == Status.completed &&
+                        voucherRes.data != null &&
+                        voucherRes.data!.discountValue != 0) ...[
+                      10.ph,
+                      OrderDetailTitleWidget(
+                        title: context.tr("voucher_discount"),
+                        value: "\$${voucherRes.data!.discountValue}",
+                      ),
+                    ],
+                    10.ph,
+              
+                    OrderDetailTitleWidget(
+                      title: context.tr("total"),
+                      value: "\$$total",
                     ),
                   ],
-                  10.ph,
-
-                  OrderDetailTitleWidget(
-                    title: context.tr("total"),
-                    value: "\$$total",
-                  ),
-                ],
-
-                // if()
-                if (voucherRes.status != Status.completed) ...[
-                  10.ph,
-                  GestureDetector(
-                    onTap: () {
-                      AppRouter.push(VoucherApplyView(totalAmount: total));
-                    },
-                    child: Row(
-                      spacing: 10,
-                      children: [
-                        SvgPicture.asset(Assets.voucherOutlineIcon),
-                        Text(
-                          context.tr("apply_voucher"),
-                          style: context.textStyle.displayMedium,
-                        ),
-                      ],
+              
+                  // if()
+                  if (voucherRes.status != Status.completed) ...[
+                    10.ph,
+                    GestureDetector(
+                      onTap: () {
+                        AppRouter.push(VoucherApplyView(totalAmount: total));
+                      },
+                      child: Row(
+                        spacing: 10,
+                        children: [
+                          SvgPicture.asset(Assets.voucherOutlineIcon),
+                          Text(
+                            context.tr("apply_voucher"),
+                            style: context.textStyle.displayMedium,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           Padding(

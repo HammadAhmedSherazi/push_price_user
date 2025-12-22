@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
+import 'package:push_price_user/models/subscription_plan_data_model.dart';
 import 'package:push_price_user/providers/auth_provider/auth_state.dart';
 import 'package:push_price_user/views/auth/otp_view.dart';
 
@@ -25,6 +27,8 @@ class AuthProvider extends Notifier<AuthState> {
       removeImageApiResponse: ApiResponse.undertermined(),
       updateProfileApiResponse: ApiResponse.undertermined(),
       logoutApiResponse: ApiResponse.undertermined(),
+      subscriptionPlanApiRes: ApiResponse.undertermined(),
+      subcribeNow: ApiResponse.undertermined(),
 
       categories: [],
       categoriesSkip: 0,
@@ -302,6 +306,7 @@ class AuthProvider extends Notifier<AuthState> {
     required Map<String, dynamic> profileData,
   }) async {
     if (!ref.mounted) return;
+    // AppRouter.push(SubscriptionPlanView(isPro: true,));
     try {
       state = state.copyWith(completeProfileApiResponse: ApiResponse.loading());
       final response = await MyHttpClient.instance.post(
@@ -330,7 +335,7 @@ class AuthProvider extends Notifier<AuthState> {
         await SecureStorageManager.sharedInstance.storeRefreshToken(
           response['refresh_token'] ?? "",
         );
-        AppRouter.push(AddFavouriteView());
+        AppRouter.push(SubscriptionPlanView(isPro: true,));
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
@@ -776,6 +781,138 @@ class AuthProvider extends Notifier<AuthState> {
       }
     }
   }
+  FutureOr<void> getSubscriptionPlan() async {
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(subscriptionPlanApiRes: ApiResponse.loading());
+      final response = await MyHttpClient.instance.get(ApiEndpoints.subscriptionPlan, isToken: false);
+      if (!ref.mounted) return;
+
+      if (response != null) {
+        List temp = response;
+        state = state.copyWith(
+          subscriptionPlanApiRes: ApiResponse.completed(List.from(temp.map((e)=>SubscriptionPlanModel.fromJson(e))),),
+        );
+        
+      } else {
+        state = state.copyWith(subscriptionPlanApiRes: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(subscriptionPlanApiRes: ApiResponse.error());
+    }
+  }
+
+  FutureOr<void> subcribeNow({
+   
+    required String type,
+  }) async {
+    if (!ref.mounted) return;
+   
+
+    try {
+      state = state.copyWith(subcribeNow: ApiResponse.loading());
+      
+
+      // Create payment intent
+      final intentResponse = await MyHttpClient.instance.post(
+        ApiEndpoints.subscriptionIntent,
+        {
+  "plan_type": type
+},
+      );
+
+      if (!ref.mounted) return;
+
+      if (intentResponse != null &&
+          !(intentResponse is Map && intentResponse.containsKey('detail'))) {
+        String clientSecret = intentResponse['client_secret'];
+        final paymentIntentId = intentResponse['payment_intent_id'];
+        if(type == "PRO"){
+           await makePayment(clientSecret);
+        // state = state.copyWith(payNowApiResponse: ApiResponse.completed(intentResponse));
+
+          confirmPayment(paymentIntentId);
+        }
+        else{
+           state = state.copyWith(
+          subcribeNow: ApiResponse.completed(intentResponse),
+        );
+        AppRouter.pushReplacement(AddFavouriteView());
+        }
+        // Make payment with Stripe
+       
+      } else {
+        state = state.copyWith(subcribeNow: ApiResponse.error());
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message:
+              (intentResponse is Map && intentResponse.containsKey('detail'))
+              ? intentResponse['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "payment_intent_creation_failed",
+                ),
+        );
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(subcribeNow: ApiResponse.error());
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: "Payment failed: $e",
+      );
+    }
+  }
+
+  Future<void> confirmPayment( String paymentIntentId) async {
+    try {
+      if (!ref.mounted) return;
+      // Confirm payment
+      final confirmResponse = await MyHttpClient.instance.post(
+        ApiEndpoints.subscriptionConfirm,
+        {"payment_intent_id": paymentIntentId},
+      );
+      if (confirmResponse != null &&
+          !(confirmResponse is Map && confirmResponse.containsKey('detail'))) {
+        state = state.copyWith(
+          subcribeNow: ApiResponse.completed(confirmResponse),
+        );
+       AppRouter.pushReplacement(AddFavouriteView());
+      } else {
+        state = state.copyWith(subcribeNow: ApiResponse.error());
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message:
+              (confirmResponse is Map && confirmResponse.containsKey('detail'))
+              ? confirmResponse['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "payment_confirmation_failed",
+                ),
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(subcribeNow: ApiResponse.error());
+    }
+  }
+
+  Future<void> makePayment(String clientSecret) async {
+    try {
+      // Optionally collect card details
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'Your App Name',
+        ),
+      );
+
+      // Present the payment sheet
+      await Stripe.instance.presentPaymentSheet();
+
+    } catch (e) {
+      rethrow; // Rethrow to handle in payNow
+    }
+  }
+
 
   void toggleTravelMode(bool chk) {
     state = state.copyWith(

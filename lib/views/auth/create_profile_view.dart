@@ -137,7 +137,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
           if (widget.isEdit!) {
             AppRouter.back();
           } else {
-            AppRouter.push(SubscriptionPlanView(isPro: true));
+            
           }
         },
         title: widget.isEdit!

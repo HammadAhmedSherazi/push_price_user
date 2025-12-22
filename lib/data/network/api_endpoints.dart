@@ -3,7 +3,10 @@ class ApiEndpoints {
   static const String user = "users/";
   static const String admin = "admin/";
   static const String userAuth = "${user}auth/";
-
+  static const String subscription = "${user}subscriptions/";
+  static const String subscriptionPlan = "${subscription}plans";
+  static const String subscriptionIntent = "${subscription}payment-intent";
+  static const String subscriptionConfirm = "${subscription}confirm";
   static const String imageUpload = "${admin}upload/upload";
   static const String imageDelete = "${admin}upload/delete";
 

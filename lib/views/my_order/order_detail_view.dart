@@ -157,76 +157,90 @@ context.tr("no_longer_need_product"),
         dataList: orderState.orderDetail != null ? [orderState.orderDetail!] : [],
         itemBuilder: null,
         customSuccessWidget: 
-        order != null ? ListView(
-            shrinkWrap: true,
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.all(AppTheme.horizontalPadding),
-            children: [
-              Text(
-                context.tr("order_details"),
-                style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
-              ),
-              10.ph,
-              ListView.separated(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final item = orderState.orderDetail!.items[index];
-                  return OrderItemCardWidget(order: item);
-                }, separatorBuilder: (context, index)=> 5.ph, itemCount: orderState.orderDetail!.items.length),
-              5.ph,
-              Row(
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-
-                    setTitle(context, order.status),
-                    style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
-                  ),
-                  // Text("Today 3:45pm", style: context.textStyle.bodySmall,)
-                ],
-              ),
-              Divider(),
-              OrderDetailTitleWidget(
-                title: context.tr("order_id"),
-                value: "#${order.orderId}" ,
-              ),
-              10.ph,
-              OrderDetailTitleWidget(
-                title: context.tr("date"),
-                value: "${order.createdAt.month}/${order.createdAt.day}/${order.createdAt.year}" ,
-              ),
-              10.ph,
-              OrderDetailTitleWidget(
-                title: context.tr("total"),
-                value: "\$${order.finalAmount}" ,
-              ),
-              if(order.status == "COMPLETED")...[
-                30.verticalSpace,
-              Center(
-                child: Column(
-                  spacing: 10,
+        order != null ? Scrollbar(
+          thumbVisibility: true,
+          trackVisibility: true,
+          child: ListView(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              padding: EdgeInsets.all(AppTheme.horizontalPadding),
+              children: [
+                Text(
+                  context.tr("order_details"),
+                  style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
+                ),
+                10.ph,
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final item = orderState.orderDetail!.items[index];
+                    return OrderItemCardWidget(order: item);
+                  }, separatorBuilder: (context, index)=> 5.ph, itemCount: orderState.orderDetail!.items.length),
+                5.ph,
+                Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SvgPicture.asset(Assets.checkCircleIcon, width: 60.r,),
-                    Container(
-                      width: 75.w,
-                      height: 35.h,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryColor
-                      ),
-                      child: Text(context.tr("paid"), style: context.textStyle.headlineMedium!.copyWith(
-                        color: Colors.white,
-                        fontSize: 16.sp
-                      ),),
-                    )
+                    Text(
+          
+                      setTitle(context, order.status),
+                      style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
+                    ),
+                    // Text("Today 3:45pm", style: context.textStyle.bodySmall,)
                   ],
                 ),
-              )
-              ]
-
-            ],
-          )
+                Divider(),
+                OrderDetailTitleWidget(
+                  title: context.tr("order_id"),
+                  value: "#${order.orderId}" ,
+                ),
+                10.ph,
+                OrderDetailTitleWidget(
+                  title: context.tr("date"),
+                  value: "${order.createdAt.month}/${order.createdAt.day}/${order.createdAt.year}" ,
+                ),
+                10.ph,
+                OrderDetailTitleWidget(
+                  title: context.tr("item_total"),
+                  value: "\$${order.orderSummary?.subTotal.toStringAsFixed(2)}" ,
+                ),
+                10.ph,
+                OrderDetailTitleWidget(
+                  title: context.tr("tax_amount"),
+                  value: "\$${order.orderSummary?.taxAmount.toStringAsFixed(2)}" ,
+                ),
+                10.ph,
+                OrderDetailTitleWidget(
+                  title: context.tr("total"),
+                  value: "\$${order.orderSummary?.finalAmount.toStringAsFixed(2)}" ,
+                ),
+                if(order.status == "COMPLETED")...[
+                  30.verticalSpace,
+                Center(
+                  child: Column(
+                    spacing: 10,
+                    children: [
+                      SvgPicture.asset(Assets.checkCircleIcon, width: 60.r,),
+                      Container(
+                        width: 75.w,
+                        height: 35.h,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryColor
+                        ),
+                        child: Text(context.tr("paid"), style: context.textStyle.headlineMedium!.copyWith(
+                          color: Colors.white,
+                          fontSize: 16.sp
+                        ),),
+                      )
+                    ],
+                  ),
+                )
+                ]
+          
+              ],
+            ),
+        )
        : null,
         onRetry: () => ref.read(orderProvider.notifier).getOrderDetail(orderId: widget.orderId),
       ),
@@ -340,7 +354,7 @@ class OrderItemCardWidget extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "\$${order.unitPrice * order.quantity}",
+                            text: "\$${(order.unitPrice * order.quantity).toStringAsFixed(2)}",
                             style: context.textStyle.displayMedium!.copyWith(
                               color: AppColors.secondaryColor,
                             ),

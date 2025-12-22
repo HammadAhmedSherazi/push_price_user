@@ -1,5 +1,6 @@
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
+import 'package:push_price_user/models/subscription_plan_data_model.dart';
 
 class AuthState {
   final ApiResponse loginApiResponse;
@@ -15,7 +16,8 @@ class AuthState {
   final ApiResponse getCategoriesApiResponse;
   final ApiResponse uploadImageApiResponse;
   final ApiResponse removeImageApiResponse;
-  final ApiResponse updateProfileApiResponse;
+  final ApiResponse updateProfileApiResponse, subcribeNow;
+  final ApiResponse<List<SubscriptionPlanModel?>> subscriptionPlanApiRes;
 
   final UserDataModel? userData;
   final String? imageUrl;
@@ -37,6 +39,8 @@ class AuthState {
     required this.removeImageApiResponse,
     required this.updateProfileApiResponse,
     required this.logoutApiResponse,
+    required this.subscriptionPlanApiRes,
+    required this.subcribeNow,
     this.userData,
     this.imageUrl,
     this.staffInfo,
@@ -58,7 +62,9 @@ class AuthState {
     ApiResponse? uploadImageApiResponse,
     ApiResponse? removeImageApiResponse,
     ApiResponse? updateProfileApiResponse,
-    ApiResponse? logoutApiResponse,
+    ApiResponse? logoutApiResponse, subcribeNow, 
+  
+    ApiResponse<List<SubscriptionPlanModel?>>? subscriptionPlanApiRes,
     UserDataModel? userData,
     String? imageUrl,
     StaffModel? staffInfo,
@@ -84,5 +90,7 @@ class AuthState {
     imageUrl: imageUrl ?? this.imageUrl,
     categories: categories ?? this.categories,
     categoriesSkip: categoriesSkip ?? this.categoriesSkip,
+    subscriptionPlanApiRes: subscriptionPlanApiRes ?? this.subscriptionPlanApiRes,
+    subcribeNow: subcribeNow ?? this.subcribeNow
   );
 }

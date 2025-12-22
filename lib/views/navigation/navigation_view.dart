@@ -118,7 +118,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     }),
     MenuDataModel(title: context.tr("my_orders"), icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
     MenuDataModel(title: context.tr("my_locations"), icon: Assets.menuLocationIcon, onTap: () => AppRouter.push(MyLocationView())),
-    // MenuDataModel(title: "Subscription & Savings", icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
+    MenuDataModel(title: "Subscription & Savings", icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
     // MenuDataModel(title: "Vouchers", icon: Assets.menuVoucherIcon, onTap: () => AppRouter.push(VoucherView())),
     // MenuDataModel(title: "Payment Methods", icon: Assets.menuPaymentIcon, onTap: () => AppRouter.push(MyPaymentMethodView())),
     MenuDataModel(title: context.tr("settings"), icon: Assets.menuSettingIcon, onTap: () => AppRouter.push(SettingView())),
@@ -191,15 +191,18 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                   Consumer(
                     builder: (context, ref, child) {
 
-                      final user = ref.watch(authProvider.select((e)=>e.userData))!;
+                      final user = ref.watch(authProvider.select((e)=>e.userData));
+                      if(user == null){
+                        ref.read(authProvider.notifier).getUser();
+                      }
                       return Center(
                         child: Column(
                           spacing: 7,
                           children: [
-                            UserProfileWidget(radius: 45.r, imageUrl: user.profileImage),
+                            UserProfileWidget(radius: 45.r, imageUrl: user?.profileImage),
                             5.ph,
-                            Text(user.fullName, style: context.textStyle.headlineMedium!.copyWith(fontSize: 18.sp)),
-                            Text(user.email, style: context.textStyle.bodyMedium),
+                            Text("${user?.fullName}", style: context.textStyle.headlineMedium!.copyWith(fontSize: 18.sp)),
+                            Text("${user?.email}", style: context.textStyle.bodyMedium),
                           ],
                         ),
                       );

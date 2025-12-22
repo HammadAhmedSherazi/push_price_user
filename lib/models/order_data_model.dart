@@ -19,6 +19,7 @@ class OrderModel {
   final LocationDataModel? shippingAddress;
   final String? paymentIntentId;
   final StoreDataModel  store;
+  final OrderSummaryDataModel? orderSummary;
   
 
   const OrderModel({
@@ -38,6 +39,7 @@ class OrderModel {
     required this.updatedAt,
     required this.items,
     this.shippingAddress,
+    this.orderSummary
 
   });
 
@@ -62,7 +64,8 @@ class OrderModel {
           ? LocationDataModel.fromJson(json['shipping_address'])
           : null,
       paymentIntentId: json['payment_intent_id'] ?? "",
-      store: StoreDataModel.fromJson(json['store'])
+      store: StoreDataModel.fromJson(json['store']),
+      orderSummary: json['summary'] != null ? OrderSummaryDataModel.fromJson(json['summary']) : null
       
     );
   }
@@ -136,3 +139,17 @@ class OrderItem {
   }
 }
 
+class OrderSummaryDataModel {
+  late final num subTotal, taxAmount, totalAmount, finalAmount, discountAmount;
+  late final bool hasTax;
+
+  OrderSummaryDataModel.fromJson(Map<String, dynamic> json){
+    subTotal = json['subtotal'] ?? 0;
+    taxAmount = json['total_tax_amount'] ?? 0;
+    totalAmount = json['total_amount'] ?? 0;
+    finalAmount = json['final_amount'] ?? 0;
+    discountAmount = json['discount_amount'] ?? 0;
+  }
+  
+  
+}

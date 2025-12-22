@@ -93,7 +93,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
             Text(context.tr("view_your_cart"), style: context.textStyle.bodyMedium!.copyWith(
               color: Colors.white
             ),),
-            Text("\$$price", style: context.textStyle.bodySmall!.copyWith(
+            Text("\$${price.toStringAsFixed(2)}", style: context.textStyle.bodySmall!.copyWith(
               color: Colors.white
             ),),
           ],
@@ -225,6 +225,12 @@ class _StoreViewState extends ConsumerState<StoreView> {
                 return AsyncStateHandler(
                   status: homeState.$1.status,
                   dataList: products,
+                  padding: EdgeInsets.only(
+                    top: AppTheme.horizontalPadding,
+                    left: AppTheme.horizontalPadding,
+                    right: AppTheme.horizontalPadding,
+                    bottom: 100.r
+                  ),
                   itemBuilder: (context, index) {
                     final product = products[index];
                     return GestureDetector(
