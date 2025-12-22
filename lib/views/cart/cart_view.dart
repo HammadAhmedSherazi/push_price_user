@@ -447,7 +447,7 @@ class _CartViewState extends ConsumerState<CartView> {
                     ),
                     10.ph,
                      OrderDetailTitleWidget(
-                      title: context.tr("tax_amount"),
+                      title: context.tr("tax"),
                       value: "\$${(calculatePricingRes.data as Map<String, dynamic>?)?['total_tax_amount'] ?? 0.0}",
                     ),
                     if (voucherRes.status == Status.completed &&

@@ -358,5 +358,6 @@
   "in_process" : "En proceso",
   "save": "Guardar",
   "view_order": "Ver pedido",
-  "back_to_home": "Volver al inicio"
+  "back_to_home": "Volver al inicio",
+   "tax": "Impuesto"
 }

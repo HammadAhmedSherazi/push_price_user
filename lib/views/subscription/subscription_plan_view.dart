@@ -53,7 +53,7 @@ int decimal = int.parse(parts[1]); //
                         builder: (context, ref, child) {
                           final isLoad = ref.watch(authProvider.select((e)=>e.subcribeNow.status)) == Status.loading;
                           return CustomButtonWidget(
-                            title: "subscribe",
+                            title: context.tr("subscribe"),
                             isLoad: isLoad,
                             onPressed: () {
                               ref.read(authProvider.notifier).subcribeNow(type: data!.planType);
@@ -64,7 +64,7 @@ int decimal = int.parse(parts[1]); //
                     ),
                     Expanded(
                       child: CustomOutlineButtonWidget(
-                        title: "not now",
+                        title: context.tr("not_now"),
                         onPressed: () {
                           AppRouter.push(SubscriptionPlanView());
                         },
@@ -75,11 +75,11 @@ int decimal = int.parse(parts[1]); //
               )
             : null,
         showBottomButton: true,
-        bottomButtonText: "next",
+        bottomButtonText: context.tr("next"),
         onButtonTap: () {
           AppRouter.push(AddFavouriteView());
         },
-        title: "Subscription",
+        title: context.tr("subscribe"),
         child: ListView(
           padding: EdgeInsets.all(AppTheme.horizontalPadding),
           children: [

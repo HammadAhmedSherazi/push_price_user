@@ -118,7 +118,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     }),
     MenuDataModel(title: context.tr("my_orders"), icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
     MenuDataModel(title: context.tr("my_locations"), icon: Assets.menuLocationIcon, onTap: () => AppRouter.push(MyLocationView())),
-    MenuDataModel(title: "Subscription & Savings", icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
+    MenuDataModel(title: context.tr("subscription_and_savings"), icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
     // MenuDataModel(title: "Vouchers", icon: Assets.menuVoucherIcon, onTap: () => AppRouter.push(VoucherView())),
     // MenuDataModel(title: "Payment Methods", icon: Assets.menuPaymentIcon, onTap: () => AppRouter.push(MyPaymentMethodView())),
     MenuDataModel(title: context.tr("settings"), icon: Assets.menuSettingIcon, onTap: () => AppRouter.push(SettingView())),

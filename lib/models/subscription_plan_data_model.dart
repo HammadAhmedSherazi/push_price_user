@@ -92,14 +92,14 @@ class SubscriptionModel {
   /// FROM JSON
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) {
     return SubscriptionModel(
-      subscriptionId: json['subscription_id'] as int,
-      planType: json['plan_type'] as String,
+      subscriptionId: json['subscription_id'] ?? -1,
+      planType: json['plan_type'] ?? "",
       isPro: json['is_pro'] as bool,
-      status: json['status'] as String,
-      startedAt: DateTime.parse(json['started_at'] as String),
-      expiresAt: DateTime.parse(json['expires_at'] as String),
+      status: json['status'] ?? "",
+      startedAt: json['started_at'] != null ? DateTime.parse(json['started_at'] as String) : DateTime.now(),
+      expiresAt: json['expires_at'] != null ? DateTime.parse(json['expires_at'] as String) : DateTime.now(),
       autoRenew: json['auto_renew'] as bool,
-        price: (json['price'] ?? 0).toDouble(),
+        price: (json['plan_price'] ?? 0).toDouble(),
       billingPeriod: json['billing_period'] ?? '',
       benefits: (json['benefits'] as List<dynamic>?)
               ?.map((e) => BenefitModel.fromJson(e))

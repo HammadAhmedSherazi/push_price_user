@@ -206,7 +206,7 @@ context.tr("no_longer_need_product"),
                 ),
                 10.ph,
                 OrderDetailTitleWidget(
-                  title: context.tr("tax_amount"),
+                  title: context.tr("tax"),
                   value: "\$${order.orderSummary?.taxAmount.toStringAsFixed(2)}" ,
                 ),
                 10.ph,

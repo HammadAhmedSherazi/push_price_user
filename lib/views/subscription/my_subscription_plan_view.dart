@@ -23,7 +23,7 @@ class _MySubscriptionPlanViewState extends ConsumerState<MySubscriptionPlanView>
      
       
       onButtonTap: () {},
-      title: "Subscription & Savings",
+      title: context.tr("subscription_and_savings"),
       child:  AsyncStateHandler(status: response.status, dataList: response.data != null?[""]: [], itemBuilder: null, onRetry: (){
         ref.read(authProvider.notifier).getMySubscriptionPlan();
       }, customSuccessWidget: response.data != null ? ListView(
@@ -99,7 +99,7 @@ class _MySubscriptionPlanViewState extends ConsumerState<MySubscriptionPlanView>
             spacing: 15,
             children: [
               SvgPicture.asset(Assets.dollarSquareIcon),
-              Text("Plan information", style: context.textStyle.displayMedium!.copyWith(
+              Text(context.tr("plan_information"), style: context.textStyle.displayMedium!.copyWith(
                 fontSize: 16.sp
               ),)
             ],
@@ -108,14 +108,15 @@ class _MySubscriptionPlanViewState extends ConsumerState<MySubscriptionPlanView>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(context.tr("price_plan"), style: context.textStyle.bodySmall,),
-              Text(context.tr("price_per_month").replaceFirst("%s", response.data!.price.toStringAsFixed(2)), style: context.textStyle.bodySmall,),
+              Expanded(child: Text( response.data!.isPro?"\$${response.data?.price}/${response.data?.billingPeriod}" : "Free", style: context.textStyle.bodySmall, textAlign: TextAlign.end,)),
             ],
           ),
+          if(response.data!.isPro)
            Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(context.tr("subscription_ends_on"), style: context.textStyle.bodySmall,),
-              Text("April 25, 2025", style: context.textStyle.bodySmall,),
+              Expanded(child: Text(Helper.selectDateFormat(response.data?.expiresAt), style: context.textStyle.bodySmall,textAlign: TextAlign.end,)),
             ],
           ),
         ],
