@@ -17,6 +17,7 @@ class AuthState {
   final ApiResponse uploadImageApiResponse;
   final ApiResponse removeImageApiResponse;
   final ApiResponse updateProfileApiResponse, subcribeNow;
+  final ApiResponse<SubscriptionModel?> mySubcribePlanRes;
   final ApiResponse<List<SubscriptionPlanModel?>> subscriptionPlanApiRes;
 
   final UserDataModel? userData;
@@ -41,6 +42,7 @@ class AuthState {
     required this.logoutApiResponse,
     required this.subscriptionPlanApiRes,
     required this.subcribeNow,
+    required this.mySubcribePlanRes,
     this.userData,
     this.imageUrl,
     this.staffInfo,
@@ -62,8 +64,8 @@ class AuthState {
     ApiResponse? uploadImageApiResponse,
     ApiResponse? removeImageApiResponse,
     ApiResponse? updateProfileApiResponse,
-    ApiResponse? logoutApiResponse, subcribeNow, 
-  
+    ApiResponse? logoutApiResponse, subcribeNow,
+    ApiResponse<SubscriptionModel?>? mySubcribePlanRes, 
     ApiResponse<List<SubscriptionPlanModel?>>? subscriptionPlanApiRes,
     UserDataModel? userData,
     String? imageUrl,
@@ -91,6 +93,7 @@ class AuthState {
     categories: categories ?? this.categories,
     categoriesSkip: categoriesSkip ?? this.categoriesSkip,
     subscriptionPlanApiRes: subscriptionPlanApiRes ?? this.subscriptionPlanApiRes,
-    subcribeNow: subcribeNow ?? this.subcribeNow
+    subcribeNow: subcribeNow ?? this.subcribeNow,
+    mySubcribePlanRes: mySubcribePlanRes ?? this.mySubcribePlanRes
   );
 }

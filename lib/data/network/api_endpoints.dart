@@ -5,6 +5,7 @@ class ApiEndpoints {
   static const String userAuth = "${user}auth/";
   static const String subscription = "${user}subscriptions/";
   static const String subscriptionPlan = "${subscription}plans";
+  static const String mySubscriptionPlan = "${subscription}my-subscription";
   static const String subscriptionIntent = "${subscription}payment-intent";
   static const String subscriptionConfirm = "${subscription}confirm";
   static const String imageUpload = "${admin}upload/upload";

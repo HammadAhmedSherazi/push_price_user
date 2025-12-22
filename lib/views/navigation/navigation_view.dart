@@ -193,7 +193,9 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
 
                       final user = ref.watch(authProvider.select((e)=>e.userData));
                       if(user == null){
-                        ref.read(authProvider.notifier).getUser();
+                        Future.microtask((){
+                          ref.read(authProvider.notifier).getUser();
+                        });
                       }
                       return Center(
                         child: Column(

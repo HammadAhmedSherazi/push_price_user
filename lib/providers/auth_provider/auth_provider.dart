@@ -29,6 +29,7 @@ class AuthProvider extends Notifier<AuthState> {
       logoutApiResponse: ApiResponse.undertermined(),
       subscriptionPlanApiRes: ApiResponse.undertermined(),
       subcribeNow: ApiResponse.undertermined(),
+      mySubcribePlanRes: ApiResponse.undertermined(),
 
       categories: [],
       categoriesSkip: 0,
@@ -781,6 +782,7 @@ class AuthProvider extends Notifier<AuthState> {
       }
     }
   }
+  
   FutureOr<void> getSubscriptionPlan() async {
     if (!ref.mounted) return;
     try {
@@ -802,6 +804,29 @@ class AuthProvider extends Notifier<AuthState> {
       state = state.copyWith(subscriptionPlanApiRes: ApiResponse.error());
     }
   }
+
+  FutureOr<void> getMySubscriptionPlan() async {
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(mySubcribePlanRes: ApiResponse.loading());
+      final response = await MyHttpClient.instance.get(ApiEndpoints.mySubscriptionPlan);
+      if (!ref.mounted) return;
+
+      if (response != null) {
+        
+        state = state.copyWith(
+          mySubcribePlanRes: ApiResponse.completed(SubscriptionModel.fromJson(response)),
+        );
+        
+      } else {
+        state = state.copyWith(mySubcribePlanRes: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(mySubcribePlanRes: ApiResponse.error());
+    }
+  }
+
 
   FutureOr<void> subcribeNow({
    

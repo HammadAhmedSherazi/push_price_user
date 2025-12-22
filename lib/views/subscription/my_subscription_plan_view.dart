@@ -1,84 +1,89 @@
 import '../../export_all.dart';
 import '../../utils/extension.dart';
 
-class MySubscriptionPlanView extends StatefulWidget {
+class MySubscriptionPlanView extends ConsumerStatefulWidget {
   const MySubscriptionPlanView({super.key});
 
   @override
-  State<MySubscriptionPlanView> createState() => _MySubscriptionPlanViewState();
+  ConsumerState<MySubscriptionPlanView> createState() => _MySubscriptionPlanViewState();
 }
 
-class _MySubscriptionPlanViewState extends State<MySubscriptionPlanView> {
+class _MySubscriptionPlanViewState extends ConsumerState<MySubscriptionPlanView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask((){
+      ref.read(authProvider.notifier).getMySubscriptionPlan();
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    final response = ref.watch(authProvider.select((e)=>e.mySubcribePlanRes));
     return CustomScreenTemplate(
      
-      showBottomButton: true,
-      bottomButtonText: "un-subscribe",
+      
       onButtonTap: () {},
       title: "Subscription & Savings",
-      child: ListView(
+      child:  AsyncStateHandler(status: response.status, dataList: response.data != null?[""]: [], itemBuilder: null, onRetry: (){
+        ref.read(authProvider.notifier).getMySubscriptionPlan();
+      }, customSuccessWidget: response.data != null ? ListView(
         padding: EdgeInsets.all(AppTheme.horizontalPadding),
         children: [
           Center(
             child: Text(
-              "Push Price Pro" ,
+              "Push Price ${response.data!.isPro ? "Pro": "Free"}" ,
               style: context.textStyle.displayMedium!.copyWith(fontSize: 20.sp),
             ),
           ),
           20.ph,
-          Container(
-            // height:  80.h,
-            padding: EdgeInsets.symmetric(horizontal: 20.r, vertical: 15.r),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              color: AppColors.secondaryColor,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                   "You’ve saved \$50 so far in this month"
-                     ,
-                  textAlign: TextAlign.center,
-                  style: context.textStyle.displayLarge!.copyWith(
-                    fontSize: 18.sp,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                   "That’s 3x of your monthly subscription fees!"
-                     ,
-                  textAlign: TextAlign.center,
-                  style: context.textStyle.bodyMedium!.copyWith(
+          // Container(
+          //   // height:  80.h,
+          //   padding: EdgeInsets.symmetric(horizontal: 20.r, vertical: 15.r),
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(8.r),
+          //     color: AppColors.secondaryColor,
+          //   ),
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Text(
+          //          "You’ve saved \$50 so far in this month"
+          //            ,
+          //         textAlign: TextAlign.center,
+          //         style: context.textStyle.displayLarge!.copyWith(
+          //           fontSize: 18.sp,
+          //           color: Colors.white,
+          //         ),
+          //       ),
+          //       Text(
+          //          "That’s 3x of your monthly subscription fees!"
+          //            ,
+          //         textAlign: TextAlign.center,
+          //         style: context.textStyle.bodyMedium!.copyWith(
                     
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          20.ph,
+          //           color: Colors.white,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // 20.ph,
           Text(
-           "Your Pro Perks",
+           "Your ${response.data!.isPro ? "Pro": "Free"} Perks",
             style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp),
           ),
           15.ph,
-          DiscountLIstTitleWidget(
-            icon: Assets.discountIcon,
-            title: "5% additional discount",
-            subtitle: "Unlimited times",
-          ),
-          DiscountLIstTitleWidget(
-            icon: Assets.notificationAlertIcon,
-            title: "Get notified for discounts",
-            subtitle:  "Unlimited times" ,
-          ),
-          DiscountLIstTitleWidget(
-            icon: Assets.travelDiscountIcon,
-            title: "5% additional discount",
-            subtitle:  "Unlimited times" ,
-          ),
+          if(response.data != null)...[
+             ...List.generate(response.data!.benefits.length, (index) {
+              final item = response.data!.benefits[index];
+              return DiscountLIstTitleWidget(
+                icon: setIcon(item.title),
+                title: item.title,
+                subtitle: item.subtitle,
+              );
+            }),
+          ],
+          
           10.ph,
           Container(
       margin: EdgeInsets.only(bottom: 15.r),
@@ -103,7 +108,7 @@ class _MySubscriptionPlanViewState extends State<MySubscriptionPlanView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(context.tr("price_plan"), style: context.textStyle.bodySmall,),
-              Text(context.tr("price_per_month").replaceFirst("%s", "14.99"), style: context.textStyle.bodySmall,),
+              Text(context.tr("price_per_month").replaceFirst("%s", response.data!.price.toStringAsFixed(2)), style: context.textStyle.bodySmall,),
             ],
           ),
            Row(
@@ -116,25 +121,25 @@ class _MySubscriptionPlanViewState extends State<MySubscriptionPlanView> {
         ],
       ),
     ),
-         Container(
-      margin: EdgeInsets.only(bottom: 15.r),
-      padding: EdgeInsets.symmetric(vertical: 15.r, horizontal: 10.r),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(width: 1, color: AppColors.borderColor),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(context.tr("terms_and_conditions"), style: context.textStyle.displayMedium,),
-          SvgPicture.asset(Assets.forwardIcon)
-        ],
-      )
-    )
+    //      Container(
+    //   margin: EdgeInsets.only(bottom: 15.r),
+    //   padding: EdgeInsets.symmetric(vertical: 15.r, horizontal: 10.r),
+    //   decoration: BoxDecoration(
+    //     borderRadius: BorderRadius.circular(8.r),
+    //     border: Border.all(width: 1, color: AppColors.borderColor),
+    //   ),
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //     children: [
+    //       Text(context.tr("terms_and_conditions"), style: context.textStyle.displayMedium,),
+    //       SvgPicture.asset(Assets.forwardIcon)
+    //     ],
+    //   )
+    // )
 
         ],
-      ),
-    );
+      ) : const SizedBox.shrink(),
+   ));
 
   }
 }
