@@ -14,7 +14,7 @@ class SearchProductView extends ConsumerStatefulWidget {
   ConsumerState<SearchProductView> createState() => _SearchProductViewState();
 }
 
-class ProductTitleWidget extends StatelessWidget {
+class ProductTitleWidget extends StatefulWidget {
   final VoidCallback ? onEditCall;
   const ProductTitleWidget({
     super.key,
@@ -25,10 +25,17 @@ class ProductTitleWidget extends StatelessWidget {
   final ProductSelectionDataModel product;
 
   @override
+  State<ProductTitleWidget> createState() => _ProductTitleWidgetState();
+}
+
+class _ProductTitleWidgetState extends State<ProductTitleWidget> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        // AppRouter.push(ProductDetailView(quatity: 0, product: product, discount: 0, storeId: 1,));
+        // AppRouter.push(ProductDetailView(quatity: 0, product: widget.product, discount: 0, storeId: 1,));
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -42,25 +49,51 @@ class ProductTitleWidget extends StatelessWidget {
       child: Row(
         spacing: 10,
         children: [
-          DisplayNetworkImage(imageUrl:  product.image, width: 57.w, height: 70.h,),
+          DisplayNetworkImage(imageUrl:  widget.product.image, width: 57.w, height: 70.h,),
           Expanded(
             child: Column(
               spacing: 12,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(product.title, style: context.textStyle.bodyMedium),
-                Text(product.description, style: context.textStyle.bodySmall!.copyWith(
-                  color: AppColors.primaryTextColor.withValues(alpha: 0.7),
-
-                )),
+                Text(widget.product.title, style: context.textStyle.bodyMedium, maxLines: 1,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.product.description,
+                      style: context.textStyle.bodySmall!.copyWith(
+                        color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                      ),
+                      maxLines: _isExpanded ? null : 2,
+                      overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                    ),
+                    if (widget.product.description.length > 50)
+                      TextButton(
+                        
+                        onPressed: () => setState(() => _isExpanded = !_isExpanded),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          _isExpanded ? 'See less' : 'See more',
+                          style: context.textStyle.bodySmall!.copyWith(
+                            color: AppColors.secondaryColor,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
 
               ],
             ),
           ),
-          if(onEditCall == null)
+          if(widget.onEditCall == null)
           20.pw,
-          if(onEditCall != null)
-          IconButton(onPressed: onEditCall, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))
+          if(widget.onEditCall != null)
+          IconButton(onPressed: widget.onEditCall, icon: Icon(Icons.edit, color: AppColors.secondaryColor,))
 
 
         ],
