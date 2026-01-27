@@ -84,4 +84,10 @@ class SharedPreferenceManager {
 
   Future<bool> clearCartList() => instance.remove(cartListKey);
 
+  /// User session clear — profile + cart. Logout / refresh fail pe use karo.
+  Future<void> clearUserSession() async {
+    await clearKey(profileKey);
+    await clearCartList();
+  }
+
 }

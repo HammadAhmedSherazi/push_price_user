@@ -3,9 +3,6 @@ abstract class BaseApiServices {
   static String baseURL = "https://testdomainpush.xyz/";
   
 
-  
-
-
   Future<dynamic> get(
     String url, {
     Map<String, dynamic>? params,

@@ -718,43 +718,57 @@ class AuthProvider extends Notifier<AuthState> {
     }
   }
 
+  static Completer<void>? _refreshCompleter;
+
+  /// Refresh fail / session invalid — SecureStorage (token, userData) + SharedPreference (profile, cart) clear, phir login.
+  Future<void> _clearUserSessionAndGoToLogin() async {
+    await SecureStorageManager.sharedInstance.clearAll();
+    await SharedPreferenceManager.sharedInstance.clearUserSession();
+    AppRouter.pushAndRemoveUntil(const LoginView());
+    Helper.showMessage(
+      AppRouter.navKey.currentContext!,
+      message: AppRouter.navKey.currentContext!.tr("please_login_again"),
+    );
+  }
+
+  /// Refresh token — ek time par sirf ek refresh chalti hai; baaki callers usi ka wait karte hain.
+  /// Refresh token tab hi clear hota hai jab response valid ho ya hum login pe bhej rahe hon.
   FutureOr<void> refreshToken() async {
+    if (_refreshCompleter != null) {
+      await _refreshCompleter!.future;
+      return;
+    }
+    _refreshCompleter = Completer<void>();
     try {
-      final refreshToken =
+      final refreshTokenValue =
           await SecureStorageManager.sharedInstance.getRefreshToken() ?? "";
-      if (refreshToken != "") {
+      if (refreshTokenValue.isNotEmpty) {
         final response = await MyHttpClient.instance.post(
           ApiEndpoints.refresh,
-          {"refresh_token": refreshToken},
+          {"refresh_token": refreshTokenValue},
+          isToken: false,
         );
-        await SecureStorageManager.sharedInstance.clearRefreshToken();
-        if (response != null) {
+        if (response != null &&
+            response['access_token'] != null &&
+            (response['access_token'] as String).isNotEmpty) {
           await SecureStorageManager.sharedInstance.storeToken(
             response['access_token'] ?? "",
           );
           await SecureStorageManager.sharedInstance.storeRefreshToken(
             response['refresh_token'] ?? "",
           );
+        } else {
+          await _clearUserSessionAndGoToLogin();
         }
       } else {
-        SecureStorageManager.sharedInstance.clearAll();
-
-        AppRouter.pushAndRemoveUntil(const LoginView());
-        Helper.showMessage(
-          AppRouter.navKey.currentContext!,
-          message: AppRouter.navKey.currentContext!.tr("please_login_again"),
-        );
+        await _clearUserSessionAndGoToLogin();
       }
     } catch (e) {
-      SecureStorageManager.sharedInstance.clearAll();
-
-      AppRouter.pushAndRemoveUntil(const LoginView());
-      Helper.showMessage(
-        AppRouter.navKey.currentContext!,
-        message: AppRouter.navKey.currentContext!.tr("please_login_again"),
-      );
-
+      await _clearUserSessionAndGoToLogin();
       throw Exception(e);
+    } finally {
+      _refreshCompleter?.complete();
+      _refreshCompleter = null;
     }
   }
 

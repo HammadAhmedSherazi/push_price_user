@@ -16,27 +16,41 @@ class _SubscriptionPlanViewState extends ConsumerState<SubscriptionPlanView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask((){
+    Future.microtask(() {
       ref.read(authProvider.notifier).getSubscriptionPlan();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final response = ref.watch(
       authProvider.select((e) => e.subscriptionPlanApiRes),
     );
     final List<SubscriptionPlanModel?>? plans = response.data;
-    final data = widget.isPro!  && response.status == Status.completed && plans![0]!.planType == "PRO"
-        ? plans[0]!
-        :response.status == Status.completed? plans![1] : null;
-    String formatted = data != null ? data.price.toStringAsFixed(2): "00.00";
-List<String> parts = formatted.split('.');
 
-int whole = int.parse(parts[0]);   // 14
-int decimal = int.parse(parts[1]); //
+    SubscriptionPlanModel? data;
+    if (response.status == Status.completed && plans != null && plans.isNotEmpty) {
+      final firstPlan = plans.isNotEmpty ? plans[0] : null;
+      final secondPlan = plans.length > 1 ? plans[1] : null;
+
+      if (widget.isPro == true &&
+          firstPlan != null &&
+          firstPlan.planType == "PRO") {
+        data = firstPlan;
+      } else if (secondPlan != null) {
+        data = secondPlan;
+      } else {
+        data = firstPlan;
+      }
+    }
+    String formatted = data != null ? data.price.toStringAsFixed(2) : "00.00";
+    List<String> parts = formatted.split('.');
+
+    int whole = int.parse(parts[0]); // 14
+    int decimal = int.parse(parts[1]); //
     return AsyncStateHandler(
       status: response.status,
-      dataList: data == null ?[]: [""],
+      dataList: data == null ? [] : [""],
       itemBuilder: null,
       onRetry: () {},
       customSuccessWidget: CustomScreenTemplate(
@@ -51,15 +65,23 @@ int decimal = int.parse(parts[1]); //
                     Expanded(
                       child: Consumer(
                         builder: (context, ref, child) {
-                          final isLoad = ref.watch(authProvider.select((e)=>e.subcribeNow.status)) == Status.loading;
+                          final isLoad =
+                              ref.watch(
+                                authProvider.select(
+                                  (e) => e.subcribeNow.status,
+                                ),
+                              ) ==
+                              Status.loading;
                           return CustomButtonWidget(
                             title: context.tr("subscribe"),
                             isLoad: isLoad,
                             onPressed: () {
-                              ref.read(authProvider.notifier).subcribeNow(type: data!.planType);
+                              ref
+                                  .read(authProvider.notifier)
+                                  .subcribeNow(type: data!.planType);
                             },
                           );
-                        }
+                        },
                       ),
                     ),
                     Expanded(
@@ -120,65 +142,64 @@ int decimal = int.parse(parts[1]); //
               style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp),
             ),
             15.ph,
-            if(data != null)...[
+            if (data != null) ...[
               ...List.generate(data.benefits.length, (index) {
-              final item = data.benefits[index];
-              return DiscountLIstTitleWidget(
-                icon: setIcon(item.title),
-                title: item.title,
-                subtitle: item.subtitle,
-              );
-            }),
+                final item = data!.benefits[index];
+                return DiscountLIstTitleWidget(
+                  icon: setIcon(item.title),
+                  title: item.title,
+                  subtitle: item.subtitle,
+                );
+              }),
             ],
-            
-            if(widget.isPro!)...[
+
+            if (widget.isPro!) ...[
               20.ph,
-            Center(
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    WidgetSpan(
-                      alignment: PlaceholderAlignment.top,
-                      child: Transform.translate(
-                        offset: const Offset(
-                          -10,
-                          -70,
-                        ), // adjust Y offset as needed
-                        child: Text(
-                          '\$',
-                          style: context.textStyle.bodySmall!.copyWith(
-                            fontSize: 18.sp,
+              Center(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.top,
+                        child: Transform.translate(
+                          offset: const Offset(
+                            -10,
+                            -70,
+                          ), // adjust Y offset as needed
+                          child: Text(
+                            '\$',
+                            style: context.textStyle.bodySmall!.copyWith(
+                              fontSize: 18.sp,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    TextSpan(
-                      text: '$whole',
-                      style: context.textStyle.headlineLarge!.copyWith(
-                        fontSize: 80.sp,
-                        color: AppColors.secondaryColor,
+                      TextSpan(
+                        text: '$whole',
+                        style: context.textStyle.headlineLarge!.copyWith(
+                          fontSize: 80.sp,
+                          color: AppColors.secondaryColor,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: '.$decimal',
-                      style: context.textStyle.displayLarge!.copyWith(
-                        fontSize: 25.sp,
-                        color: AppColors.secondaryColor,
+                      TextSpan(
+                        text: '.$decimal',
+                        style: context.textStyle.displayLarge!.copyWith(
+                          fontSize: 25.sp,
+                          color: AppColors.secondaryColor,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: '/${data?.billingPeriod}',
-                      style: context.textStyle.displayLarge!.copyWith(
-                        fontSize: 18.sp,
+                      TextSpan(
+                        text: '/${data?.billingPeriod}',
+                        style: context.textStyle.displayLarge!.copyWith(
+                          fontSize: 18.sp,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          
-            ]
             ],
+          ],
         ),
       ),
     );
