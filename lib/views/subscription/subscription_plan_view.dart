@@ -88,7 +88,7 @@ class _SubscriptionPlanViewState extends ConsumerState<SubscriptionPlanView> {
                       child: CustomOutlineButtonWidget(
                         title: context.tr("not_now"),
                         onPressed: () {
-                          AppRouter.push(SubscriptionPlanView());
+                          AppRouter.push(AddFavouriteView());
                         },
                       ),
                     ),
