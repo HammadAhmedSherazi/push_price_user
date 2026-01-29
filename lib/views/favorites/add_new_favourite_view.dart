@@ -13,7 +13,7 @@ class AddNewFavouriteView extends ConsumerStatefulWidget {
     super.key,
     this.data,
     required this.isSignUp,
-    this.isScan = false
+    this.isScan = false,
   });
 
   @override
@@ -28,25 +28,22 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
   int selectIndex = -1;
   bool selectTravelMode = false;
   double radius = 0;
-  String distanceUnit = "METERS";
+  String distanceUnit = "MILES";
   @override
   void initState() {
     Future.microtask(() {
       ref.read(geolocatorProvider.notifier).getAddresses();
-      products = widget.data != null ?widget.data!.products : List.from(
-        ref.watch(favouriteProvider).products!.where((e) => e.isSelect),
-      );
-      if(widget.data != null)
-      {
-      selectTravelMode = widget.data!.travelMode;
-      radius = double.tryParse(widget.data!.distanceValue.toString()) ?? 0.0;
-      distanceUnit = widget.data!.distanceUnit;
-
+      products = widget.data != null
+          ? widget.data!.products
+          : List.from(
+              ref.watch(favouriteProvider).products!.where((e) => e.isSelect),
+            );
+      if (widget.data != null) {
+        selectTravelMode = widget.data!.travelMode;
+        radius = double.tryParse(widget.data!.distanceValue.toString()) ?? 0.0;
+        distanceUnit = widget.data!.distanceUnit;
       }
-      setState(() {
-        
-      });
-      
+      setState(() {});
     });
     // Future.delayed(Duration(seconds: 3),(){
     //   if(!isSet){
@@ -54,7 +51,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
     // }
     //   setState(() {});
     // });
-    
+
     super.initState();
   }
 
@@ -64,9 +61,9 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
       setState(() {});
     }
   }
+
   bool isSet = false;
 
-  
   @override
   Widget build(BuildContext context) {
     // if(!isSet){
@@ -79,7 +76,9 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
           final isLoad =
               ref.watch(
                 favouriteProvider.select(
-                  (e) => widget.data != null? e.updateFavouriteApiResponse.status : e.addNewFavouriteApiResponse.status,
+                  (e) => widget.data != null
+                      ? e.updateFavouriteApiResponse.status
+                      : e.addNewFavouriteApiResponse.status,
                 ),
               ) ==
               Status.loading;
@@ -89,53 +88,68 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
             ),
             child: CustomButtonWidget(
               isLoad: isLoad,
-              title: widget.data != null ? context.tr("save") : context.tr("add_favorite"),
+              title: widget.data != null
+                  ? context.tr("save")
+                  : context.tr("add_favorite"),
               onPressed: () {
-              if(myLocation.isEmpty){
-                Helper.showMessage(context, message: context.tr("please_first_add_location"));
-                return;
-              }
-              else if(radius == 0.0){
-Helper.showMessage(context, message: context.tr("please_set_a_distance"));
-                return;
-              }
-               List<int> addressIds = [];
+                if (myLocation.isEmpty) {
+                  Helper.showMessage(
+                    context,
+                    message: context.tr("please_first_add_location"),
+                  );
+                  return;
+                } else if (radius == 0.0) {
+                  Helper.showMessage(
+                    context,
+                    message: context.tr("please_set_a_distance"),
+                  );
+                  return;
+                }
+                List<int> addressIds = [];
 
-                    for (var item in myLocation) {
-                      if (item.isSelect!) {
-                        addressIds.add(item.addressId!);
-                      }
-                    }
-                    if (addressIds.isEmpty) {
-                      Helper.showMessage(
-                        context,
-                        message: context.tr("please_select_a_location"),
-                      );
-                      return;
-                    }
-                    Map<String, dynamic> data = {
-                      "product_ids": products.map((e) => e.id).toList(),
-                      "address_ids": addressIds,
-                      "distance_value": radius,
-                      "distance_unit": distanceUnit,
-                      "travel_mode": selectTravelMode,
-                    };
-                  if (widget.data == null || widget.isSignUp) {
-                    
-
-                    ref.read(favouriteProvider.notifier).addNewFavourite(data,widget.isSignUp,widget.isScan!);
-                  } else {
-                    ref.read(favouriteProvider.notifier).updateFavourite(favouriteId: widget.data!.favoriteId, favouriteData: data,);
+                for (var item in myLocation) {
+                  if (item.isSelect!) {
+                    addressIds.add(item.addressId!);
                   }
-                
+                }
+                if (addressIds.isEmpty) {
+                  Helper.showMessage(
+                    context,
+                    message: context.tr("please_select_a_location"),
+                  );
+                  return;
+                }
+                Map<String, dynamic> data = {
+                  "product_ids": products.map((e) => e.id).toList(),
+                  "address_ids": addressIds,
+                  "distance_value": radius,
+                  "distance_unit": distanceUnit,
+                  "travel_mode": selectTravelMode,
+                };
+                if (widget.data == null || widget.isSignUp) {
+                  ref
+                      .read(favouriteProvider.notifier)
+                      .addNewFavourite(data, widget.isSignUp, widget.isScan!);
+                } else {
+                  ref
+                      .read(favouriteProvider.notifier)
+                      .updateFavourite(
+                        favouriteId: widget.data!.favoriteId,
+                        favouriteData: data,
+                      );
+                }
               },
             ),
           );
         },
       ),
-      bottomButtonText:  widget.data != null ? context.tr("save") : context.tr("add_favorite"),
+      bottomButtonText: widget.data != null
+          ? context.tr("save")
+          : context.tr("add_favorite"),
 
-      title:  widget.data != null ? context.tr("edit") : context.tr("add_new_favorite"),
+      title: widget.data != null
+          ? context.tr("edit")
+          : context.tr("add_new_favorite"),
       child: ListView(
         padding: EdgeInsets.symmetric(vertical: AppTheme.horizontalPadding),
         children: [
@@ -161,21 +175,50 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
             ),
             child: Row(
               children: [
-                Text(context.tr("distance"), style: context.textStyle.displayMedium),
+                Text(
+                  context.tr("distance"),
+                  style: context.textStyle.displayMedium,
+                ),
                 const Spacer(),
                 DropdownButton<String>(
                   value: distanceUnit,
                   items: [
-                    DropdownMenuItem(value: "METERS", child: Text(context.tr("meters"))),
-                    DropdownMenuItem(value: "KILOMETERS", child: Text(context.tr("kilometers"))),
+                    DropdownMenuItem(
+                      value: "MILES",
+                      child: Text(context.tr("miles")),
+                    ),
+                    DropdownMenuItem(
+                      value: "FEET",
+                      child: Text(context.tr("feet")),
+                    ),
                   ],
                   onChanged: (value) {
-                    if(value == null) return;
+                    if (value == null) return;
+                    String oldUnit = distanceUnit;
                     setState(() {
                       distanceUnit = value;
-                      radius = 0;
+                      // Convert radius to new unit if it has a value
+                      if (radius > 0) {
+                        if (oldUnit == "MILES" && value == "FEET") {
+                          // Convert miles to feet: 1 mile = 5280 feet
+                          radius = radius * 5280;
+                        } else if (oldUnit == "FEET" && value == "MILES") {
+                          // Convert feet to miles: 1 mile = 5280 feet
+                          radius = radius / 5280;
+                        }
+                      } else if (widget.data != null && radius == 0) {
+                        // If editing and radius is 0, convert from stored value
+                        double storedValue = double.tryParse(widget.data!.distanceValue.toString()) ?? 0.0;
+                        if (widget.data!.distanceUnit == "MILES" && value == "FEET") {
+                          radius = storedValue * 5280;
+                        } else if (widget.data!.distanceUnit == "FEET" && value == "MILES") {
+                          radius = storedValue / 5280;
+                        } else {
+                          radius = storedValue;
+                        }
+                      }
                     });
-                    
+
                     // Handle unit change if needed
                   },
                   underline: const SizedBox(),
@@ -188,13 +231,12 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
           CustomRangeSlider(
             unit: distanceUnit,
             isSet: isSet,
-            initialValue: widget.data != null ?double.tryParse(widget.data!.distanceValue.toString())!: radius,
+            initialValue: radius,
             onValueChanged: (value) {
-              if(!isSet){
+              if (!isSet) {
                 isSet = true;
               }
               setState(() {
-
                 radius = value;
               });
             },
@@ -204,7 +246,10 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
             padding: EdgeInsets.symmetric(
               horizontal: AppTheme.horizontalPadding,
             ),
-            child: Text(context.tr("my_location"), style: context.textStyle.displayMedium),
+            child: Text(
+              context.tr("my_location"),
+              style: context.textStyle.displayMedium,
+            ),
           ),
           10.ph,
           Consumer(
@@ -214,88 +259,116 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
                   (e) => (e.addresses ?? [], e.getAddressesApiResponse),
                 ),
               );
-              
-              if(widget.data != null){
-                myLocation = List.from(data.$1.map((e)=>widget.data!.addresses.contains(e)? e.copyWith(isSelect: true): e ));
-              }
-              else{
+
+              if (widget.data != null) {
+                myLocation = List.from(
+                  data.$1.map(
+                    (e) => widget.data!.addresses.contains(e)
+                        ? e.copyWith(isSelect: true)
+                        : e,
+                  ),
+                );
+              } else {
                 myLocation = data.$1;
               }
               final res = data.$2;
-              return res.status == Status.completed && myLocation.isEmpty ?  Padding(
-               padding: EdgeInsets.symmetric(
-              horizontal: AppTheme.horizontalPadding,
-            ),
-                child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: () async {
-                          LocationPermission permission = await Geolocator.checkPermission();
-                         
-                          if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-                             if(!context.mounted) return;
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Container(
-                                  padding: EdgeInsets.all(16),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(context.tr('location_permission_required')),
-                                      SizedBox(height: 16),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          LocationPermission newPermission = await Geolocator.requestPermission();
-                                          AppRouter.back();
-                                          if (newPermission == LocationPermission.whileInUse || newPermission == LocationPermission.always) {
-                                            AppRouter.push(AddNewAddressView());
-                                          } else {
-                                             if(!context.mounted) return;
-                                            Helper.showMessage(context, message: context.tr('location_permission_denied'));
-                                          }
-                                        },
-                                        child: Text(context.tr('enable_location')),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          } else {
-                            AppRouter.push(AddNewAddressView());
-                          }
-                        },
-                        icon: Icon(Icons.add, color: AppColors.primaryColor),
-                        label: Text(
-                         context.tr("add_address"),
-                          style: context.textStyle.displayMedium!.copyWith(
-                            color: AppColors.primaryColor
+              return res.status == Status.completed && myLocation.isEmpty
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppTheme.horizontalPadding,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          onPressed: () async {
+                            LocationPermission permission =
+                                await Geolocator.checkPermission();
+
+                            if (permission == LocationPermission.denied ||
+                                permission ==
+                                    LocationPermission.deniedForever) {
+                              if (!context.mounted) return;
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Container(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          context.tr(
+                                            'location_permission_required',
+                                          ),
+                                        ),
+                                        SizedBox(height: 16),
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            LocationPermission newPermission =
+                                                await Geolocator.requestPermission();
+                                            AppRouter.back();
+                                            if (newPermission ==
+                                                    LocationPermission
+                                                        .whileInUse ||
+                                                newPermission ==
+                                                    LocationPermission.always) {
+                                              AppRouter.push(
+                                                AddNewAddressView(),
+                                              );
+                                            } else {
+                                              if (!context.mounted) return;
+                                              Helper.showMessage(
+                                                context,
+                                                message: context.tr(
+                                                  'location_permission_denied',
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: Text(
+                                            context.tr('enable_location'),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            } else {
+                              AppRouter.push(AddNewAddressView());
+                            }
+                          },
+                          icon: Icon(Icons.add, color: AppColors.primaryColor),
+                          label: Text(
+                            context.tr("add_address"),
+                            style: context.textStyle.displayMedium!.copyWith(
+                              color: AppColors.primaryColor,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-              ) : AsyncStateHandler(
-                status: res.status,
-                dataList: [""],
-                itemBuilder: null,
-                onRetry: () =>
-                    ref.read(geolocatorProvider.notifier).getAddresses(),
-                customSuccessWidget: ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => MyLocationTitleWidget(
-                    location: myLocation[index],
-                    isSelected: myLocation[index].isSelect!,
-                    onTap: () {
-                      selectAddress(index);
-                    },
-                  ),
-                  separatorBuilder: (context, index) =>
-                      Divider(color: Color.fromRGBO(116, 133, 160, 1)),
-                  itemCount: myLocation.length,
-                ),
-              );
+                    )
+                  : AsyncStateHandler(
+                      status: res.status,
+                      dataList: [""],
+                      itemBuilder: null,
+                      onRetry: () =>
+                          ref.read(geolocatorProvider.notifier).getAddresses(),
+                      customSuccessWidget: ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) => MyLocationTitleWidget(
+                          location: myLocation[index],
+                          isSelected: myLocation[index].isSelect!,
+                          onTap: () {
+                            selectAddress(index);
+                          },
+                        ),
+                        separatorBuilder: (context, index) =>
+                            Divider(color: Color.fromRGBO(116, 133, 160, 1)),
+                        itemCount: myLocation.length,
+                      ),
+                    );
             },
           ),
 
@@ -304,7 +377,10 @@ Helper.showMessage(context, message: context.tr("please_set_a_distance"));
             padding: EdgeInsets.symmetric(
               horizontal: AppTheme.horizontalPadding,
             ),
-            child: Text(context.tr("travel_mode"), style: context.textStyle.displayMedium),
+            child: Text(
+              context.tr("travel_mode"),
+              style: context.textStyle.displayMedium,
+            ),
           ),
           10.ph,
           Padding(
@@ -447,34 +523,39 @@ class CustomRangeSlider extends StatefulWidget {
   final double initialValue;
   final String unit;
   final bool isSet;
-  const CustomRangeSlider({super.key, this.onValueChanged,required this.initialValue, required this.unit, required this.isSet});
+  const CustomRangeSlider({
+    super.key,
+    this.onValueChanged,
+    required this.initialValue,
+    required this.unit,
+    required this.isSet,
+  });
 
   @override
   State<CustomRangeSlider> createState() => _CustomRangeSliderState();
 }
 
 class _CustomRangeSliderState extends State<CustomRangeSlider> {
-   double _endValue = 0;
-   String symbol = 'm';
-   int maxValue = 0;
+  double _endValue = 0;
+  String symbol = 'm';
+  int maxValue = 0;
 
   @override
   void initState() {
     super.initState();
     _updateValues();
     _endValue = widget.initialValue.clamp(0.0, maxValue.toDouble());
-   
   }
 
   void _updateValues() {
-    if (widget.unit == "METERS") {
-      symbol = 'm';
+    if (widget.unit == "MILES") {
+      symbol = 'mi';
       _endValue = 0;
-      maxValue = 1000;
+      maxValue = 20;
     } else {
-      symbol = 'km';
+      symbol = 'ft';
       _endValue = 0;
-      maxValue = 100;
+      maxValue = 10000;
     }
   }
 
@@ -484,9 +565,9 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
     //  _endValue = widget.initialValue.clamp(0.0, maxValue.toDouble());
     if (oldWidget.unit != widget.unit) {
       _updateValues();
-       // Use initial value clamped to new range
+      // Use initial value clamped to new range
     }
-    if(!widget.isSet){
+    if (!widget.isSet) {
       _endValue = widget.initialValue.clamp(0.0, maxValue.toDouble());
     }
   }

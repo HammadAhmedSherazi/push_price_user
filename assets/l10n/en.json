@@ -336,6 +336,8 @@
   "apply_voucher": "Apply Voucher",
   "meters": "Meters",
   "kilometers": "Kilometers",
+  "miles": "Miles",
+  "feet": "Feet",
   "price_plan": "Price Plan",
   "subscription_ends_on": "Subscription ends on",
   "terms_and_conditions": "Terms and Conditions",

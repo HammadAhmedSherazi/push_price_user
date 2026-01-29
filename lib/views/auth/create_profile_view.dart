@@ -17,7 +17,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
       TextEditingController();
   final TextEditingController phoneTextController = TextEditingController();
   final TextEditingController emailTextController = TextEditingController();
-  final TextEditingController addressTextController = TextEditingController();
+  // final TextEditingController addressTextController = TextEditingController();
   String profileImage = "",  isoCode = "US", dialCode = "+1";
 
   @override
@@ -35,7 +35,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
       employeeIdTextController.text = widget.isEdit! ? "123456789" : "";
       phoneTextController.text = widget.isEdit! ? phone.nsn : "";
       emailTextController.text = widget.isEdit! ? user.email : "";
-      addressTextController.text = widget.isEdit! ? user.address : "";
+      // addressTextController.text = widget.isEdit! ? user.address : "";
       profileImage = user.profileImage ?? "";
     }
     // }
@@ -92,7 +92,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
                             userDataModel: userData.copyWith(
 
                             fullName: nameTextController.text,
-                            address: addressTextController.text,
+                            // address: addressTextController.text,
                             phoneNumber: parsed.international,
                             profileImage: profileImage
                           ));
@@ -101,7 +101,7 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
                           Map<String, dynamic> data = {
                           "full_name": nameTextController.text,
                           "phone_number": parsed.international,
-                          "address": addressTextController.text,
+                          // "address": addressTextController.text,
                         };
                         profileImage =
                             ref.watch(authProvider.select((e) => e.imageUrl)) ??
@@ -191,23 +191,23 @@ class _CreateProfileViewState extends ConsumerState<CreateProfileView> {
               ),
             ),
             10.ph,
-            TextFormField(
+            // TextFormField(
             
-              onTapOutside: (event) {
-                FocusScope.of(context).unfocus();
-              },
-              validator: (value) => value?.validateGeneralField(fieldName: "Address", minStrLen: 10),
-              controller: addressTextController,
-              decoration: InputDecoration(
-                labelText: context.tr("address"),
-                hintText: context.tr("address"),
-                // suffixIcon: Icon(
-                //   Icons.check_circle_rounded,
-                //   color: AppColors.secondaryColor,
-                // ),
-              ),
-            ),
-            10.ph,
+            //   onTapOutside: (event) {
+            //     FocusScope.of(context).unfocus();
+            //   },
+            //   validator: (value) => value?.validateGeneralField(fieldName: "Address", minStrLen: 10),
+            //   controller: addressTextController,
+            //   decoration: InputDecoration(
+            //     labelText: context.tr("address"),
+            //     hintText: context.tr("address"),
+            //     // suffixIcon: Icon(
+            //     //   Icons.check_circle_rounded,
+            //     //   color: AppColors.secondaryColor,
+            //     // ),
+            //   ),
+            // ),
+            // 10.ph,
             CustomPhoneTextfieldWidget(
               phoneNumberController: phoneTextController,
               initialValue: ph.PhoneNumber(phoneNumber: phoneTextController.text, isoCode: isoCode, dialCode: dialCode),

@@ -57,7 +57,7 @@ class UserDataModel {
       'email': email,
       'full_name': fullName,
       'phone_number': phoneNumber,
-      'address': address,
+      // 'address': address,
       'profile_image': profileImage,
       'is_verified': isVerified,
       'is_active': isActive,
