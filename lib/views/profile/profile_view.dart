@@ -79,10 +79,10 @@ class _ProfileViewState extends State<ProfileView> {
                           title: context.tr("phone_number"),
                           value: user.phoneNumber,
                         ),
-                        ProfileTitleWidget(
-                          title: context.tr("address"),
-                          value: user.address,
-                        ),
+                        // ProfileTitleWidget(
+                        //   title: context.tr("address"),
+                        //   value: user.address,
+                        // ),
                         // ProfileTitleWidget(
                         //   title: 
                         //   // AppConstant.userType == UserType.manager? context.tr("staff_id") :

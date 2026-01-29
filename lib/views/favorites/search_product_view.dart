@@ -90,6 +90,7 @@ class _ProductTitleWidgetState extends State<ProductTitleWidget> {
               ],
             ),
           ),
+          20.pw,
           if(widget.onEditCall == null)
           20.pw,
           if(widget.onEditCall != null)
