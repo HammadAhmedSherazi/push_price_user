@@ -5,7 +5,9 @@ import '../../utils/extension.dart';
 
 class SubscriptionPlanView extends ConsumerStatefulWidget {
   final bool? isPro;
-  const SubscriptionPlanView({super.key, this.isPro = false});
+  /// When true, "Not Now" button is shown (e.g. after signup). When false (e.g. from drawer or Subscribe to Pro), "Not Now" is hidden.
+  final bool fromSignup;
+  const SubscriptionPlanView({super.key, this.isPro = false, this.fromSignup = false});
 
   @override
   ConsumerState<SubscriptionPlanView> createState() =>
@@ -23,6 +25,15 @@ class _SubscriptionPlanViewState extends ConsumerState<SubscriptionPlanView> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<Status>(
+      authProvider.select((e) => e.subcribeNow.status),
+      (prev, next) {
+        if (next == Status.completed && !widget.fromSignup && context.mounted) {
+          Navigator.of(context).pop();
+          ref.read(authProvider.notifier).getMySubscriptionPlan();
+        }
+      },
+    );
     final response = ref.watch(
       authProvider.select((e) => e.subscriptionPlanApiRes),
     );
@@ -78,24 +89,35 @@ class _SubscriptionPlanViewState extends ConsumerState<SubscriptionPlanView> {
                             onPressed: () {
                               ref
                                   .read(authProvider.notifier)
-                                  .subcribeNow(type: data!.planType);
+                                  .subcribeNow(type: data!.planType, fromSignUp: widget.fromSignup);
                             },
                           );
                         },
                       ),
                     ),
-                    Expanded(
-                      child: CustomOutlineButtonWidget(
-                        title: context.tr("not_now"),
-                        onPressed: () {
-                          AppRouter.push(AddFavouriteView());
-                        },
+                    if (widget.fromSignup)
+                      Expanded(
+                        child: CustomOutlineButtonWidget(
+                          title: context.tr("not_now"),
+                          onPressed: () {
+                            AppRouter.push(AddFavouriteView());
+                          },
+                        ),
                       ),
-                    ),
                   ],
                 ),
               )
-            : null,
+            : Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppTheme.horizontalPadding,
+                ),
+                child: CustomButtonWidget(
+                  title: context.tr("subscribe_to_pro"),
+                  onPressed: () {
+                    AppRouter.push(SubscriptionPlanView(isPro: true, fromSignup: false));
+                  },
+                ),
+              ),
         showBottomButton: true,
         bottomButtonText: context.tr("next"),
         onButtonTap: () {

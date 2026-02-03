@@ -257,6 +257,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
             ),
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset(Assets.locationIcon),
               10.pw,
@@ -271,8 +272,10 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                         showLocationBottomSheet(context);
                       },
                       child: Column(
-                        spacing: 5,
+                        spacing:location== null || location.label == null ? 0:  5,
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        // mainAxisSize: MainAxisSize.min,
+                        // mainAxisAlignment: location== null || location.label == null ? MainAxisAlignment.center : MainAxisAlignment.start,
                         children: [
                           Text(location== null || location.label == null ? context.tr("select_location") :location.label ?? "" , style: context.textStyle.headlineMedium, maxLines: 1,),
                           if(location != null && location.addressLine1 != null)...[

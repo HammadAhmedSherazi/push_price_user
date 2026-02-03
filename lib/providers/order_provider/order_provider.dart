@@ -304,7 +304,7 @@ class OrderProvider extends Notifier<OrderState> {
       state = state.copyWith(payNowApiResponse: ApiResponse.error());
       Helper.showMessage(
         AppRouter.navKey.currentContext!,
-        message: "Payment failed: $e",
+        message: AppRouter.navKey.currentContext!.tr('unable_to_process_payment'),
       );
     }
   }

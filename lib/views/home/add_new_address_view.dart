@@ -42,44 +42,58 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
     _mapController = controller;
   }
 
-  // void _onMapTap(LatLng position) async {
-  //   setState(() {
-  //     _selectedLocation = position;
-  //     _markers.clear();
-  //     _markers.add(
-  //       Marker(
-  //         markerId: const MarkerId('selected_location'),
-  //         position: position,
-  //       ),
-  //     );
-  //   });
+  /// When user taps on map or drags the pin - update pin position and reverse geocode.
+  Future<void> _onLocationSelectedFromMap(LatLng position) async {
+    setState(() {
+      _selectedLocation = position;
+      _markers.removeWhere((m) => m.markerId.value == 'current_location');
+      _markers.removeWhere((m) => m.markerId.value == 'selected_location');
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('selected_location'),
+          position: position,
+          draggable: true,
+          onDragEnd: (LatLng newPosition) => _onLocationSelectedFromMap(newPosition),
+        ),
+      );
+    });
 
-  //   // Reverse geocode the selected location
-  //   try {
-  //     List<Placemark> placemarks = await placemarkFromCoordinates(
-  //       position.latitude,
-  //       position.longitude,
-  //     );
-
-  //     if (placemarks.isNotEmpty) {
-  //       Placemark place = placemarks[0];
-  //       _selectedLocationData = LocationDataModel(
-  //         addressLine1: place.street ?? '',
-  //         city: place.locality ?? '',
-  //         state: place.administrativeArea ?? '',
-  //         country: place.country ?? '',
-  //         latitude: position.latitude,
-  //         longitude: position.longitude,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     // Handle error silently
-  //     _selectedLocationData = LocationDataModel(
-  //       latitude: position.latitude,
-  //       longitude: position.longitude,
-  //     );
-  //   }
-  // }
+    try {
+      Placemark? place = await GeolocatorService.getLocationDetail(
+        lat: position.latitude,
+        lon: position.longitude,
+      );
+      String city = place?.locality ?? "";
+      String state = place?.administrativeArea ?? "";
+      String country = place?.country ?? "";
+      String postalCode = place?.postalCode ?? "";
+      String addressLine1 = place?.street ?? "";
+      if (addressLine1.isEmpty) addressLine1 = "$state, $city $country".trim();
+      if (!mounted) return;
+      setState(() {
+        _selectedLocationData = LocationDataModel(
+          addressLine1: addressLine1,
+          addressLine2: place?.subThoroughfare ?? "",
+          city: city,
+          state: state,
+          country: country,
+          postalCode: postalCode,
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+        searchTextController.text = _selectedLocationData?.addressLine1 ?? "";
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _selectedLocationData = LocationDataModel(
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+        searchTextController.text = "";
+      });
+    }
+  }
 
   Future<void> _selectSearchResult(LocationDataModel location) async {
     final latLng = LatLng(location.latitude, location.longitude);
@@ -109,7 +123,12 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
       showSearchDialog = false;
       _markers.clear();
       _markers.add(
-        Marker(markerId: const MarkerId('selected_location'), position: latLng),
+        Marker(
+          markerId: const MarkerId('selected_location'),
+          position: latLng,
+          draggable: true,
+          onDragEnd: (LatLng newPosition) => _onLocationSelectedFromMap(newPosition),
+        ),
       );
     });
 
@@ -295,36 +314,24 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
               ref.watch(geolocatorProvider.select((e) => e.searchResults)) ??
               [];
 
-          // Get current location on first build
-
-          // Set initial map position and marker
+          // Set initial map position and marker; show pin from current location so user can drag it (Foodpanda-style)
           LatLng initialPosition = const LatLng(
             37.7749,
             -122.4194,
           ); // Default to San Francisco
-          if (_selectedLocation == null && locationData != null && locationData.latitude != 0.0 && locationData.longitude != 0.0 ) {
+          if (locationData != null && locationData.latitude != 0.0 && locationData.longitude != 0.0) {
             initialPosition = LatLng(
-             locationData.latitude,
+              locationData.latitude,
               locationData.longitude,
             );
-            // Always show current location marker
-            _markers.removeWhere(
-              (marker) => marker.markerId.value == 'current_location',
-            );
-            _markers.add(
-              Marker(
-                markerId: const MarkerId('current_location'),
-                position: initialPosition,
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueRed,
-                ),
-              ),
-            );
-            // Set selected location to current location if not already set
-            // if (_selectedLocation == null) {
-            //   _selectedLocation = initialPosition;
-            //   _selectedLocationData = locationData;
-            // }
+            // When no edit and no selection yet, set initial pin at current location so user sees pin and can drag (Foodpanda-style)
+            if (widget.addressToEdit == null && _selectedLocation == null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (_selectedLocation == null && mounted) {
+                  _selectSearchResult(locationData);
+                }
+              });
+            }
           }
 
           return Stack(
@@ -338,9 +345,8 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                   zoom: 15,
                 ),
                 markers: _markers,
-                onTap: null,
+                onTap: (LatLng position) => _onLocationSelectedFromMap(position),
                 myLocationEnabled: true,
-
                 myLocationButtonEnabled: false,
               ),
               Positioned(

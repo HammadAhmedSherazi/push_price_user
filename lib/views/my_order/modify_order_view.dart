@@ -201,12 +201,17 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
           ), child: CustomButtonWidget(
             isLoad: isLoad,
             title: context.tr("save"), onPressed: (){
+              if(itemTotal > 0){
             final items = modifiedOrder.items.map((item) => {
           "listing_id": item.listingId,
-          "quantity": item.quantity,
-        }).toList();
-        ref.read(orderProvider.notifier).updateOrder(orderId: modifiedOrder.orderId, items: items);
-     
+            "quantity": item.quantity,
+          }).toList();
+          ref.read(orderProvider.notifier).updateOrder(orderId: modifiedOrder.orderId, items: items);
+        }
+        else{
+          Helper.showMessage(AppRouter.navKey.currentState!.context, message: AppRouter.navKey.currentState!.context.tr('please_add_items_to_order'));
+          return;
+        }
           }),);
         },
       ),

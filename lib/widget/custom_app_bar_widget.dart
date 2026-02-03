@@ -60,10 +60,10 @@ class CustomAppBarWidget extends ConsumerWidget implements PreferredSizeWidget {
 
                           if (AppRouter
                                   .scaffoldkey
-                                  .currentState
+                                  ?.currentState
                                   ?.isDrawerOpen !=
                               true) {
-                            AppRouter.scaffoldkey.currentState?.openDrawer();
+                            AppRouter.scaffoldkey?.currentState?.openDrawer();
                           }
                         },
                         child: CircleAvatar(

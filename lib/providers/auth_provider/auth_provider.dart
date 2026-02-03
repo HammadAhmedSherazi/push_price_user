@@ -336,7 +336,7 @@ class AuthProvider extends Notifier<AuthState> {
         await SecureStorageManager.sharedInstance.storeRefreshToken(
           response['refresh_token'] ?? "",
         );
-        AppRouter.push(SubscriptionPlanView(isPro: true,));
+        AppRouter.push(SubscriptionPlanView(isPro: true, fromSignup: true));
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
@@ -843,8 +843,8 @@ class AuthProvider extends Notifier<AuthState> {
 
 
   FutureOr<void> subcribeNow({
-   
     required String type,
+    bool fromSignUp = false,
   }) async {
     if (!ref.mounted) return;
    
@@ -871,13 +871,13 @@ class AuthProvider extends Notifier<AuthState> {
            await makePayment(clientSecret);
         // state = state.copyWith(payNowApiResponse: ApiResponse.completed(intentResponse));
 
-          confirmPayment(paymentIntentId);
+          confirmPayment(paymentIntentId, fromSignUp: fromSignUp);
         }
         else{
            state = state.copyWith(
           subcribeNow: ApiResponse.completed(intentResponse),
         );
-        AppRouter.pushReplacement(AddFavouriteView());
+        if (fromSignUp) AppRouter.pushReplacement(AddFavouriteView());
         }
         // Make payment with Stripe
        
@@ -898,12 +898,12 @@ class AuthProvider extends Notifier<AuthState> {
       state = state.copyWith(subcribeNow: ApiResponse.error());
       Helper.showMessage(
         AppRouter.navKey.currentContext!,
-        message: "Payment failed: $e",
+        message: AppRouter.navKey.currentContext!.tr('unable_to_process_payment'),
       );
     }
   }
 
-  Future<void> confirmPayment( String paymentIntentId) async {
+  Future<void> confirmPayment(String paymentIntentId, {bool fromSignUp = false}) async {
     try {
       if (!ref.mounted) return;
       // Confirm payment
@@ -916,7 +916,7 @@ class AuthProvider extends Notifier<AuthState> {
         state = state.copyWith(
           subcribeNow: ApiResponse.completed(confirmResponse),
         );
-       AppRouter.pushReplacement(AddFavouriteView());
+        if (fromSignUp) AppRouter.pushReplacement(AddFavouriteView());
       } else {
         state = state.copyWith(subcribeNow: ApiResponse.error());
         Helper.showMessage(

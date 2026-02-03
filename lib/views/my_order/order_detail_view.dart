@@ -4,7 +4,11 @@ import '../../utils/extension.dart';
 class OrderDetailView extends ConsumerStatefulWidget {
   final int orderId;
   final bool? afterPayment;
-  const OrderDetailView({super.key, required this.orderId, this.afterPayment = false});
+  const OrderDetailView({
+    super.key,
+    required this.orderId,
+    this.afterPayment = false,
+  });
 
   @override
   ConsumerState<OrderDetailView> createState() => _OrderDetailViewState();
@@ -12,121 +16,156 @@ class OrderDetailView extends ConsumerStatefulWidget {
 
 class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
   void showReasonDialog(BuildContext context) {
-  int selectedIndex = 0;
-  List<String> reasons = [
-   context.tr("placed_order_by_mistake"),
-context.tr("found_better_price"),
-context.tr("no_longer_need_product"),
-  ];
+    int selectedIndex = 0;
+    List<String> reasons = [
+      context.tr("placed_order_by_mistake"),
+      context.tr("found_better_price"),
+      context.tr("no_longer_need_product"),
+    ];
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return StatefulBuilder( // To manage state in dialog
-        builder: (context, setState) {
-          return Dialog(
-            backgroundColor: const Color(0xFFF1F6FA),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Padding(
-              padding:  EdgeInsets.symmetric(
-                horizontal: AppTheme.horizontalPadding,
-                vertical: 25.r
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          // To manage state in dialog
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: const Color(0xFFF1F6FA),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.r),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    context.tr("reason"),
-                    style: context.textStyle.bodyMedium!.copyWith(
-                      fontSize: 18.sp
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppTheme.horizontalPadding,
+                  vertical: 25.r,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      context.tr("reason"),
+                      style: context.textStyle.bodyMedium!.copyWith(
+                        fontSize: 18.sp,
+                      ),
                     ),
-                  ),
-                  20.ph,
+                    20.ph,
 
-                  // Radio List
-                  RadioGroup<int>(
-                    groupValue: selectedIndex,
-                    onChanged: (value) => setState(() => selectedIndex = value!),
-                    child: Column(
-                      children: List.generate(reasons.length, (index) {
-                        return Column(
-                          children: [
-                            Radio<int>(
-                              value: index,
-                              activeColor: AppColors.secondaryColor,
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
-                            ),
-                            Text(reasons[index], style: context.textStyle.displayMedium,),
-                            if (index != reasons.length - 1)
-                              Divider(height: 1,),
-                          ],
+                    // Radio List
+                    RadioGroup<int>(
+                      groupValue: selectedIndex,
+                      onChanged: (value) =>
+                          setState(() => selectedIndex = value!),
+                      child: Column(
+                        children: List.generate(reasons.length, (index) {
+                          return Column(
+                            children: [
+                              Radio<int>(
+                                value: index,
+                                activeColor: AppColors.secondaryColor,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: VisualDensity(
+                                  horizontal: -4.0,
+                                  vertical: -4.0,
+                                ),
+                              ),
+                              Text(
+                                reasons[index],
+                                style: context.textStyle.displayMedium,
+                              ),
+                              if (index != reasons.length - 1)
+                                Divider(height: 1),
+                            ],
+                          );
+                        }),
+                      ),
+                    ),
+
+                    20.ph,
+
+                    // Next Button
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final isLoad =
+                            ref.watch(
+                              orderProvider.select(
+                                (e) => e.cancelOrderApiResponse.status,
+                              ),
+                            ) ==
+                            Status.loading;
+                        return CustomButtonWidget(
+                          isLoad: isLoad,
+                          title: context.tr("next"),
+                          onPressed: () {
+                            ref
+                                .read(orderProvider.notifier)
+                                .cancelOrder(orderId: widget.orderId);
+                          },
                         );
-                      }),
+                      },
                     ),
-                  ),
-
-                  20.ph,
-
-                  // Next Button
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final isLoad = ref.watch(orderProvider.select((e)=>e.cancelOrderApiResponse.status)) == Status.loading;
-                      return  CustomButtonWidget(
-                        isLoad: isLoad,
-                        title: context.tr("next"), onPressed: (){
-                          ref.read(orderProvider.notifier).cancelOrder(orderId: widget.orderId);
-                  });
-                    },
-                  )
-                 
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    Future.microtask((){
+    Future.microtask(() {
       ref.read(orderProvider.notifier).getOrderDetail(orderId: widget.orderId);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final orderState = ref.watch(orderProvider);
     final order = orderState.orderDetail;
-   
+
     return CustomScreenTemplate(
       title: context.tr("order_details"),
-      bottomButtonText:  widget.afterPayment!?"back to home" : null,
-      onButtonTap: (){
+      bottomButtonText: widget.afterPayment! ? "back to home" : null,
+      onButtonTap: () {
         AppRouter.customback(times: 6);
       },
-      showBottomButton: orderState.orderDetail?.status == "IN_PROCESS" && orderState.getOrderDetailApiResponse.status == Status.completed || widget.afterPayment!,
-      customBottomWidget: orderState.orderDetail?.status == "IN_PROCESS" && orderState.getOrderDetailApiResponse.status == Status.completed?
-      Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: Column(
-        spacing: 15,
-        children: [
-          CustomOutlineButtonWidget(title: context.tr("modify_order"), onPressed: (){
-            AppRouter.push(ModifyOrderView(
-              orderData: orderState.orderDetail!,
-            ));
-          }),
-          CustomButtonWidget(title: context.tr("make_payment"), onPressed: (){
-            AppRouter.push(StoreCodeView(
-              orderId: order!.orderId,
-            ));
-          }),
-        ],
-      ),) : null,
-      actionWidget: orderState.orderDetail?.status == "IN_PROCESS" && orderState.getOrderDetailApiResponse.status == Status.completed
+      showBottomButton:
+          orderState.orderDetail?.status == "IN_PROCESS" &&
+              orderState.getOrderDetailApiResponse.status == Status.completed ||
+          widget.afterPayment!,
+      customBottomWidget:
+          orderState.orderDetail?.status == "IN_PROCESS" &&
+              orderState.getOrderDetailApiResponse.status == Status.completed
+          ? Padding(
+              padding: EdgeInsets.all(AppTheme.horizontalPadding),
+              child: Column(
+                spacing: 15,
+                children: [
+                  CustomOutlineButtonWidget(
+                    title: context.tr("modify_order"),
+                    onPressed: () {
+                      AppRouter.push(
+                        ModifyOrderView(orderData: orderState.orderDetail!),
+                      );
+                    },
+                  ),
+                  CustomButtonWidget(
+                    title: context.tr("make_payment"),
+                    onPressed: () {
+                      AppRouter.push(StoreCodeView(orderId: order!.orderId));
+                    },
+                  ),
+                ],
+              ),
+            )
+          : null,
+      actionWidget:
+          orderState.orderDetail?.status == "IN_PROCESS" &&
+              orderState.getOrderDetailApiResponse.status == Status.completed
           ? Row(
               children: [
                 TextButton(
@@ -154,101 +193,121 @@ context.tr("no_longer_need_product"),
           : null,
       child: AsyncStateHandler(
         status: orderState.getOrderDetailApiResponse.status,
-        dataList: orderState.orderDetail != null ? [orderState.orderDetail!] : [],
+        dataList: orderState.orderDetail != null
+            ? [orderState.orderDetail!]
+            : [],
         itemBuilder: null,
-        customSuccessWidget: 
-        order != null ? Scrollbar(
-          thumbVisibility: true,
-          trackVisibility: true,
-          child: ListView(
-              shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.all(AppTheme.horizontalPadding),
-              children: [
-                Text(
-                  context.tr("order_details"),
-                  style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
-                ),
-                10.ph,
-                ListView.separated(
+        customSuccessWidget: order != null
+            ? Scrollbar(
+                thumbVisibility: true,
+                trackVisibility: true,
+                child: ListView(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    final item = orderState.orderDetail!.items[index];
-                    return OrderItemCardWidget(order: item);
-                  }, separatorBuilder: (context, index)=> 5.ph, itemCount: orderState.orderDetail!.items.length),
-                5.ph,
-                Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  physics: BouncingScrollPhysics(),
+                  padding: EdgeInsets.all(AppTheme.horizontalPadding),
                   children: [
                     Text(
-          
-                      setTitle(context, order.status),
-                      style: context.textStyle.bodyMedium!.copyWith(fontSize: 18.sp),
+                      context.tr("order_details"),
+                      style: context.textStyle.bodyMedium!.copyWith(
+                        fontSize: 18.sp,
+                      ),
                     ),
-                    // Text("Today 3:45pm", style: context.textStyle.bodySmall,)
+                    10.ph,
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final item = orderState.orderDetail!.items[index];
+                        return OrderItemCardWidget(order: item);
+                      },
+                      separatorBuilder: (context, index) => 5.ph,
+                      itemCount: orderState.orderDetail!.items.length,
+                    ),
+                    5.ph,
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          setTitle(context, order.status),
+                          style: context.textStyle.bodyMedium!.copyWith(
+                            fontSize: 18.sp,
+                          ),
+                        ),
+                        // Text("Today 3:45pm", style: context.textStyle.bodySmall,)
+                      ],
+                    ),
+                    Divider(),
+                    OrderDetailTitleWidget(
+                      title: context.tr("order_id"),
+                      value: "#${order.orderId}",
+                    ),
+                    10.ph,
+                    OrderDetailTitleWidget(
+                      title: context.tr("date"),
+                      value:
+                          "${order.createdAt.month}/${order.createdAt.day}/${order.createdAt.year}",
+                    ),
+                    10.ph,
+                    OrderDetailTitleWidget(
+                      title: context.tr("item_total"),
+                      value:
+                          "\$${order.orderSummary?.subTotal.toStringAsFixed(2)}",
+                    ),
+                    10.ph,
+                    OrderDetailTitleWidget(
+                      title: context.tr("tax"),
+                      value:
+                          "\$${order.orderSummary?.taxAmount.toStringAsFixed(2)}",
+                    ),
+                    10.ph,
+                    OrderDetailTitleWidget(
+                      title: context.tr("total"),
+                      value:
+                          "\$${order.orderSummary?.finalAmount.toStringAsFixed(2)}",
+                    ),
+                    if (order.status == "COMPLETED") ...[
+                      30.verticalSpace,
+                      Center(
+                        child: Column(
+                          spacing: 10,
+                          children: [
+                            SvgPicture.asset(
+                              Assets.checkCircleIcon,
+                              width: 60.r,
+                            ),
+                            Container(
+                              width: 75.w,
+                              height: 35.h,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: AppColors.secondaryColor,
+                              ),
+                              child: Text(
+                                context.tr("paid"),
+                                style: context.textStyle.headlineMedium!
+                                    .copyWith(
+                                      color: Colors.white,
+                                      fontSize: 16.sp,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                Divider(),
-                OrderDetailTitleWidget(
-                  title: context.tr("order_id"),
-                  value: "#${order.orderId}" ,
-                ),
-                10.ph,
-                OrderDetailTitleWidget(
-                  title: context.tr("date"),
-                  value: "${order.createdAt.month}/${order.createdAt.day}/${order.createdAt.year}" ,
-                ),
-                10.ph,
-                OrderDetailTitleWidget(
-                  title: context.tr("item_total"),
-                  value: "\$${order.orderSummary?.subTotal.toStringAsFixed(2)}" ,
-                ),
-                10.ph,
-                OrderDetailTitleWidget(
-                  title: context.tr("tax"),
-                  value: "\$${order.orderSummary?.taxAmount.toStringAsFixed(2)}" ,
-                ),
-                10.ph,
-                OrderDetailTitleWidget(
-                  title: context.tr("total"),
-                  value: "\$${order.orderSummary?.finalAmount.toStringAsFixed(2)}" ,
-                ),
-                if(order.status == "COMPLETED")...[
-                  30.verticalSpace,
-                Center(
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      SvgPicture.asset(Assets.checkCircleIcon, width: 60.r,),
-                      Container(
-                        width: 75.w,
-                        height: 35.h,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.secondaryColor
-                        ),
-                        child: Text(context.tr("paid"), style: context.textStyle.headlineMedium!.copyWith(
-                          color: Colors.white,
-                          fontSize: 16.sp
-                        ),),
-                      )
-                    ],
-                  ),
-                )
-                ]
-          
-              ],
-            ),
-        )
-       : null,
-        onRetry: () => ref.read(orderProvider.notifier).getOrderDetail(orderId: widget.orderId),
+              )
+            : null,
+        onRetry: () => ref
+            .read(orderProvider.notifier)
+            .getOrderDetail(orderId: widget.orderId),
       ),
     );
   }
 }
 
-String setTitle(BuildContext context, String status){
+String setTitle(BuildContext context, String status) {
   switch (status) {
     case "IN_PROCESS":
       return context.tr("order_in_process");
@@ -258,7 +317,6 @@ String setTitle(BuildContext context, String status){
       return context.tr("order_cancelled");
     default:
       return "";
-
   }
 }
 
@@ -268,7 +326,7 @@ class OrderDetailTitleWidget extends StatelessWidget {
   const OrderDetailTitleWidget({
     super.key,
     required this.title,
-    required this.value
+    required this.value,
   });
 
   @override
@@ -279,19 +337,20 @@ class OrderDetailTitleWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title,style: context.textStyle.bodyMedium!.copyWith(
-              color: Color.fromRGBO(91, 91, 91, 1)
-            ),),
-            Text(value, style: context.textStyle.displayMedium,)
+            Text(
+              title,
+              style: context.textStyle.bodyMedium!.copyWith(
+                color: Color.fromRGBO(91, 91, 91, 1),
+              ),
+            ),
+            Text(value, style: context.textStyle.displayMedium),
           ],
         ),
         SizedBox(
-      width: double.infinity,
-      height: 1,
-      child: CustomPaint(
-        painter: DottedLinePainter(),
-      ),
-    ),
+          width: double.infinity,
+          height: 1,
+          child: CustomPaint(painter: DottedLinePainter()),
+        ),
       ],
     );
   }
@@ -312,8 +371,12 @@ class OrderItemCardWidget extends StatelessWidget {
       child: Row(
         spacing: 10,
         children: [
-          DisplayNetworkImage(imageUrl: order.listingData.product?.image ?? "", width: 50.r, height: 70.r),
-   
+          DisplayNetworkImage(
+            imageUrl: order.listingData.product?.image ?? "",
+            width: 50.r,
+            height: 70.r,
+          ),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,24 +384,23 @@ class OrderItemCardWidget extends StatelessWidget {
                 Text.rich(
                   maxLines: 1,
                   TextSpan(
-                    
                     children: [
                       TextSpan(
                         text: order.productName,
                         style: context.textStyle.displayMedium,
-                        
                       ),
                     ],
                   ),
                 ),
                 3.ph,
-                if(order.listingData.listingType == "BEST_BY_PRODUCTS" && order.listingData.bestByDate != null)
-                Text(
-                  "Best By: ${Helper.selectDateFormat(order.listingData.bestByDate!)} ",
-                  style: context.textStyle.bodySmall!.copyWith(
-                    color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                if (order.listingData.listingType == "BEST_BY_PRODUCTS" &&
+                    order.listingData.bestByDate != null)
+                  Text(
+                    "Best By: ${Helper.selectDateFormat(order.listingData.bestByDate!)} ",
+                    style: context.textStyle.bodySmall!.copyWith(
+                      color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                    ),
                   ),
-                ),
                 10.ph,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -354,11 +416,11 @@ class OrderItemCardWidget extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "\$${(order.unitPrice * order.quantity).toStringAsFixed(2)}",
+                            text:
+                                "\$${(order.unitPrice * order.quantity).toStringAsFixed(2)}",
                             style: context.textStyle.displayMedium!.copyWith(
                               color: AppColors.secondaryColor,
                             ),
-                            
                           ),
                           // if(order.listingData.)
                         ],
@@ -369,7 +431,6 @@ class OrderItemCardWidget extends StatelessWidget {
               ],
             ),
           ),
-
         ],
       ),
     );

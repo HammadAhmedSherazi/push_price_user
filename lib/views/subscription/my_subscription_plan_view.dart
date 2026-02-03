@@ -19,9 +19,21 @@ class _MySubscriptionPlanViewState extends ConsumerState<MySubscriptionPlanView>
   @override
   Widget build(BuildContext context) {
     final response = ref.watch(authProvider.select((e)=>e.mySubcribePlanRes));
+    final isFreePlan = response.data != null && !response.data!.isPro;
     return CustomScreenTemplate(
-     
-      
+      showBottomButton: isFreePlan,
+      customBottomWidget: isFreePlan
+          ? Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding),
+              child: CustomButtonWidget(
+                title: context.tr("subscribe_to_pro"),
+                onPressed: () {
+                  AppRouter.push(SubscriptionPlanView(isPro: true,
+                  ));
+                },
+              ),
+            )
+          : null,
       onButtonTap: () {},
       title: context.tr("subscription_and_savings"),
       child:  AsyncStateHandler(status: response.status, dataList: response.data != null?[""]: [], itemBuilder: null, onRetry: (){

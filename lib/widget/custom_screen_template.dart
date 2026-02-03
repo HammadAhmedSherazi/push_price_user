@@ -48,8 +48,8 @@ class CustomScreenTemplate extends StatelessWidget {
         body: Column(
           children: [
             Expanded(child: child),
-            20.ph,
-            if( showBottomButton ?? false)...[
+            20.ph, 
+            if(  showBottomButton ?? false)...[
               customBottomWidget ?? Padding(padding: EdgeInsets.symmetric(
                 horizontal: AppTheme.horizontalPadding
               ), child: CustomButtonWidget(title: bottomButtonText ?? "", onPressed: onButtonTap),)

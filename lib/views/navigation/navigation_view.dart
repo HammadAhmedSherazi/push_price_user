@@ -1,6 +1,6 @@
-
 import 'package:push_price_user/providers/notification_provider/notification_provider.dart';
 import 'package:push_price_user/utils/extension.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../export_all.dart';
 
@@ -16,11 +16,13 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
 
   final ScrollController scrollController = ScrollController();
   final ScrollController drawerScrollController = ScrollController();
-  late final List<BottomDataModel> bottomNavItems ;
+  late final List<BottomDataModel> bottomNavItems;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
+    AppRouter.registerScaffoldKey(_scaffoldKey);
 
     // scrollController.addListener(() {
     //   final direction = scrollController.position.userScrollDirection;
@@ -31,15 +33,31 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     //   }
     // });
 
-    Future.microtask((){
+    Future.microtask(() {
       ref.read(notificationProvider.notifier).getUnreadNotificationCount();
       ref.read(geolocatorProvider.notifier).getCurrentLocation();
     });
     bottomNavItems = [
-      BottomDataModel(title: "home", icon: Assets.home, child: HomeView(scrollController: scrollController ,)),
-      BottomDataModel(title:"explore", icon: Assets.explore, child: ExploreView(scrollController: scrollController,)),
-      BottomDataModel(title: "favorite", icon: Assets.heart, child: FavouriteView(scrollController: scrollController,)),
-      BottomDataModel(title: "profile", icon: Assets.profile, child: ProfileView()),
+      BottomDataModel(
+        title: "home",
+        icon: Assets.home,
+        child: HomeView(scrollController: scrollController),
+      ),
+      BottomDataModel(
+        title: "explore",
+        icon: Assets.explore,
+        child: ExploreView(scrollController: scrollController),
+      ),
+      BottomDataModel(
+        title: "favorite",
+        icon: Assets.heart,
+        child: FavouriteView(scrollController: scrollController),
+      ),
+      BottomDataModel(
+        title: "profile",
+        icon: Assets.profile,
+        child: ProfileView(),
+      ),
     ];
   }
 
@@ -49,19 +67,28 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
       barrierDismissible: true,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           backgroundColor: const Color(0xFFF2F7FA),
           child: Padding(
             padding: EdgeInsets.all(AppTheme.horizontalPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(context.tr('logout'), style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp)),
+                Text(
+                  context.tr('logout'),
+                  style: context.textStyle.displayMedium!.copyWith(
+                    fontSize: 18.sp,
+                  ),
+                ),
                 10.ph,
                 Text(
                   context.tr('are_you_sure_you_want_to_logout'),
                   textAlign: TextAlign.center,
-                  style: context.textStyle.bodyMedium!.copyWith(color: Colors.grey),
+                  style: context.textStyle.bodyMedium!.copyWith(
+                    color: Colors.grey,
+                  ),
                 ),
                 30.ph,
                 Row(
@@ -76,7 +103,13 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                     Expanded(
                       child: Consumer(
                         builder: (context, ref, child) {
-                          final isLoad = ref.watch(authProvider.select((e)=>e.logoutApiResponse.status)) == Status.loading;
+                          final isLoad =
+                              ref.watch(
+                                authProvider.select(
+                                  (e) => e.logoutApiResponse.status,
+                                ),
+                              ) ==
+                              Status.loading;
                           return CustomButtonWidget(
                             isLoad: isLoad,
                             title: context.tr("logout"),
@@ -84,7 +117,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                               ref.read(authProvider.notifier).logout();
                             },
                           );
-                        }
+                        },
                       ),
                     ),
                   ],
@@ -97,35 +130,63 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     );
   }
 
- 
+  @override
+  void dispose() {
+    AppRouter.unregisterScaffoldKey(_scaffoldKey);
+    scrollController.dispose();
+    drawerScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
   }
 
   @override
   Widget build(BuildContext context) {
-     final List<MenuDataModel> menuData = [
-    MenuDataModel(title: context.tr("my_favorites"), icon: Assets.menuFavouritIcon, onTap: () {
-      AppRouter.back();
-      ref.read(navigationProvider.notifier).setIndex(2);
-      // setState(() {
-      //   selectIndex = 2;
-      // });
-
-    }),
-    MenuDataModel(title: context.tr("my_orders"), icon: Assets.menuMyorderIcon, onTap: () => AppRouter.push(MyOrderView())),
-    MenuDataModel(title: context.tr("my_locations"), icon: Assets.menuLocationIcon, onTap: () => AppRouter.push(MyLocationView())),
-    MenuDataModel(title: context.tr("subscription_and_savings"), icon: Assets.menuDollarSquareIcon, onTap: () => AppRouter.push(MySubscriptionPlanView())),
-    // MenuDataModel(title: "Vouchers", icon: Assets.menuVoucherIcon, onTap: () => AppRouter.push(VoucherView())),
-    // MenuDataModel(title: "Payment Methods", icon: Assets.menuPaymentIcon, onTap: () => AppRouter.push(MyPaymentMethodView())),
-    MenuDataModel(title: context.tr("settings"), icon: Assets.menuSettingIcon, onTap: () => AppRouter.push(SettingView())),
-    MenuDataModel(title: context.tr("help_feedback"), icon: Assets.menuHelpIcon, onTap: () => AppRouter.push(HelpFeedbackView())),
-  ];
+    final List<MenuDataModel> menuData = [
+      MenuDataModel(
+        title: context.tr("my_favorites"),
+        icon: Assets.menuFavouritIcon,
+        onTap: () {
+          AppRouter.back();
+          ref.read(navigationProvider.notifier).setIndex(2);
+          // setState(() {
+          //   selectIndex = 2;
+          // });
+        },
+      ),
+      MenuDataModel(
+        title: context.tr("my_orders"),
+        icon: Assets.menuMyorderIcon,
+        onTap: () => AppRouter.push(MyOrderView()),
+      ),
+      MenuDataModel(
+        title: context.tr("my_locations"),
+        icon: Assets.menuLocationIcon,
+        onTap: () => AppRouter.push(MyLocationView()),
+      ),
+      MenuDataModel(
+        title: context.tr("subscription_and_savings"),
+        icon: Assets.menuDollarSquareIcon,
+        onTap: () => AppRouter.push(MySubscriptionPlanView()),
+      ),
+      // MenuDataModel(title: "Vouchers", icon: Assets.menuVoucherIcon, onTap: () => AppRouter.push(VoucherView())),
+      // MenuDataModel(title: "Payment Methods", icon: Assets.menuPaymentIcon, onTap: () => AppRouter.push(MyPaymentMethodView())),
+      MenuDataModel(
+        title: context.tr("settings"),
+        icon: Assets.menuSettingIcon,
+        onTap: () => AppRouter.push(SettingView()),
+      ),
+      MenuDataModel(
+        title: context.tr("help_feedback"),
+        icon: Assets.menuHelpIcon,
+        onTap: () => AppRouter.push(HelpFeedbackView()),
+      ),
+    ];
     return Scaffold(
-      key: AppRouter.scaffoldkey,
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       drawerEnableOpenDragGesture: false,
       extendBody: true,
@@ -165,7 +226,9 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                     padding: EdgeInsets.only(left: 10.r),
                     decoration: BoxDecoration(
                       color: AppColors.primaryColor,
-                      borderRadius: BorderRadius.horizontal(right: Radius.circular(50.r)),
+                      borderRadius: BorderRadius.horizontal(
+                        right: Radius.circular(50.r),
+                      ),
                     ),
                     height: 45.h,
                     width: context.screenwidth * 0.48,
@@ -190,25 +253,80 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                   50.ph,
                   Consumer(
                     builder: (context, ref, child) {
-
-                      final user = ref.watch(authProvider.select((e)=>e.userData));
-                      if(user == null){
-                        Future.microtask((){
+                      final user = ref.watch(
+                        authProvider.select((e) => e.userData),
+                      );
+                      final isLoading = ref.watch(
+                        authProvider.select(
+                          (e) => e.getUserApiResponse.status,
+                        ),
+                      ) == Status.loading;
+                      if (user == null && !isLoading) {
+                        Future.microtask(() {
                           ref.read(authProvider.notifier).getUser();
                         });
+                      }
+                      if (isLoading) {
+                        return Center(
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey.shade300,
+                            highlightColor: Colors.grey.shade100,
+                            child: Column(
+                              spacing: 7,
+                              children: [
+                                Container(
+                                  width: 90.r,
+                                  height: 90.r,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                5.ph,
+                                Container(
+                                  width: 120.w,
+                                  height: 18.h,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(4.r),
+                                  ),
+                                ),
+                                Container(
+                                  width: 100.w,
+                                  height: 14.h,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(4.r),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
                       }
                       return Center(
                         child: Column(
                           spacing: 7,
                           children: [
-                            UserProfileWidget(radius: 45.r, imageUrl: user?.profileImage),
+                            UserProfileWidget(
+                              radius: 45.r,
+                              imageUrl: user?.profileImage,
+                            ),
                             5.ph,
-                            Text("${user?.fullName}", style: context.textStyle.headlineMedium!.copyWith(fontSize: 18.sp)),
-                            Text("${user?.email}", style: context.textStyle.bodyMedium),
+                            Text(
+                              "${user?.fullName}",
+                              style: context.textStyle.headlineMedium!.copyWith(
+                                fontSize: 18.sp,
+                              ),
+                            ),
+                            Text(
+                              "${user?.email}",
+                              style: context.textStyle.bodyMedium,
+                            ),
                           ],
                         ),
                       );
-                    }
+                    },
                   ),
                   SizedBox(
                     height: context.screenheight * 0.48,
@@ -220,20 +338,17 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                         primary: false,
                         controller: drawerScrollController,
                         padding: EdgeInsets.symmetric(
-                          horizontal: 20.r
-                        ).copyWith(
-                          top: 20.r
-                        ),
+                          horizontal: 20.r,
+                        ).copyWith(top: 20.r),
                         children: List.generate(menuData.length, (index) {
                           final menu = menuData[index];
                           return ListTile(
                             onTap: menu.onTap,
-                            visualDensity: VisualDensity(
-                              vertical: -2.0
-                            ),
-                            leading: SvgPicture.asset(menu.icon,  ),
+                            visualDensity: VisualDensity(vertical: -2.0),
+                            leading: SvgPicture.asset(menu.icon),
                             title: Text(menu.title),
-                            titleTextStyle: context.textStyle.displayMedium!.copyWith(fontSize: 16.sp),
+                            titleTextStyle: context.textStyle.displayMedium!
+                                .copyWith(fontSize: 16.sp),
                           );
                         }),
                       ),
@@ -260,14 +375,13 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
             currentIndex: selectedIndex,
             onTap: (index) {
               ref.read(navigationProvider.notifier).setIndex(index);
-              if(index == 3){
+              if (index == 3) {
                 ref.read(authProvider.notifier).getUser();
               }
-             
             },
           );
         },
-      )
+      ),
       //  AnimatedSlide(
       //   offset: _isBottomBarVisible ? Offset.zero : const Offset(0, 100),
       //   duration: const Duration(milliseconds: 2000),
