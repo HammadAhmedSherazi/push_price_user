@@ -456,7 +456,7 @@ class _CartViewState extends ConsumerState<CartView> {
                       10.ph,
                       OrderDetailTitleWidget(
                         title: context.tr("voucher_discount"),
-                        value: "\$${voucherRes.data!.discountValue}",
+                        value: "\$${voucherRes.data!.discountAmount}",
                       ),
                     ],
                     10.ph,

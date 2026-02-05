@@ -194,10 +194,20 @@ class OrderProvider extends Notifier<OrderState> {
 
       if (response != null &&
           !(response is Map && response.containsKey('detail'))) {
+            
         final VoucherModel voucher = VoucherModel.fromJson(response);
         state = state.copyWith(
           validateVoucherApiResponse: ApiResponse.completed(voucher),
         );
+         Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "voucher_applied_successfully",
+                ),
+        );
+        AppRouter.back();
       } else {
         Helper.showMessage(
           AppRouter.navKey.currentContext!,
