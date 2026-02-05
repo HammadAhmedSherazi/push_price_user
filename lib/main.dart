@@ -9,6 +9,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/firebase_options.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'export_all.dart';
 // import 'firebase_options.dart';
 //sds
@@ -119,17 +121,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
+  await ScreenUtil.ensureScreenSize();
   await SharedPreferenceManager.init();
   Stripe.publishableKey = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM';
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    const ProviderScope(child: MyApp()),
-        );
-  await Future.delayed(Duration(seconds: 1));
+  runApp(const ProviderScope(child: MyApp()));
+  await Future.delayed(const Duration(seconds: 1));
   // Run heavy stuff AFTER UI built
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     try {
@@ -242,6 +242,42 @@ void onStart(ServiceInstance service) async {
   startLocationUpdates(service);
 }
 
+/// Wrapper that calls restoreUserFromCache once when showing NavigationView after app open.
+class _RestoreUserWrapper extends ConsumerStatefulWidget {
+  const _RestoreUserWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_RestoreUserWrapper> createState() => _RestoreUserWrapperState();
+}
+
+class _RestoreUserWrapperState extends ConsumerState<_RestoreUserWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authProvider.notifier).restoreUserFromCache();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+Future<Widget> _getInitialChild(
+  SharedPreferenceManager prefs,
+  WidgetRef ref,
+) async {
+  final token = await SecureStorageManager.sharedInstance.getToken();
+  final hasValidToken = token != null && token.isNotEmpty;
+  if (hasValidToken) {
+    return _RestoreUserWrapper(child: const NavigationView());
+  }
+  if (prefs.getStartedCheck()) return const LoginView();
+  return const OnboardingView();
+}
+
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
@@ -297,7 +333,17 @@ class MyApp extends ConsumerWidget {
         );
       },
       useInheritedMediaQuery: true,
-      child: prefs.getStartedCheck() ? LoginView() : OnboardingView(),
+      child: FutureBuilder<Widget>(
+        future: _getInitialChild(prefs, ref),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          return snapshot.data!;
+        },
+      ),
     );
   }
 }

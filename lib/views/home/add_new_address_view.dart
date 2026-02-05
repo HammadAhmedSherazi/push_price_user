@@ -22,6 +22,8 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
   final Set<Marker> _markers = {};
   LocationDataModel? _selectedLocationData;
   Timer? _searchDebounce;
+  /// Store camera position during drag; on idle we update selected location from center.
+  CameraPosition? _lastCameraPosition;
 
   @override
   void initState() {
@@ -40,22 +42,23 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    // Set initial center so first onCameraIdle can update address
+    controller.getVisibleRegion().then((bounds) {
+      if (!mounted) return;
+      final center = LatLng(
+        (bounds.southwest.latitude + bounds.northeast.latitude) / 2,
+        (bounds.southwest.longitude + bounds.northeast.longitude) / 2,
+      );
+      _lastCameraPosition = CameraPosition(target: center, zoom: 15);
+    });
   }
 
-  /// When user taps on map or drags the pin - update pin position and reverse geocode.
+  /// When map center changes (tap or camera idle after drag) - update selected location and reverse geocode.
+  /// Pin is fixed at screen center; moving the map updates the location under the pin.
   Future<void> _onLocationSelectedFromMap(LatLng position) async {
     setState(() {
       _selectedLocation = position;
-      _markers.removeWhere((m) => m.markerId.value == 'current_location');
       _markers.removeWhere((m) => m.markerId.value == 'selected_location');
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('selected_location'),
-          position: position,
-          draggable: true,
-          onDragEnd: (LatLng newPosition) => _onLocationSelectedFromMap(newPosition),
-        ),
-      );
     });
 
     try {
@@ -121,18 +124,10 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
       );
       searchTextController.text = _selectedLocationData?.addressLine1 ?? "";
       showSearchDialog = false;
-      _markers.clear();
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('selected_location'),
-          position: latLng,
-          draggable: true,
-          onDragEnd: (LatLng newPosition) => _onLocationSelectedFromMap(newPosition),
-        ),
-      );
+      _markers.removeWhere((m) => m.markerId.value == 'selected_location');
     });
 
-    // Move camera to selected location
+    // Animate camera so center pin moves to this location
     _mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
   }
 
@@ -337,7 +332,7 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              // Map
+              // Map: center pin stays fixed; moving map updates selected location on camera idle
               GoogleMap(
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
@@ -345,9 +340,44 @@ class _AddNewAddressViewState extends ConsumerState<AddNewAddressView> {
                   zoom: 15,
                 ),
                 markers: _markers,
-                onTap: (LatLng position) => _onLocationSelectedFromMap(position),
+                onCameraMove: (CameraPosition position) {
+                  _lastCameraPosition = position;
+                },
+                onCameraIdle: () {
+                  if (_lastCameraPosition != null && mounted) {
+                    _onLocationSelectedFromMap(_lastCameraPosition!.target);
+                  }
+                },
+                onTap: (LatLng position) {
+                  // Animate camera to tapped point; pin follows. onCameraIdle will update address.
+                  _mapController?.animateCamera(
+                    CameraUpdate.newLatLngZoom(position, 15),
+                  );
+                },
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
+              ),
+              // Fixed center pin: map move karein to pin center me rahe, location update camera idle pe
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Center(
+                    child: TweenAnimationBuilder<double>(
+                      key: ValueKey(_selectedLocation?.latitude),
+                      tween: Tween(begin: 0.9, end: 1.0),
+                      duration: const Duration(milliseconds: 200),
+                      builder: (context, value, child) {
+                        return Transform.scale(
+                          scale: value,
+                          child: Icon(
+                            Icons.location_pin,
+                            size: 56,
+                            color: Colors.red,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
               Positioned(
                 bottom: 20.r,

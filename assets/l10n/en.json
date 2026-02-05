@@ -59,6 +59,8 @@
   "logout": "Logout",
   "are_you_sure_you_want_to_logout": "Are you sure you want to logout?",
   "cancel": "Cancel",
+  "exit_app": "Exit App",
+  "are_you_sure_to_exit_app": "Are you sure you want to exit the app?",
   "my_favorites": "My Favorites",
   "my_orders": "My Orders",
   "my_locations": "My Locations",

@@ -796,7 +796,12 @@ class AuthProvider extends Notifier<AuthState> {
       }
     }
   }
-  
+
+  /// Restores auth state from SecureStorage (token + userData). Call after app open when user has valid token.
+  Future<void> restoreUserFromCache() async {
+    await userSet();
+  }
+
   FutureOr<void> getSubscriptionPlan() async {
     if (!ref.mounted) return;
     try {

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:push_price_user/providers/notification_provider/notification_provider.dart';
 import 'package:push_price_user/utils/extension.dart';
 import 'package:shimmer/shimmer.dart';
@@ -130,6 +131,64 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
     );
   }
 
+  void showExitAppDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: const Color(0xFFF2F7FA),
+          child: Padding(
+            padding: EdgeInsets.all(AppTheme.horizontalPadding),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.tr('exit_app'),
+                  style: context.textStyle.displayMedium!.copyWith(
+                    fontSize: 18.sp,
+                  ),
+                ),
+                10.ph,
+                Text(
+                  context.tr('are_you_sure_to_exit_app'),
+                  textAlign: TextAlign.center,
+                  style: context.textStyle.bodyMedium!.copyWith(
+                    color: Colors.grey,
+                  ),
+                ),
+                30.ph,
+                Row(
+                  spacing: 20,
+                  children: [
+                    Expanded(
+                      child: CustomOutlineButtonWidget(
+                        title: context.tr("cancel"),
+                        onPressed: () => AppRouter.back(),
+                      ),
+                    ),
+                    Expanded(
+                      child: CustomButtonWidget(
+                        title: context.tr("exit_app"),
+                        onPressed: () {
+                          AppRouter.back();
+                          SystemNavigator.pop();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     AppRouter.unregisterScaffoldKey(_scaffoldKey);
@@ -185,9 +244,16 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
         onTap: () => AppRouter.push(HelpFeedbackView()),
       ),
     ];
-    return Scaffold(
-      key: _scaffoldKey,
-      resizeToAvoidBottomInset: false,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showExitAppDialog(context);
+        }
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: false,
       drawerEnableOpenDragGesture: false,
       extendBody: true,
       drawer: SafeArea(
@@ -366,6 +432,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
           return bottomNavItems[selectedIndex].child;
         },
       ),
+      
 
       bottomNavigationBar: Consumer(
         builder: (context, ref, child) {
@@ -393,6 +460,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
       //     },
       //   ),
       // ),
+      ),
     );
   }
 }

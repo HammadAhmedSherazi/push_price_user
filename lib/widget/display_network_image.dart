@@ -17,6 +17,10 @@ class DisplayNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Empty URL: show placeholder directly, avoid failed network call
+    if (imageUrl.trim().isEmpty) {
+      return _buildPlaceholder();
+    }
     return CachedNetworkImage(
       width: width,
       height: height,
@@ -24,16 +28,21 @@ class DisplayNetworkImage extends StatelessWidget {
       fit: BoxFit.cover,
       errorWidget: (context, url, error) =>
           errorWidget ??
-          Image.asset(
-            Assets.placeholderImage,
-            fit: BoxFit.cover,
-          ),
+          _buildPlaceholder(),
       placeholder: (context, url) =>
           loadingWidget ??
-          Image.asset(
-            Assets.placeholderImage,
-            fit: BoxFit.cover,
-          ),
+          _buildPlaceholder(),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Image.asset(
+        Assets.placeholderImage,
+        fit: BoxFit.cover,
+      ),
     );
   }
 }
