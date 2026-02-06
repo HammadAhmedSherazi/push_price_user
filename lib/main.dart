@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,8 +14,10 @@ import 'package:push_price_user/firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'export_all.dart';
-// import 'firebase_options.dart';
-//sds
+
+/// Top-level function for isolate — parses user JSON without blocking main thread.
+UserDataModel _parseUserJson(String jsonStr) =>
+    UserDataModel.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
 
 Timer? _locationTimer;
 
@@ -33,7 +37,7 @@ Future<void> performLocationUpdate(ServiceInstance service) async {
       final userJsonData = await SecureStorageManager.sharedInstance.getUserData();
 
       if (userJsonData != null) {
-        final userData = UserDataModel.fromJson(jsonDecode(userJsonData));
+        final userData = await compute(_parseUserJson, userJsonData);
    
 
         final shouldUpdate =  hasToken && userData.isTravelMode ;
@@ -128,57 +132,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Configure background service early so it's ready when needed
+  await _configureBackgroundService();
   runApp(const ProviderScope(child: MyApp()));
-  await Future.delayed(const Duration(seconds: 1));
-  // Run heavy stuff AFTER UI built
-  WidgetsBinding.instance.addPostFrameCallback((_) async {
-    try {
-     await  Future.wait([ NotificationService.initNotifications(),FirebaseService.firebaseTokenInitial()]);
-
-
-    if (Platform.isIOS) {
-      SecureStorageManager.sharedInstance.deletePreviousStorage();
-    }
-
-    // Request location permissions before starting background service
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.whileInUse) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.always) {
-      await initializeService();
-    }
-
-    } catch (e) {
-      if (Platform.isIOS) {
-      SecureStorageManager.sharedInstance.deletePreviousStorage();
-    }
-
-    // Request location permissions before starting background service
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.whileInUse) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.always) {
-      await initializeService();
-    }
-    }
-  });
+  // Run heavy stuff AFTER first frame — staggered to avoid blocking UI
+  WidgetsBinding.instance.addPostFrameCallback((_) => _runPostLaunchTasks());
 }
 
-Future<void> initializeService() async {
+Future<void> _configureBackgroundService() async {
   final service = FlutterBackgroundService();
-
   await service.configure(
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
@@ -188,14 +150,38 @@ Future<void> initializeService() async {
       initialNotificationTitle: 'Background Location Service',
       initialNotificationContent: 'Fetching location...',
       foregroundServiceNotificationId: 888,
+      foregroundServiceTypes: [AndroidForegroundType.location],
     ),
     iosConfiguration: IosConfiguration(
       onForeground: onStart,
       onBackground: onIosBackground,
     ),
   );
+}
 
-  await service.startService();
+Future<void> _runPostLaunchTasks() async {
+  try {
+    await Future.wait([
+      NotificationService.initNotifications(),
+      FirebaseService.firebaseTokenInitial(),
+    ]);
+  } catch (_) {}
+  // Request permissions and start background service
+  await _requestPermissionsAndStartService();
+}
+
+Future<void> _requestPermissionsAndStartService() async {
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+  if (permission == LocationPermission.whileInUse) {
+    permission = await Geolocator.requestPermission();
+  }
+  if (permission == LocationPermission.always) {
+    final service = FlutterBackgroundService();
+    await service.startService();
+  }
 }
 
 @pragma('vm:entry-point')
@@ -222,22 +208,17 @@ Future<bool> onIosBackground(ServiceInstance service) async {
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
-  // Set the service as foreground immediately to avoid timeout
-  service.invoke('setAsForeground');
+  WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
 
-
- WidgetsFlutterBinding.ensureInitialized();
- // MUST RUN IMMEDIATELY — avoid FGS timeout
+  // Android: Notification MUST be set BEFORE setAsForegroundService, else FGS timeout/crash
   if (service is AndroidServiceInstance) {
     service.setForegroundNotificationInfo(
       title: "Background Location Service",
       content: "Initializing...",
     );
+    service.setAsForegroundService();
   }
-
-  // Optional but supported by plugin
-  service.invoke('setAsForeground');
- 
 
   startLocationUpdates(service);
 }
@@ -265,10 +246,7 @@ class _RestoreUserWrapperState extends ConsumerState<_RestoreUserWrapper> {
   Widget build(BuildContext context) => widget.child;
 }
 
-Future<Widget> _getInitialChild(
-  SharedPreferenceManager prefs,
-  WidgetRef ref,
-) async {
+Future<Widget> _getInitialChild(SharedPreferenceManager prefs) async {
   final token = await SecureStorageManager.sharedInstance.getToken();
   final hasValidToken = token != null && token.isNotEmpty;
   if (hasValidToken) {
@@ -278,6 +256,40 @@ Future<Widget> _getInitialChild(
   return const OnboardingView();
 }
 
+/// Caches the initial route future so it's created once — avoids re-running on locale/rebuild.
+class _InitialRouteLoader extends ConsumerStatefulWidget {
+  const _InitialRouteLoader();
+
+  @override
+  ConsumerState<_InitialRouteLoader> createState() => _InitialRouteLoaderState();
+}
+
+class _InitialRouteLoaderState extends ConsumerState<_InitialRouteLoader> {
+  late final Future<Widget> _initialRouteFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialRouteFuture =
+        _getInitialChild(SharedPreferenceManager.sharedInstance);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _initialRouteFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return snapshot.data!;
+      },
+    );
+  }
+}
+
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
@@ -285,8 +297,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentLocale = ref.watch(localeProvider);
-    final prefs = SharedPreferenceManager.sharedInstance;
-    //Set the fit size (Find your UI design, look at the dimensions of the device screen and fill it in,unit in dp)
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       minTextAdapt: true,
@@ -317,7 +327,7 @@ class MyApp extends ConsumerWidget {
               ],
               locale: currentLocale,
               debugShowCheckedModeBanner: false,
-              title: 'Push Price Store',
+              title: 'Push Price',
               theme: AppTheme.lightTheme,
               builder: (context, child) {
                 return MediaQuery(
@@ -333,17 +343,7 @@ class MyApp extends ConsumerWidget {
         );
       },
       useInheritedMediaQuery: true,
-      child: FutureBuilder<Widget>(
-        future: _getInitialChild(prefs, ref),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-          return snapshot.data!;
-        },
-      ),
+      child: const _InitialRouteLoader(),
     );
   }
 }

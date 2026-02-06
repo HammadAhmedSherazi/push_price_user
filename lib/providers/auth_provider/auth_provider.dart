@@ -2,12 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
 import 'package:push_price_user/models/subscription_plan_data_model.dart';
 import 'package:push_price_user/providers/auth_provider/auth_state.dart';
 import 'package:push_price_user/views/auth/otp_view.dart';
+
+/// Top-level for isolate — parses user JSON without blocking main thread.
+UserDataModel _parseUserDataFromJson(String jsonStr) =>
+    UserDataModel.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
 
 class AuthProvider extends Notifier<AuthState> {
   @override
@@ -784,10 +789,9 @@ class AuthProvider extends Notifier<AuthState> {
   }
 
   Future<void> userSet() async {
-    String? userData = await SecureStorageManager.sharedInstance.getUserData();
+    final userData = await SecureStorageManager.sharedInstance.getUserData();
     if (userData != null) {
-      Map<String, dynamic> userJson = jsonDecode(userData);
-      final UserDataModel user = UserDataModel.fromJson(userJson);
+      final user = await compute(_parseUserDataFromJson, userData);
       state = state.copyWith(userData: user);
       if ((user.deviceToken == "" && FirebaseService.fcmToken != "" )|| user.deviceToken != FirebaseService.fcmToken) {
         updateProfile(

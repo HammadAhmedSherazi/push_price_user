@@ -69,4 +69,8 @@ class SecureStorageManager {
       file.createSync();
     }
   }
+
+  Future<void> deleteAll() async {
+    await _storage.deleteAll();
+  }
 }
