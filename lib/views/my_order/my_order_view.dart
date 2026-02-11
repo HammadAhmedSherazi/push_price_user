@@ -89,52 +89,57 @@ class OrderCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-    padding: EdgeInsets.symmetric(
-      vertical: 10.r,
-      horizontal: 20.r
-    ),
-
-    decoration: AppTheme.productBoxDecoration,
-    child: Row(
-      spacing: 15,
-      children: [
-        Image.asset(Assets.store, width: 50.r,),
-        Expanded(child: Column(
-          spacing: 4,
-          children: [
-            Row(
-              children: [
-                Expanded(child: Text(order.store.storeName,style: context.textStyle.displayMedium, maxLines: 1,)),
-                Text("\$${order.finalAmount}", style: context.textStyle.titleSmall!.copyWith(
-                  color: AppColors.secondaryColor
-                ),)
-              ],
-            ),
-             Row(
-              children: [
-                Expanded(child: Text("Order ID #${order.orderId}",style: context.textStyle.bodyMedium,)),
-               TextButton(
-                style: ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                  visualDensity: VisualDensity(
-                    vertical: -4.0,
-                    horizontal: -4.0
-                  )
-                ),
-                onPressed: (){
-                  AppRouter.push(OrderDetailView(orderId: order.orderId),fun:fun);
-                }, child: Text(context.tr("view_details"), style: context.textStyle.bodyMedium!.copyWith(
-                color: AppColors.primaryColor,
-                decoration: TextDecoration.underline
-               ),))
-              ],
-            )
-          ],
-        ))
-      ],
-    ),
-            );
+    return GestureDetector(
+      onTap: (){
+        AppRouter.push(OrderDetailView(orderId: order.orderId));
+      },
+      child: Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 10.r,
+        horizontal: 20.r
+      ),
+      
+      decoration: AppTheme.productBoxDecoration,
+      child: Row(
+        spacing: 15,
+        children: [
+          Image.asset(Assets.store, width: 50.r,),
+          Expanded(child: Column(
+            spacing: 4,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: Text(order.store.storeName,style: context.textStyle.displayMedium, maxLines: 1,)),
+                  Text("\$${order.finalAmount}", style: context.textStyle.titleSmall!.copyWith(
+                    color: AppColors.secondaryColor
+                  ),)
+                ],
+              ),
+               Row(
+                children: [
+                  Expanded(child: Text("Order ID #${order.orderId}",style: context.textStyle.bodyMedium,)),
+                 TextButton(
+                  style: ButtonStyle(
+                    padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                    visualDensity: VisualDensity(
+                      vertical: -4.0,
+                      horizontal: -4.0
+                    )
+                  ),
+                  onPressed: (){
+                    
+                  }, child: Text(context.tr("view_details"), style: context.textStyle.bodyMedium!.copyWith(
+                  color: AppColors.primaryColor,
+                  decoration: TextDecoration.underline
+                 ),))
+                ],
+              )
+            ],
+          ))
+        ],
+      ),
+              ),
+    );
   }
 }
 

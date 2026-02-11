@@ -58,7 +58,10 @@ class OrderModel {
       createdAt: DateTime.tryParse(json['created_at']) ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updated_at']) ?? DateTime.now(),
       items: json['items'] != null
-          ? (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList()
+          ? (json['items'] as List)
+              .where((e) => e != null && e is Map<String, dynamic>)
+              .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+              .toList()
           : [],
       shippingAddress: json['shipping_address'] != null
           ? LocationDataModel.fromJson(json['shipping_address'])
@@ -121,7 +124,10 @@ class OrderItem {
       quantity: json['quantity'] ?? 0,
       unitPrice: json['unit_price'] ?? 0,
       totalPrice: json['total_price'] ?? 0,
-      listingData: ListingModel.fromJson(json['listing'])
+      listingData: ListingModel.fromJson(
+          json['listing'] is Map<String, dynamic>
+              ? json['listing'] as Map<String, dynamic>
+              : {})
     );
   }
 

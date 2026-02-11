@@ -39,9 +39,10 @@ class OrderProvider extends Notifier<OrderState> {
       if (response != null &&
           !(response is Map && response.containsKey('detail'))) {
         List temp = response ?? [];
-        final List<OrderModel> list = List.from(
-          temp.map((e) => OrderModel.fromJson(e)),
-        );
+        final List<OrderModel> list = temp
+            .where((e) => e != null && e is Map<String, dynamic>)
+            .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
+            .toList();
         state = state.copyWith(
           getOrdersApiResponse: ApiResponse.completed(response),
           orders: list,
