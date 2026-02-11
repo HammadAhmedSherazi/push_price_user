@@ -275,10 +275,10 @@ class OrderProvider extends Notifier<OrderState> {
 
     try {
       state = state.copyWith(payNowApiResponse: ApiResponse.loading());
-      if (paymentIntentId != "") {
-        confirmPayment(orderId, paymentIntentId);
-        return;
-      }
+      // if (paymentIntentId != "") {
+      //   confirmPayment(orderId, paymentIntentId);
+      //   return;
+      // }
 
       // Create payment intent
       final intentResponse = await MyHttpClient.instance.post(
