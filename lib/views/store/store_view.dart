@@ -100,7 +100,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
         ),
       ),),) : null,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(context.screenheight * 0.10),
+        preferredSize: Size.fromHeight(context.screenheight * 0.12),
         child:
             // Container(
             //   decoration: BoxDecoration(
@@ -118,18 +118,13 @@ class _StoreViewState extends ConsumerState<StoreView> {
                 ),
               ),
               backgroundColor: AppColors.primaryAppBarColor,
-              leadingWidth: context.screenwidth * 0.38,
-              leading: Row(
-                
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppTheme.horizontalPadding,
-                      vertical: 10.r,
-                    ),
-                    child: CustomBackWidget(),
-                  ),
-                ],
+              leadingWidth: 56.r,
+              leading: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppTheme.horizontalPadding,
+                  vertical: 10.r,
+                ),
+                child: CustomBackWidget(),
               ),
               centerTitle: true,
               title: Consumer(
@@ -189,6 +184,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
               ),
             ),
       ),
+      
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
