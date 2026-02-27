@@ -32,6 +32,7 @@ class AuthProvider extends Notifier<AuthState> {
       removeImageApiResponse: ApiResponse.undertermined(),
       updateProfileApiResponse: ApiResponse.undertermined(),
       logoutApiResponse: ApiResponse.undertermined(),
+      submitFeedbackApiResponse: ApiResponse.undertermined(),
       subscriptionPlanApiRes: ApiResponse.undertermined(),
       subcribeNow: ApiResponse.undertermined(),
       mySubcribePlanRes: ApiResponse.undertermined(),
@@ -667,6 +668,107 @@ class AuthProvider extends Notifier<AuthState> {
       if (!ref.mounted) return;
       state = state.copyWith(uploadImageApiResponse: ApiResponse.error());
     }
+  }
+
+  /// Same upload API as uploadImage, returns URL for feedback (folder: feedback). Used by submitFeedback.
+  Future<String?> _uploadFileForFeedback(File file) async {
+    if (!ref.mounted) return null;
+    final response = await MyHttpClient.instance.post(
+      ApiEndpoints.imageUpload,
+      {"files": file, "folder": "feedback"},
+      variableName: 'file',
+      isMultipartRequest: true,
+    );
+    if (!ref.mounted) return null;
+    if (response != null &&
+        response is Map &&
+        !response.containsKey('detail') &&
+        response['url'] != null) {
+      return response['url'] as String?;
+    }
+    return null;
+  }
+
+  FutureOr<void> submitFeedback({
+    required String subject,
+    required String description,
+    List<File> images = const [],
+  }) async {
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(
+        submitFeedbackApiResponse: ApiResponse.loading(),
+      );
+
+      List<String> imageUrls = [];
+      for (final file in images) {
+        final url = await _uploadFileForFeedback(file);
+        if (url != null) {
+          imageUrls.add(url);
+        } else {
+          if (!ref.mounted) return;
+          Helper.showMessage(
+            AppRouter.navKey.currentContext!,
+            message: AppRouter.navKey.currentContext!.tr("failed_to_upload_image"),
+          );
+          state = state.copyWith(
+            submitFeedbackApiResponse: ApiResponse.error(),
+          );
+          return;
+        }
+      }
+
+      if (!ref.mounted) return;
+
+      final body = <String, dynamic>{
+        "subject": subject,
+        "description": description,
+        "image_urls": imageUrls,
+      };
+
+      final response = await MyHttpClient.instance.post(
+        ApiEndpoints.feedbacks,
+        body,
+      );
+
+      if (!ref.mounted) return;
+
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
+        state = state.copyWith(
+          submitFeedbackApiResponse: ApiResponse.completed(response),
+        );
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "something_went_wrong_try_again",
+                ),
+        );
+        state = state.copyWith(
+          submitFeedbackApiResponse: ApiResponse.error(),
+        );
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr(
+          "something_went_wrong_try_again",
+        ),
+      );
+      state = state.copyWith(
+        submitFeedbackApiResponse: ApiResponse.error(),
+      );
+    }
+  }
+
+  void resetSubmitFeedbackResponse() {
+    state = state.copyWith(
+      submitFeedbackApiResponse: ApiResponse.undertermined(),
+    );
   }
 
   FutureOr<void> removeImage({required String imageUrl}) async {

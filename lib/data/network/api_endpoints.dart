@@ -50,6 +50,7 @@ class ApiEndpoints {
   static const String notifications = "${user}notifications";
   static const String unreadNotificationCount = "$notifications/unread-count";
   static String markAsRead(int notificationId) => "$notifications/$notificationId/read";
+  static const String feedbacks = "${user}feedbacks";
   static const String googleMapApi = "https://maps.googleapis.com/maps/api/";
 
 }

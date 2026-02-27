@@ -39,6 +39,7 @@ export './models/user_rating_data_model.dart';
 export './models/voucher_data_model.dart';
 //PROVIDERS
 export './providers/auth_provider/auth_provider.dart';
+export './providers/auth_provider/auth_state.dart';
 export './providers/home_provider/home_provider.dart';
 export './providers/navigation_provider/navigation_provider.dart';
 export './providers/order_provider/order_provider.dart';

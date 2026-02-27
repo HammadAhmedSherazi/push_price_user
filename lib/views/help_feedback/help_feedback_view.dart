@@ -5,15 +5,26 @@ import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
 
-class HelpFeedbackView extends StatefulWidget {
+class HelpFeedbackView extends ConsumerStatefulWidget {
   const HelpFeedbackView({super.key});
 
   @override
-  State<HelpFeedbackView> createState() => _HelpFeedbackViewState();
+  ConsumerState<HelpFeedbackView> createState() => _HelpFeedbackViewState();
 }
 
-class _HelpFeedbackViewState extends State<HelpFeedbackView> {
+class _HelpFeedbackViewState extends ConsumerState<HelpFeedbackView> {
   List<File> images = [];
+  final _formKey = GlobalKey<FormState>();
+  final _subjectController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    _subjectController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
   void showThankYouDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -99,34 +110,78 @@ Future<void> _pickImage() async {
   }
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final isLoading =
+        authState.submitFeedbackApiResponse.status == Status.loading;
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.submitFeedbackApiResponse.status == Status.completed) {
+        showThankYouDialog(context);
+        ref.read(authProvider.notifier).resetSubmitFeedbackResponse();
+      }
+    });
+
     return CustomScreenTemplate(
       showBottomButton: true,
-      bottomButtonText: context.tr("get_started"),
-      onButtonTap: (){
-        showThankYouDialog(context);
+      bottomButtonText: context.tr("submit"),
+      customBottomWidget: isLoading
+          ? Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding),
+              child: CustomButtonWidget(
+                title: context.tr("submit"),
+                isLoad: true,
+                onPressed: () {},
+              ),
+            )
+          : null,
+      onButtonTap: () {
+        if (_formKey.currentState?.validate() ?? false) {
+          ref.read(authProvider.notifier).submitFeedback(
+                subject: _subjectController.text.trim(),
+                description: _descriptionController.text.trim(),
+                images: images,
+              );
+        }
       },
-      title: context.tr("help_and_feedback"), child: ListView(
+      title: context.tr("help_and_feedback"),
+      child: Form(
+        key: _formKey,
+        child: ListView(
       padding: EdgeInsets.all(AppTheme.horizontalPadding),
       children: [
         TextFormField(
-          onTapOutside: (event) {
-  FocusScope.of(context).unfocus();
-},
+            controller: _subjectController,
+            onTapOutside: (event) {
+              FocusScope.of(context).unfocus();
+            },
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return context.tr("please_enter_subject");
+              }
+              return null;
+            },
           decoration: InputDecoration(
             labelText: context.tr("subject"),
-            hintText: context.tr("subject")
+            hintText: context.tr("subject"),
           ),
         ),
         10.ph,
         TextFormField(
-          onTapOutside: (event) {
-  FocusScope.of(context).unfocus();
-},
-          maxLines: 6,
-          minLines: 6,
+            controller: _descriptionController,
+            onTapOutside: (event) {
+              FocusScope.of(context).unfocus();
+            },
+            maxLines: 6,
+            minLines: 6,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return context.tr("please_enter_description");
+              }
+              return null;
+            },
           decoration: InputDecoration(
             labelText: context.tr("description"),
-            hintText: context.tr("type_your_message_here")
+            hintText: context.tr("type_your_message_here"),
           ),
         ),
         20.ph,
@@ -136,22 +191,42 @@ Future<void> _pickImage() async {
           spacing: 10.r,
 
           children: [
-            if(images.isNotEmpty)...[
-               ... 
-           List.generate(images.length, (index)=> Container(
-            width: 100.r,
-            height: 100.r,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(
-                color: AppColors.borderColor,
-                
-              ),
-              image: DecorationImage(image: FileImage(images[index],), fit: BoxFit.cover)
-            ),
-          )),
-            ],
-          
+            if(images.isNotEmpty)
+              ...List.generate(images.length, (index) => Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 100.r,
+                  height: 100.r,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    border: Border.all(
+                      color: AppColors.borderColor,
+                    ),
+                    image: DecorationImage(
+                      image: FileImage(images[index]),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: -6.r,
+                  right: -6.r,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        images.removeAt(index);
+                      });
+                    },
+                    child: Icon(
+                      Icons.cancel,
+                      size: 24.r,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ],
+            )),
             CustomPaint(
       painter: DottedBorderPainter(),
       child: GestureDetector(
@@ -177,10 +252,11 @@ Future<void> _pickImage() async {
         ),
       ))
           ]
-          
         )
       ],
-    ));
+    ),
+    ),
+    );
   }
 }
 

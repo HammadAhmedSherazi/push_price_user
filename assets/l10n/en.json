@@ -152,6 +152,8 @@
   "change_password_lowercase": "change password",
   "subject": "Subject",
   "description": "Description",
+  "please_enter_subject": "Please enter subject",
+  "please_enter_description": "Please enter description",
   "type_your_message_here": "Type your message here....",
   "add_more": "Add more",
   "your_feedback_has_been_submitted_successfully": "Your feedback has been submitted successfully!",
