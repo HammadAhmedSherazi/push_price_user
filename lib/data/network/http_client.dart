@@ -143,8 +143,7 @@ class MyHttpClient extends BaseApiServices {
             final List<File> fileList = body['files'];
             for (var file in fileList) {
               final filePart = await http.MultipartFile.fromPath(
-                DateTime.now().millisecondsSinceEpoch
-                    .toString(), // Use '0' as the key to match the map
+                variableName ?? DateTime.now().millisecondsSinceEpoch.toString(),
                 file.path,
                 contentType: MediaType(
                   'image',

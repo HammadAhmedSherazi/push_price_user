@@ -670,25 +670,6 @@ class AuthProvider extends Notifier<AuthState> {
     }
   }
 
-  /// Same upload API as uploadImage, returns URL for feedback (folder: feedback). Used by submitFeedback.
-  Future<String?> _uploadFileForFeedback(File file) async {
-    if (!ref.mounted) return null;
-    final response = await MyHttpClient.instance.post(
-      ApiEndpoints.imageUpload,
-      {"files": file, "folder": "feedback"},
-      variableName: 'file',
-      isMultipartRequest: true,
-    );
-    if (!ref.mounted) return null;
-    if (response != null &&
-        response is Map &&
-        !response.containsKey('detail') &&
-        response['url'] != null) {
-      return response['url'] as String?;
-    }
-    return null;
-  }
-
   FutureOr<void> submitFeedback({
     required String subject,
     required String description,
@@ -700,21 +681,24 @@ class AuthProvider extends Notifier<AuthState> {
         submitFeedbackApiResponse: ApiResponse.loading(),
       );
 
-      List<String> imageUrls = [];
-      for (final file in images) {
-        final url = await _uploadFileForFeedback(file);
-        if (url != null) {
-          imageUrls.add(url);
-        } else {
+      List<File> filesToUpload = [];
+      if (images.isNotEmpty) {
+        for (final file in images) {
           if (!ref.mounted) return;
-          Helper.showMessage(
-            AppRouter.navKey.currentContext!,
-            message: AppRouter.navKey.currentContext!.tr("failed_to_upload_image"),
-          );
-          state = state.copyWith(
-            submitFeedbackApiResponse: ApiResponse.error(),
-          );
-          return;
+          final compressed = await Helper.compressImage(file);
+          if (compressed != null) {
+            filesToUpload.add(compressed);
+          } else {
+            if (!ref.mounted) return;
+            Helper.showMessage(
+              AppRouter.navKey.currentContext!,
+              message: AppRouter.navKey.currentContext!.tr("failed_to_compress_image"),
+            );
+            state = state.copyWith(
+              submitFeedbackApiResponse: ApiResponse.error(),
+            );
+            return;
+          }
         }
       }
 
@@ -723,12 +707,15 @@ class AuthProvider extends Notifier<AuthState> {
       final body = <String, dynamic>{
         "subject": subject,
         "description": description,
-        "image_urls": imageUrls,
+        "files": filesToUpload.isEmpty ? null : filesToUpload,
       };
+      if (body["files"] == null) body.remove("files");
 
       final response = await MyHttpClient.instance.post(
         ApiEndpoints.feedbacks,
         body,
+        isMultipartRequest: true,
+        variableName: "images",
       );
 
       if (!ref.mounted) return;
