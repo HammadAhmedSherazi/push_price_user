@@ -261,7 +261,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                   ),
                   10.ph,
          SizedBox(
-          height: 125.h,
+          height: 135.h,
            child: Consumer(
               builder: (context, ref, child) {
                 final promotionalState = ref.watch(
@@ -276,6 +276,8 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                 return AsyncStateHandler(
                   status: promotionalState.$1.status,
                   dataList: promotionalProducts,
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.zero,
                 
                   itemBuilder: (context, index) {
                     final product = promotionalProducts[index];
@@ -284,7 +286,6 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         horizontal: 10.r,
                         vertical: 15.r,
                       ),
-                      height: double.infinity,
                       width: context.screenwidth * 0.35,
                       decoration: AppTheme.productBoxDecoration,
                       child: Stack(
@@ -311,17 +312,25 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    product.title ,
-                                    style: context.textStyle.displaySmall,
+                                  Expanded(
+                                    child: Text(
+                                      product.title ,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.textStyle.displaySmall,
+                                    ),
                                   ),
                                 ],
                               ),
                               Row(
                                 children: [
-                                  Text(
-                                    product.category?.title ?? "Category",
-                                    style: context.textStyle.bodySmall,
+                                  Expanded(
+                                    child: Text(
+                                      product.category?.title ?? "Category",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.textStyle.bodySmall,
+                                    ),
                                   ),
                                 ],
                               ),

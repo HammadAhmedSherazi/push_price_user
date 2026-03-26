@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -304,14 +303,12 @@ class MyApp extends ConsumerWidget {
     
       // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (_ , child) {
+        final hasSystemBottomInset = MediaQuery.viewPaddingOf(context).bottom > 0;
         return Container(
           color: Colors.white,
           child: SafeArea(
             top: false,
-            bottom: false,
-            minimum: EdgeInsets.only(
-            bottom: MediaQuery.of(context).padding.bottom
-          ),
+            bottom: hasSystemBottomInset,
             child: MaterialApp(
               navigatorKey: AppRouter.navKey,
               localizationsDelegates: const [

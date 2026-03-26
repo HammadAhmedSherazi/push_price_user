@@ -320,7 +320,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                             ),
                             Row(
                               spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 DisplayNetworkImage(imageUrl: product.image, width: 57.r, height: 70.r,),
                                 Expanded(
@@ -366,12 +366,17 @@ class _StoreViewState extends ConsumerState<StoreView> {
                                         ),
                                       ),
                                       8.ph,
-                                      Text(
-                                        Helper.getTypeTitle(product.type!)== "Best By Products"
-                                            ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
-                                            : product.description,
-                                        style: context.textStyle.bodySmall!.copyWith(
-                                          color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 30.r),
+                                        child: Text(
+                                          Helper.getTypeTitle(product.type!)== "Best By Products"
+                                              ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
+                                              : product.description,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context.textStyle.bodySmall!.copyWith(
+                                            color: AppColors.primaryTextColor.withValues(alpha: 0.7),
+                                          ),
                                         ),
                                       ),
                                     ],
