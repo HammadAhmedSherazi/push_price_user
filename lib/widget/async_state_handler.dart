@@ -70,6 +70,13 @@ class AsyncStateHandler<T> extends StatelessWidget {
           ],
         );
       }
+
+      // Some screens use `customSuccessWidget` instead of `itemBuilder`.
+      // Guarding here prevents runtime null-check crashes.
+      if (itemBuilder == null) {
+        return customSuccessWidget ?? const SizedBox.shrink();
+      }
+
       if(customSuccessWidget != null && itemBuilder == null){
         return customSuccessWidget!;
       }

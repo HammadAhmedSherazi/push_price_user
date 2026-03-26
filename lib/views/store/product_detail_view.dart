@@ -22,30 +22,16 @@ class ProductDetailView extends ConsumerStatefulWidget {
 }
 
 class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
-  int quantity = 0;
-  int count = 0;
   void addQuantity() {
     ref.read(homeProvider.notifier).addQuantity(widget.product);
-    setState(() {
-      quantity++;
-      count++;
-    });
   }
 
   void removeQuantity() {
-    if (quantity > 0) {
-      ref.read(homeProvider.notifier).removeQuantity(widget.product);
-      setState(() {
-        quantity--;
-        count--;
-      });
-    }
+    ref.read(homeProvider.notifier).removeQuantity(widget.product);
   }
 
   @override
   void initState() {
-    quantity = widget.quatity;
-    count = widget.quatity;
     super.initState();
     // Fetch promotional products
     Future.microtask(() {
@@ -66,15 +52,25 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
   int listCount = 5;
   @override
   Widget build(BuildContext context) {
+    final selectedQuantity = ref.watch(
+      homeProvider.select((state) {
+        final index = state.cartList.indexWhere(
+          (item) => item.listingId == widget.product.listingId,
+        );
+        return index == -1 ? 0 : state.cartList[index].selectQuantity;
+      }),
+    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      bottomSheet: count > 0 && !widget.isFavourite!
+      bottomSheet: selectedQuantity > 0 && !widget.isFavourite!
           ? Padding(
               padding: EdgeInsets.all(AppTheme.horizontalPadding),
               child: CustomButtonWidget(
                 title: "",
                 onPressed: () {
-                  AppRouter.push(CartView(count: 5,storeId: widget.storeId,));
+                  AppRouter.push(
+                    CartView(count: selectedQuantity, storeId: widget.storeId),
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -91,7 +87,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          "$count",
+                          "$selectedQuantity",
                           style: context.textStyle.titleSmall!.copyWith(
                             color: Colors.white,
                           ),
@@ -104,7 +100,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         ),
                       ),
                       Text(
-                        "\$${(count * widget.product.discountedPrice!).toStringAsFixed(2)}",
+                        "\$${(selectedQuantity * widget.product.discountedPrice!).toStringAsFixed(2)}",
                         style: context.textStyle.bodySmall!.copyWith(
                           color: Colors.white,
                         ),
@@ -204,7 +200,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
           if(!widget.isFavourite!)...[
              10.ph,
           Row(
-            children: quantity > 0
+            children: selectedQuantity > 0
                 ? [
                     Container(
                       // height: 30.h,
@@ -226,12 +222,12 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                             onTap: () {
                               removeQuantity();
                             },
-                            child: quantity == 1
+                            child: selectedQuantity == 1
                                 ? SvgPicture.asset(Assets.deleteIcon)
                                 : SvgPicture.asset(Assets.minusSquareIcon),
                           ),
                           Text(
-                            "$quantity",
+                            "$selectedQuantity",
                             style: context.textStyle.displayMedium,
                           ),
 
@@ -254,6 +250,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                     ),
                   ],
           ),
+        
          10.ph,
            Text(
                     context.tr("promotional_products"),

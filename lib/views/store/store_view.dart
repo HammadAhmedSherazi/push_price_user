@@ -367,7 +367,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                                       ),
                                       8.ph,
                                       Padding(
-                                        padding: EdgeInsets.only(right: 30.r),
+                                        padding: EdgeInsets.only(right: 70.r),
                                         child: Text(
                                           Helper.getTypeTitle(product.type!)== "Best By Products"
                                               ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"

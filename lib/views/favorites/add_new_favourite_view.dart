@@ -31,28 +31,28 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
   String distanceUnit = "MILES";
   @override
   void initState() {
-    Future.microtask(() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Post-frame ensures the widget's Consumer listeners are attached
+      // before `autoDispose` provider starts the request.
       ref.read(geolocatorProvider.notifier).getAddresses();
+
       products = widget.data != null
           ? widget.data!.products
           : List.from(
-              ref.watch(favouriteProvider).products!.where((e) => e.isSelect),
+              ref.read(favouriteProvider).products!.where((e) => e.isSelect),
             );
+
       if (widget.data != null) {
         selectTravelMode = widget.data!.travelMode;
-        radius = double.tryParse(widget.data!.distanceValue.toString()) ?? 0.0;
+        radius =
+            double.tryParse(widget.data!.distanceValue.toString()) ?? 0.0;
         distanceUnit = widget.data!.distanceUnit;
       }
+
+      if (!mounted) return;
       setState(() {});
     });
-    // Future.delayed(Duration(seconds: 3),(){
-    //   if(!isSet){
-    //   isSet = true;
-    // }
-    //   setState(() {});
-    // });
-
-    super.initState();
   }
 
   void selectAddress(int index) {
@@ -272,103 +272,125 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
                 myLocation = data.$1;
               }
               final res = data.$2;
-              return res.status == Status.completed && myLocation.isEmpty
-                  ? Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AppTheme.horizontalPadding,
+              // Render rule:
+              // - If data is available (myLocation not empty), show it even if status isn't "completed".
+              // - If no data, show either an empty-state "add address" or a loader.
+              if (myLocation.isNotEmpty) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (int i = 0; i < myLocation.length; i++) ...[
+                      if (i > 0)
+                        Divider(
+                          color: Color.fromRGBO(116, 133, 160, 1),
+                        ),
+                      MyLocationTitleWidget(
+                        location: myLocation[i],
+                        isSelected: myLocation[i].isSelect ?? false,
+                        onTap: () {
+                          selectAddress(i);
+                        },
                       ),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton.icon(
-                          onPressed: () async {
-                            LocationPermission permission =
-                                await Geolocator.checkPermission();
+                    ],
+                  ],
+                );
+              }
 
-                            if (permission == LocationPermission.denied ||
-                                permission ==
-                                    LocationPermission.deniedForever) {
-                              if (!context.mounted) return;
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return Container(
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          context.tr(
-                                            'location_permission_required',
-                                          ),
-                                        ),
-                                        SizedBox(height: 16),
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            LocationPermission newPermission =
-                                                await Geolocator.requestPermission();
-                                            AppRouter.back();
-                                            if (newPermission ==
-                                                    LocationPermission
-                                                        .whileInUse ||
-                                                newPermission ==
-                                                    LocationPermission.always) {
-                                              AppRouter.push(
-                                                AddNewAddressView(),
-                                              );
-                                            } else {
-                                              if (!context.mounted) return;
-                                              Helper.showMessage(
-                                                context,
-                                                message: context.tr(
-                                                  'location_permission_denied',
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          child: Text(
-                                            context.tr('enable_location'),
-                                          ),
-                                        ),
-                                      ],
+              final isLoading = res.status == Status.loading ||
+                  res.status == Status.loadingMore ||
+                  res.status == Status.loadingProcess;
+
+              // When there are no locations to show:
+              // - Show loader only during actual loading / initial state.
+              // - Otherwise show "Add address" so user can proceed.
+              if (isLoading || res.status == Status.undertermined) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.r),
+                  child: Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  ),
+                );
+              }
+
+              if (res.status == Status.completed || res.status == Status.error) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppTheme.horizontalPadding,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () async {
+                        LocationPermission permission =
+                            await Geolocator.checkPermission();
+
+                        if (permission == LocationPermission.denied ||
+                            permission == LocationPermission.deniedForever) {
+                          if (!context.mounted) return;
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Container(
+                                padding: EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      context.tr('location_permission_required'),
                                     ),
-                                  );
-                                },
+                                    SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        LocationPermission newPermission =
+                                            await Geolocator.requestPermission();
+                                        AppRouter.back();
+                                        if (newPermission ==
+                                                LocationPermission.whileInUse ||
+                                            newPermission ==
+                                                LocationPermission.always) {
+                                          AppRouter.push(AddNewAddressView());
+                                        } else {
+                                          if (!context.mounted) return;
+                                          Helper.showMessage(
+                                            context,
+                                            message: context.tr(
+                                              'location_permission_denied',
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: Text(
+                                        context.tr('enable_location'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
-                            } else {
-                              AppRouter.push(AddNewAddressView());
-                            }
-                          },
-                          icon: Icon(Icons.add, color: AppColors.primaryColor),
-                          label: Text(
-                            context.tr("add_address"),
-                            style: context.textStyle.displayMedium!.copyWith(
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
+                            },
+                          );
+                        } else {
+                          AppRouter.push(AddNewAddressView());
+                        }
+                      },
+                      icon: Icon(Icons.add, color: AppColors.primaryColor),
+                      label: Text(
+                        context.tr("add_address"),
+                        style: context.textStyle.displayMedium!.copyWith(
+                          color: AppColors.primaryColor,
                         ),
                       ),
-                    )
-                  : AsyncStateHandler(
-                      status: res.status,
-                      dataList: [""],
-                      itemBuilder: null,
-                      onRetry: () =>
-                          ref.read(geolocatorProvider.notifier).getAddresses(),
-                      customSuccessWidget: ListView.separated(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) => MyLocationTitleWidget(
-                          location: myLocation[index],
-                          isSelected: myLocation[index].isSelect!,
-                          onTap: () {
-                            selectAddress(index);
-                          },
-                        ),
-                        separatorBuilder: (context, index) =>
-                            Divider(color: Color.fromRGBO(116, 133, 160, 1)),
-                        itemCount: myLocation.length,
-                      ),
-                    );
+                    ),
+                  ),
+                );
+              }
+
+              // Fallback for any other status values.
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.r),
+                child: Center(
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              );
             },
           ),
 

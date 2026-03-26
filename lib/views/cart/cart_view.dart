@@ -188,7 +188,8 @@ class _CartViewState extends ConsumerState<CartView> {
                             ),
                             child: Row(
                               spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              // mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 DisplayNetworkImage(
                                   imageUrl: product.image,
@@ -262,6 +263,8 @@ class _CartViewState extends ConsumerState<CartView> {
                                                 "Best By Products"
                                             ? "Best By: ${Helper.selectDateFormat(product.bestByDate)}"
                                             : product.description,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                         style: context.textStyle.bodySmall!
                                             .copyWith(
                                               color: AppColors.primaryTextColor
@@ -346,6 +349,7 @@ class _CartViewState extends ConsumerState<CartView> {
                         return AsyncStateHandler(
                           status: promotionalState.$1.status,
                           dataList: promotionalProducts,
+                          scrollDirection: Axis.horizontal,
               
                           itemBuilder: (context, index) {
                             final product = promotionalProducts[index];
@@ -354,7 +358,6 @@ class _CartViewState extends ConsumerState<CartView> {
                                 horizontal: 10.r,
                                 vertical: 15.r,
                               ),
-                              height: double.infinity,
                               width: context.screenwidth * 0.35,
                               decoration: AppTheme.productBoxDecoration,
                               child: Stack(

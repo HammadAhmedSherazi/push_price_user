@@ -306,6 +306,9 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
 
 }
 
-final geolocatorProvider = NotifierProvider.autoDispose<GeolocatorProvider, GeolocatorState>(
+// Keep this provider alive across screen rebuilds / scrolls.
+// `autoDispose` can cause `getAddresses()` to finish after the provider
+// is disposed, leaving `getAddressesApiResponse` stuck on `undetermind`.
+final geolocatorProvider = NotifierProvider<GeolocatorProvider, GeolocatorState>(
   GeolocatorProvider.new,
 );
