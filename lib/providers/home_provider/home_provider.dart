@@ -271,8 +271,10 @@ class HomeProvider extends Notifier<HomeState> {
       int productIndex = index ?? promotionalProducts.indexWhere((e) => e.listingId == product.listingId);
       if(productIndex != -1 && productIndex < promotionalProducts.length){
          List<ProductPurchasingDataModel> products = List.from(state.products ?? []);
-         promotionalProducts.removeAt(productIndex);
-      products.add(product.copyWith(selectQuantity: 1));
+      final existsInProducts = products.any((e) => e.listingId == product.listingId);
+      if (!existsInProducts) {
+        products.add(product.copyWith(selectQuantity: 1));
+      }
       state = state.copyWith(products: products, promotionalProducts: promotionalProducts);
       }
      
@@ -349,7 +351,9 @@ class HomeProvider extends Notifier<HomeState> {
         List temp = response['products'] ?? [];
         final List<ProductPurchasingDataModel> list = List.from(
           temp.map((e) {
-            final cartIndex = state.cartList.indexWhere((cart) => cart.title == e['product_name']);
+            final cartIndex = state.cartList.indexWhere(
+              (cart) => cart.listingId == e['listing_id'],
+            );
             final selectQty = cartIndex != -1 ? state.cartList[cartIndex].selectQuantity : 0;
             return ProductPurchasingDataModel.fromJson(e, quantity: selectQty, discount: e['current_discount_percent'] ?? 0, store: StoreDataModel.fromJson(response['store']));
           }),

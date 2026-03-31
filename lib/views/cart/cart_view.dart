@@ -334,7 +334,7 @@ class _CartViewState extends ConsumerState<CartView> {
                   ),
                   10.ph,
                   SizedBox(
-                    height: 125.h,
+                    height: 135.h,
                     child: Consumer(
                       builder: (context, ref, child) {
                         final promotionalState = ref.watch(
@@ -349,6 +349,7 @@ class _CartViewState extends ConsumerState<CartView> {
                         return AsyncStateHandler(
                           status: promotionalState.$1.status,
                           dataList: promotionalProducts,
+                          padding: EdgeInsets.zero,
                           scrollDirection: Axis.horizontal,
               
                           itemBuilder: (context, index) {
@@ -394,9 +395,13 @@ class _CartViewState extends ConsumerState<CartView> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            product.title,
-                                            style: context.textStyle.displaySmall,
+                                          Expanded(
+                                            child: Text(
+                                              product.title,
+                                              style: context.textStyle.displaySmall,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ],
                                       ),

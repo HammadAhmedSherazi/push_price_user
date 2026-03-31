@@ -55,21 +55,42 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
     final selectedQuantity = ref.watch(
       homeProvider.select((state) {
         final index = state.cartList.indexWhere(
-          (item) => item.listingId == widget.product.listingId,
+          (item) => (item.listingId == widget.product.listingId),
         );
         return index == -1 ? 0 : state.cartList[index].selectQuantity;
       }),
     );
+    final storeCartSummary = ref.watch(
+      homeProvider.select((state) {
+        final storeItems = state.cartList.where(
+          (item) => item.store?.storeId == widget.storeId,
+        );
+        final quantity = storeItems.fold<int>(
+          0,
+          (sum, item) => sum + item.selectQuantity,
+        );
+        final total = storeItems.fold<num>(
+          0,
+          (sum, item) =>
+              sum +
+              ((item.discountedPrice ?? item.price ?? 0) * item.selectQuantity),
+        );
+        return (quantity: quantity, total: total);
+      }),
+    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      bottomSheet: selectedQuantity > 0 && !widget.isFavourite!
+      bottomSheet: storeCartSummary.quantity > 0 && !widget.isFavourite!
           ? Padding(
               padding: EdgeInsets.all(AppTheme.horizontalPadding),
               child: CustomButtonWidget(
                 title: "",
                 onPressed: () {
                   AppRouter.push(
-                    CartView(count: selectedQuantity, storeId: widget.storeId),
+                    CartView(
+                      count: storeCartSummary.quantity,
+                      storeId: widget.storeId,
+                    ),
                   );
                 },
                 child: Padding(
@@ -87,7 +108,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          "$selectedQuantity",
+                          "${storeCartSummary.quantity}",
                           style: context.textStyle.titleSmall!.copyWith(
                             color: Colors.white,
                           ),
@@ -100,7 +121,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         ),
                       ),
                       Text(
-                        "\$${(selectedQuantity * widget.product.discountedPrice!).toStringAsFixed(2)}",
+                        "\$${storeCartSummary.total.toStringAsFixed(2)}",
                         style: context.textStyle.bodySmall!.copyWith(
                           color: Colors.white,
                         ),

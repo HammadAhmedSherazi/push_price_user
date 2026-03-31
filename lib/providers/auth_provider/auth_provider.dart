@@ -7,7 +7,6 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
 import 'package:push_price_user/models/subscription_plan_data_model.dart';
-import 'package:push_price_user/providers/auth_provider/auth_state.dart';
 import 'package:push_price_user/views/auth/otp_view.dart';
 
 /// Top-level for isolate — parses user JSON without blocking main thread.

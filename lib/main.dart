@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/firebase_options.dart';
 
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'export_all.dart';
 
@@ -308,7 +308,7 @@ class MyApp extends ConsumerWidget {
           color: Colors.white,
           child: SafeArea(
             top: false,
-            bottom: hasSystemBottomInset,
+            bottom: Platform.isIOS ? false : hasSystemBottomInset,
             child: MaterialApp(
               navigatorKey: AppRouter.navKey,
               localizationsDelegates: const [
