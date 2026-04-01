@@ -15,6 +15,7 @@ import 'package:push_price_user/firebase_options.dart';
 import 'export_all.dart';
 
 /// Top-level function for isolate — parses user JSON without blocking main thread.
+/// //
 UserDataModel _parseUserJson(String jsonStr) =>
     UserDataModel.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
 
