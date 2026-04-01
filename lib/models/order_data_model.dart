@@ -127,6 +127,8 @@ class OrderItem {
       listingData: ListingModel.fromJson(
           json['listing'] is Map<String, dynamic>
               ? json['listing'] as Map<String, dynamic>
+              : {}, json['product'] is Map<String, dynamic>
+              ? json['product'] as Map<String, dynamic>
               : {})
     );
   }

@@ -70,7 +70,7 @@ class ListingModel {
   });
 
   /// ✅ Factory for parsing JSON safely with type conversion and date parsing
-ListingModel.fromJson(Map<String, dynamic> json)
+ListingModel.fromJson(Map<String, dynamic> json, Map<String, dynamic>? productJson)
     : averagePrice = (json['average_price'] ?? 0).toDouble(),
       createdAt = json['created_at'] != null && json['created_at'] != ''
           ? DateTime.tryParse(json['created_at'])
@@ -115,9 +115,11 @@ ListingModel.fromJson(Map<String, dynamic> json)
       store = json['store'] != null
           ? StoreDataModel.fromJson(json['store'])
           : const StoreDataModel(),
-      product = json['product'] != null
+      product =  json['product'] != null
           ? ProductDataModel.fromJson(json['product'])
-          : null,
+          : productJson != null
+              ? ProductDataModel.fromJson(productJson)
+              : null,
       employee = json['employee'] != null
           ? UserDataModel.fromJson(json['employee'])
           : null,
