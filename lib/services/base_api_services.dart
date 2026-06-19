@@ -1,6 +1,6 @@
 abstract class BaseApiServices {
   // //DEV URL
-  static String baseURL = "https://testdomainpush.xyz/";
+  static String baseURL = "https://pushpricenow.xyz/";
   
 
   Future<dynamic> get(
