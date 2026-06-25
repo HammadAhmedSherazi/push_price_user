@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.app.pushprice</string>
+	<string>com.pushprice.ios</string>
 	<key>PROJECT_ID</key>
 	<string>pushprice-378f3</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:444879899393:ios:434fc4f1f8694ec2b3a900</string>
+	<string>1:444879899393:ios:73ad037baefd9dedb3a900</string>
 </dict>
 </plist>

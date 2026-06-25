@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB95jaKO2tNs67kooUYMP2TTHKeZKqSOTc',
-    appId: '1:444879899393:ios:434fc4f1f8694ec2b3a900',
+    appId: '1:444879899393:ios:73ad037baefd9dedb3a900',
     messagingSenderId: '444879899393',
     projectId: 'pushprice-378f3',
     storageBucket: 'pushprice-378f3.firebasestorage.app',
-    iosBundleId: 'com.app.pushprice',
+    iosBundleId: 'com.pushprice.ios',
   );
 
 }
