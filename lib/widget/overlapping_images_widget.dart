@@ -25,8 +25,8 @@ class OverlappingImages extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.r),
               child: DisplayNetworkImage(
                 imageUrl: images[index],
-                width: aboveTwo ? 30.r : 35.r,
-                height: aboveTwo ? 30.r : 35.r,
+                width: aboveTwo ? 30 : 35,
+                height: aboveTwo ? 30 : 35,
               ),
             ),
           ),

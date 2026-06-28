@@ -9,9 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:push_price_user/config/env_config.dart';
 import 'package:push_price_user/firebase_options.dart';
-
 
 import 'export_all.dart';
 
@@ -127,7 +125,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ScreenUtil.ensureScreenSize();
   await SharedPreferenceManager.init();
   await EnvConfig.load();
   Stripe.publishableKey = EnvConfig.stripePublishableKey;
@@ -298,52 +295,43 @@ class MyApp extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ResponsiveScope.update(context);
     final currentLocale = ref.watch(localeProvider);
-    return ScreenUtilInit(
-      designSize: const Size(360, 690),
-      minTextAdapt: true,
-      splitScreenMode: true,
-    
-      // Use builder only if you need to use library outside ScreenUtilInit context
-      builder: (_ , child) {
-        final hasSystemBottomInset = MediaQuery.viewPaddingOf(context).bottom > 0;
-        return Container(
-          color: Colors.white,
-          child: SafeArea(
-            top: false,
-            bottom: Platform.isIOS ? false : hasSystemBottomInset,
-            child: MaterialApp(
-              navigatorKey: AppRouter.navKey,
-              localizationsDelegates: const [
-                LocalizationService.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [
-                Locale('en', ""), // English
-                Locale('es', ""), // Spanish
-                // Add more languages here
-              ],
-              locale: currentLocale,
-              debugShowCheckedModeBanner: false,
-              title: 'Push Price',
-              theme: AppTheme.lightTheme,
-              builder: (context, child) {
-                return MediaQuery(
-                  data: MediaQuery.of(context).copyWith(
-                    textScaler: const TextScaler.linear(1.0),
-                  ),
-                  child: child!,
-                );
-              },
-              home: child,
-            ),
-          ),
-        );
-      },
-      useInheritedMediaQuery: true,
-      child: const _InitialRouteLoader(),
+    final hasSystemBottomInset = MediaQuery.viewPaddingOf(context).bottom > 0;
+
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        top: false,
+        bottom: Platform.isIOS ? false : hasSystemBottomInset,
+        child: MaterialApp(
+          navigatorKey: AppRouter.navKey,
+          localizationsDelegates: const [
+            LocalizationService.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', ""), // English
+            Locale('es', ""), // Spanish
+          ],
+          locale: currentLocale,
+          debugShowCheckedModeBanner: false,
+          title: 'Push Price',
+          theme: AppTheme.lightTheme,
+          builder: (context, child) {
+            ResponsiveScope.update(context);
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.noScaling,
+              ),
+              child: ResponsiveLayout(child: child!),
+            );
+          },
+          home: const _InitialRouteLoader(),
+        ),
+      ),
     );
   }
 }

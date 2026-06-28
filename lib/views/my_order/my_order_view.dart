@@ -103,7 +103,7 @@ class OrderCardWidget extends StatelessWidget {
       child: Row(
         spacing: 15,
         children: [
-          Image.asset(Assets.store, width: 50.r,),
+          Image.asset(Assets.store, width: 50.iw,),
           Expanded(child: Column(
             spacing: 4,
             children: [

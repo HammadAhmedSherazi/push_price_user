@@ -86,7 +86,11 @@ class AsyncStateHandler<T> extends StatelessWidget {
         controller: scrollController,
         // shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: padding ??  EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding, vertical: 10.r),
+        padding: padding ??
+            EdgeInsets.symmetric(
+              horizontal: context.pageHorizontalPadding,
+              vertical: 10.ih,
+            ),
         itemBuilder: (context, index) {
           if (status == Status.loadingMore && index == dataList.length) {
             return const CustomLoadingWidget();
@@ -94,7 +98,9 @@ class AsyncStateHandler<T> extends StatelessWidget {
             return itemBuilder!(context, index);
           }
         },
-        separatorBuilder: (context, index) =>scrollDirection == Axis.vertical ? const SizedBox(height: 16): 10.pw,
+        separatorBuilder: (context, index) => scrollDirection == Axis.vertical
+            ? const SizedBox(height: 16)
+            : SizedBox(width: context.isTablet ? 12.iw : 10.w),
         itemCount: status == Status.loadingMore ? dataList.length + 1 : length ?? dataList.length,
       );
     }

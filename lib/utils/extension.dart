@@ -1,6 +1,9 @@
 
 
+import 'dart:math';
+
 import 'package:intl/intl.dart';
+import 'package:push_price_user/utils/responsive.dart';
 
 import '../export_all.dart';
 
@@ -10,7 +13,7 @@ extension Spacing on num {
   SizedBox get pw => SizedBox(width: toDouble().w);
 }
 
-extension ThemeExtension on BuildContext {
+extension AppContextExtension on BuildContext {
   ThemeData get theme => Theme.of(this);
 
   ColorScheme get colors => theme.colorScheme;
@@ -24,7 +27,86 @@ extension ThemeExtension on BuildContext {
 
   double get screenwidth => MediaQuery.of(this).size.width;
   double get screenheight => MediaQuery.of(this).size.height;
+
+  bool get isTablet =>
+      MediaQuery.sizeOf(this).shortestSide >= Responsive.tabletBreakpoint;
+
+  bool get isLargeTablet =>
+      MediaQuery.sizeOf(this).shortestSide >= Responsive.largeTabletBreakpoint;
+
+  double get layoutWidth => screenwidth;
+
+  double responsiveWidth(double fraction) => screenwidth * fraction;
+
+  double responsiveHeight(double fraction) => screenheight * fraction;
+
+  int gridCrossAxisCount({int mobile = 3}) {
+    if (!isTablet) return mobile;
+    if (isLargeTablet) return mobile + 3;
+    return mobile + 2;
+  }
+
+  double get pageHorizontalPadding =>
+      isTablet ? 24.r : AppTheme.horizontalPadding;
+
+  double get drawerWidth {
+    if (!isTablet) return screenwidth * 0.8;
+    return min(420.0, screenwidth * 0.55);
+  }
+
+  double get dialogMaxWidth => isTablet ? 480.0 : double.infinity;
+
+  double get categoryItemWidth => responsiveWidth(isTablet ? 0.11 : 0.17);
+
+  double get storeCardWidth => responsiveWidth(isTablet ? 0.22 : 0.26);
+
+  double get homeAppBarHeight =>
+      responsiveHeight(isTablet ? 0.24 : 0.22);
+
+  double get specialOfferSectionHeight =>
+      responsiveHeight(isTablet ? 0.24 : 0.21);
+
+  /// Tab screens with search below title (Explore, Favourites).
+  double get tabAppBarWithSearchHeight =>
+      responsiveHeight(isTablet ? 0.20 : 0.18);
+
+  /// Tab screens with title only (Profile header).
+  double get tabAppBarTitleHeight =>
+      responsiveHeight(isTablet ? 0.14 : 0.12);
+
+  /// Pushed inner screens with standard back + title app bar.
+  double get innerAppBarHeight =>
+      responsiveHeight(isTablet ? 0.14 : 0.12);
+
+  /// Store detail header with image below title row.
+  double get storeDetailAppBarHeight =>
+      responsiveHeight(isTablet ? 0.18 : 0.15);
+
+  double get storeSectionHeight =>
+      responsiveHeight(isTablet ? 0.18 : 0.20);
+
+  double get categorySectionHeight =>
+      responsiveHeight(isTablet ? 0.15 : 0.17);
+
+  double get nearbyGridSectionHeight =>
+      responsiveHeight(isTablet ? 0.28 : 0.35);
+
+  EdgeInsets get pagePadding => EdgeInsets.all(pageHorizontalPadding);
+
+  /// Scroll padding for main tab screens that sit above bottom nav.
+  EdgeInsets get tabScrollPadding =>
+      pagePadding.copyWith(bottom: scrollBottomPadding);
+
+  double get bottomNavBarHeight => 56.ih + 12.ih;
+
+  double get bottomNavBottomPadding =>
+      MediaQuery.viewPaddingOf(this).bottom + (isTablet ? 12.ih : 8.ih);
+
+  /// ListView bottom inset so content clears the bottom nav.
+  double get scrollBottomPadding =>
+      bottomNavBarHeight + bottomNavBottomPadding + 16.ih;
 }
+
 extension StringExtension on String {
   String toTitleCase() {
     return toLowerCase().split(' ').map((word) {

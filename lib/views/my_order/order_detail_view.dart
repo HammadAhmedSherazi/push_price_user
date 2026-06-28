@@ -373,8 +373,8 @@ class OrderItemCardWidget extends StatelessWidget {
         children: [
           DisplayNetworkImage(
             imageUrl: order.listingData.product?.image ?? "",
-            width: 50.r,
-            height: 70.r,
+            width: 50,
+            height: 70,
           ),
 
           Expanded(

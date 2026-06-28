@@ -49,7 +49,7 @@ class _ProductTitleWidgetState extends State<ProductTitleWidget> {
       child: Row(
         spacing: 10,
         children: [
-          DisplayNetworkImage(imageUrl:  widget.product.image, width: 57.w, height: 70.h,),
+          DisplayNetworkImage(imageUrl:  widget.product.image, width: 57, height: 70,),
           Expanded(
             child: Column(
               spacing: 12,

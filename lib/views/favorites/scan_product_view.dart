@@ -26,8 +26,8 @@ class ScanProductView extends StatelessWidget {
                 alignment: Alignment.center,
                 child: DisplayNetworkImage(
                   imageUrl: product.image,
-                  width: 150.r,
-                  height: 150.r,
+                  width: 150,
+                  height: 150,
                 ),
               ),
             ),

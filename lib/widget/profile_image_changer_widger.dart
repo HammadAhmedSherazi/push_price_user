@@ -111,15 +111,15 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
 
 
       if(widget.apiResponse.status == Status.completed || widget.apiResponse.status == Status.error || widget.apiResponse.status == Status.undertermined)...[
-          UserProfileWidget(radius: 50.r, imageUrl: widget.profileUrl ?? ""),
+          UserProfileWidget(radius: 50, imageUrl: widget.profileUrl ?? ""),
       ],
       // if()...[
       //   UserProfileWidget(radius: 50.r, imageUrl:  widget.profileUrl ?? "")
       // ],
       if(widget.apiResponse.status == Status.loading)...[
         Container(
-          height: 108.r,
-          width: 108.r,
+          height: 108.iw,
+          width: 108.iw,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -146,8 +146,8 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
           child: GestureDetector(
             onTap: _pickImage,
             child: Container(
-              width: 40.r,
-              height: 40.r,
+              width: 40.iw,
+              height: 40.iw,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -157,7 +157,7 @@ class _ProfileImageChangerState extends State<ProfileImageChanger> {
             ),
               ),
               
-              child:  Icon(Icons.camera_alt, color: AppColors.secondaryColor, size: 25.r,),
+              child:  Icon(Icons.camera_alt, color: AppColors.secondaryColor, size: 25.iw,),
             ),
           ),
         ),

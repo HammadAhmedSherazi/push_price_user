@@ -12,39 +12,55 @@ class StoreDetailView extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: PreferredSize(preferredSize: Size.fromHeight(context.screenheight * 0.15), child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppTheme.horizontalPadding,
-
-        ),
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.primaryAppBarColor,
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(30.r)
-          )
-        ),
-        child: Column(
-          children: [
-            Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomBackWidget(
-                  height: 24.r,
-                ),
-                Text(storeData.storeName, style: context.textStyle.displayMedium!,),
-                25.pw,
-              ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(context.storeDetailAppBarHeight),
+        child: Container(
+          padding: EdgeInsets.only(
+            left: context.pageHorizontalPadding,
+            right: context.pageHorizontalPadding,
+            bottom: 10.ih,
+            top: MediaQuery.paddingOf(context).top + 8.ih,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.primaryAppBarColor,
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(30.iw),
             ),
-            10.ph,
-            Image.asset(Assets.store, width: 70.r,),
-            10.ph,
-          ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: 40.iw,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: CustomBackWidget(height: 24, width: 24),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 48.iw),
+                      child: Text(
+                        storeData.storeName,
+                        style: context.textStyle.displayMedium!,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              10.ph,
+              Image.asset(Assets.store, width: 70.iw),
+              10.ph,
+            ],
+          ),
         ),
-      )),
+      ),
       body: ListView(
-        padding: EdgeInsets.all(AppTheme.horizontalPadding),
+        padding: context.pagePadding,
         children: [
           Text(context.tr("store_information"), style: context.textStyle.displayMedium!.copyWith(
             fontSize: 16.sp

@@ -24,7 +24,7 @@ class _TutorialViewState extends State<TutorialView> {
         children: [
           Container(
             width: double.infinity,
-            height: context.screenheight * 0.37,
+            height: context.responsiveHeight(0.37),
             decoration: BoxDecoration(
               color: Color(0xff353535)
             ),

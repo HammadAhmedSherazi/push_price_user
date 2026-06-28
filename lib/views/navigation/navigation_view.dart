@@ -68,11 +68,16 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
       barrierDismissible: true,
       builder: (context) {
         return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: context.isTablet ? 48 : 24,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           backgroundColor: const Color(0xFFF2F7FA),
-          child: Padding(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: context.dialogMaxWidth),
+            child: Padding(
             padding: EdgeInsets.all(AppTheme.horizontalPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -126,6 +131,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
               ],
             ),
           ),
+          ),
         );
       },
     );
@@ -137,11 +143,16 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
       barrierDismissible: true,
       builder: (context) {
         return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: context.isTablet ? 48 : 24,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           backgroundColor: const Color(0xFFF2F7FA),
-          child: Padding(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: context.dialogMaxWidth),
+            child: Padding(
             padding: EdgeInsets.all(AppTheme.horizontalPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -183,6 +194,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                 ),
               ],
             ),
+          ),
           ),
         );
       },
@@ -260,7 +272,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
         bottom: false,
         top: true,
         child: Drawer(
-          width: context.screenwidth * 0.8,
+          width: context.drawerWidth,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(right: Radius.circular(30.r)),
           ),
@@ -297,7 +309,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                       ),
                     ),
                     height: 45.h,
-                    width: context.screenwidth * 0.48,
+                    width: context.responsiveWidth(0.48),
                     child: Row(
                       spacing: 20,
                       children: [
@@ -375,7 +387,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                           spacing: 7,
                           children: [
                             UserProfileWidget(
-                              radius: 45.r,
+                              radius: 45,
                               imageUrl: user?.profileImage,
                             ),
                             5.ph,
@@ -395,7 +407,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                     },
                   ),
                   SizedBox(
-                    height: context.screenheight * 0.48,
+                    height: context.responsiveHeight(0.48),
                     child: Scrollbar(
                       trackVisibility: true,
                       thumbVisibility: true,

@@ -193,8 +193,8 @@ class _CartViewState extends ConsumerState<CartView> {
                               children: [
                                 DisplayNetworkImage(
                                   imageUrl: product.image,
-                                  width: 57.r,
-                                  height: 73.r,
+                                  width: 57,
+                                  height: 73,
                                 ),
               
                                 Expanded(
@@ -359,7 +359,7 @@ class _CartViewState extends ConsumerState<CartView> {
                                 horizontal: 10.r,
                                 vertical: 15.r,
                               ),
-                              width: context.screenwidth * 0.35,
+                              width: context.responsiveWidth(0.35),
                               decoration: AppTheme.productBoxDecoration,
                               child: Stack(
                                 clipBehavior: Clip.none,
@@ -387,8 +387,8 @@ class _CartViewState extends ConsumerState<CartView> {
                                     children: [
                                       DisplayNetworkImage(
                                         imageUrl: product.image,
-                                        width: 49.r,
-                                        height: 61.r,
+                                        width: 49,
+                                        height: 61,
                                       ),
                                       5.ph,
                                       Row(

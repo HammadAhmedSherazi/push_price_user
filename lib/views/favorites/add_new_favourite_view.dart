@@ -412,7 +412,7 @@ class _AddNewFavouriteViewState extends ConsumerState<AddNewFavouriteView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.asset(Assets.travelDiscountIcon, width: 20.r),
+                Image.asset(Assets.travelDiscountIcon, width: 20.iw),
                 IconButton(
                   visualDensity: VisualDensity(horizontal: -4.0),
                   onPressed: () {
@@ -531,8 +531,8 @@ class ProductPriceTitleWidget extends StatelessWidget {
           ),
           DisplayNetworkImage(
             imageUrl: product.image,
-            width: 57.w,
-            height: 70.h,
+            width: 57,
+            height: 70,
           ),
         ],
       ),

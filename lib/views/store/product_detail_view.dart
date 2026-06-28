@@ -133,7 +133,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
             )
           : null,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(context.screenheight * 0.16),
+        preferredSize: Size.fromHeight(context.responsiveHeight(0.16)),
         child: Container(
           width: double.infinity,
           height: double.infinity,
@@ -144,7 +144,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              DisplayNetworkImage(imageUrl: widget.product.image , width: 80.r, height: 80.r),
+              DisplayNetworkImage(imageUrl: widget.product.image , width: 80, height: 80),
               Positioned(
                 left: 20.r,
                 top: 50.r,
@@ -304,7 +304,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                         horizontal: 10.r,
                         vertical: 15.r,
                       ),
-                      width: context.screenwidth * 0.35,
+                      width: context.responsiveWidth(0.35),
                       decoration: AppTheme.productBoxDecoration,
                       child: Stack(
                         clipBehavior: Clip.none,
@@ -325,7 +325,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             spacing: 3,
                             children: [
-                              DisplayNetworkImage(imageUrl: product.image, width: 49.r, height: 61.r ,),
+                              DisplayNetworkImage(imageUrl: product.image, width: 49, height: 61 ,),
                               5.ph,
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,

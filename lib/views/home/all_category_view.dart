@@ -34,7 +34,7 @@ class _AllCategoryViewState extends ConsumerState<AllCategoryView> {
             },
             contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
             leading: CircleAvatar(
-              radius: 25.r,
+              radius: 25.iw,
               backgroundColor: Color.fromRGBO(238, 247, 254, 1),
               child: Padding(
                 padding: EdgeInsets.all(4.r),

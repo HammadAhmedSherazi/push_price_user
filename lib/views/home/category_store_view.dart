@@ -1,4 +1,5 @@
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class CategoryStoreView extends ConsumerStatefulWidget {
   final String title;
@@ -63,12 +64,12 @@ class _CategoryStoreViewState extends ConsumerState<CategoryStoreView> {
             dataList: stores,
             customSuccessWidget: GridView.builder(
               controller: _scrollController,
-              padding: EdgeInsets.all(AppTheme.horizontalPadding),
+              padding: context.pagePadding,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: stores.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                crossAxisCount: context.gridCrossAxisCount(mobile: 3),
                 mainAxisSpacing: 10.r,
                 crossAxisSpacing: 10.r,
                 childAspectRatio: 0.87,

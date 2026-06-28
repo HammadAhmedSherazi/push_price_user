@@ -28,14 +28,19 @@ class _SelectLanguageViewState extends ConsumerState<SelectLanguageView> {
         elevation: 0.0,
         title: Text(context.tr("languages"), style: context.textStyle.labelMedium),
       ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: AppTheme.horizontalPadding),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: context.pageHorizontalPadding),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: context.screenheight -
+                  MediaQuery.paddingOf(context).top -
+                  MediaQuery.paddingOf(context).bottom -
+                  kToolbarHeight,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
             SelectLanguageWidget(
               title: context.tr("english_default"),
               icon: Assets.engFlagIcon,
@@ -81,7 +86,9 @@ class _SelectLanguageViewState extends ConsumerState<SelectLanguageView> {
                 ),
               ],
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );

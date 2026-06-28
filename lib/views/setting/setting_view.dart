@@ -69,7 +69,7 @@ class _SettingViewState extends State<SettingView> {
     return CustomScreenTemplate(
       title: context.tr("settings"),
       child: ListView.separated(
-        padding: EdgeInsets.all(AppTheme.horizontalPadding),
+        padding: context.pagePadding,
         itemBuilder: (context, index) {
           final menu = menuList[index];
           final isNotification = menu.icon == Assets.notificationToggleIcon;

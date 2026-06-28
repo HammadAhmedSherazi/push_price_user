@@ -73,7 +73,7 @@ class _AuthScreenTemplateWidgetState extends State<AuthScreenTemplateWidget>
         shrinkWrap: true,
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(
-          horizontal: AppTheme.horizontalPadding,
+          horizontal: context.pageHorizontalPadding,
           vertical: 20.r,
         ),
         children: [

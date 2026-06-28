@@ -2,8 +2,8 @@ import '../export_all.dart';
 
 class DisplayNetworkImage extends StatelessWidget {
   final String imageUrl;
-  final double? width;
-  final double? height;
+  final num? width;
+  final num? height;
   final Widget? loadingWidget;
   final Widget? errorWidget;
 
@@ -17,28 +17,31 @@ class DisplayNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaledWidth = width?.iw;
+    final scaledHeight = height?.ih;
+
     // Empty URL: show placeholder directly, avoid failed network call
     if (imageUrl.trim().isEmpty) {
-      return _buildPlaceholder();
+      return _buildPlaceholder(scaledWidth, scaledHeight);
     }
     return CachedNetworkImage(
-      width: width,
-      height: height,
+      width: scaledWidth,
+      height: scaledHeight,
       imageUrl: imageUrl,
       fit: BoxFit.cover,
       errorWidget: (context, url, error) =>
           errorWidget ??
-          _buildPlaceholder(),
+          _buildPlaceholder(scaledWidth, scaledHeight),
       placeholder: (context, url) =>
           loadingWidget ??
-          _buildPlaceholder(),
+          _buildPlaceholder(scaledWidth, scaledHeight),
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(double? w, double? h) {
     return SizedBox(
-      width: width,
-      height: height,
+      width: w,
+      height: h,
       child: Image.asset(
         Assets.placeholderImage,
         fit: BoxFit.cover,

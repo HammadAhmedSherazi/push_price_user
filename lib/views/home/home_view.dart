@@ -212,7 +212,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
     return 
     Scaffold(
       appBar: CustomAppBarWidget(
-        height: context.screenheight * 0.21,
+        height: context.homeAppBarHeight,
         title: context.tr("home"),
         children: [
           // CustomSearchBarWidget(
@@ -230,7 +230,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
               });
             },
             child: Container(
-              height: 35.h,
+              height: context.isTablet ? 36.ih : 35.h,
               width: double.infinity,
               alignment: Alignment.center,
               padding: EdgeInsets.symmetric(
@@ -256,59 +256,69 @@ class _HomeViewState extends ConsumerState<HomeView>  {
             ),
             ),
           ),
+          SizedBox(height: 8.ih),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset(Assets.locationIcon),
+              SvgPicture.asset(Assets.locationIcon, width: 20.iw, height: 20.iw),
               10.pw,
-
               Consumer(
                 builder: (context, ref, child) {
-                  final LocationDataModel? location = ref.watch(geolocatorProvider.select((e)=>e.locationData));
-               
+                  final LocationDataModel? location =
+                      ref.watch(geolocatorProvider.select((e) => e.locationData));
+
                   return Expanded(
                     child: InkWell(
-                      onTap: () {
-                        showLocationBottomSheet(context);
-                      },
+                      onTap: () => showLocationBottomSheet(context),
                       child: Column(
-                        spacing:location== null || location.label == null ? 0:  5,
+                        spacing:
+                            location == null || location.label == null ? 0 : 5,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        // mainAxisSize: MainAxisSize.min,
-                        // mainAxisAlignment: location== null || location.label == null ? MainAxisAlignment.center : MainAxisAlignment.start,
                         children: [
-                          Text(location== null || location.label == null ? context.tr("select_location") :location.label ?? "" , style: context.textStyle.headlineMedium, maxLines: 1,),
-                          if(location != null && location.addressLine1 != null)...[
-                            Text(
-                            location.addressLine1 ?? "",
-                            style: context.textStyle.titleSmall,
+                          Text(
+                            location == null || location.label == null
+                                ? context.tr("select_location")
+                                : location.label ?? "",
+                            style: context.textStyle.headlineMedium,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          ]
-                          
+                          if (location != null &&
+                              location.addressLine1 != null) ...[
+                            Text(
+                              location.addressLine1 ?? "",
+                              style: context.textStyle.titleSmall,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ],
                       ),
                     ),
                   );
-                }
+                },
               ),
-              30.pw,
-              Text(context.tr("travel_mode"), style: context.textStyle.displayMedium),
+              if (!context.isTablet) 30.pw,
+              if (context.isTablet) 12.pw,
+              Text(
+                context.tr("travel_mode"),
+                style: context.textStyle.displayMedium,
+                maxLines: 1,
+              ),
               10.pw,
               Consumer(
-                builder: (context,ref, child) {
-                     final bool isTravelMode = ref.watch(authProvider.select((e)=>e.userData?.isTravelMode ?? false));
+                builder: (context, ref, child) {
+                  final bool isTravelMode = ref.watch(
+                    authProvider.select((e) => e.userData?.isTravelMode ?? false),
+                  );
                   return CustomSwitchWidget(
-                   scale: 1.0,
-                    value: isTravelMode ,
+                    scale: context.isTablet ? 0.85 : 1.0,
+                    value: isTravelMode,
                     onChanged: (val) {
-                      
                       ref.read(geolocatorProvider.notifier).toggleTravelMode(val);
-                      
                     },
                   );
-                }
+                },
               ),
             ],
           ),
@@ -316,7 +326,7 @@ class _HomeViewState extends ConsumerState<HomeView>  {
       ),
       body: ListView(
         padding: EdgeInsets.all(AppTheme.horizontalPadding).copyWith(
-          bottom: 100.r
+          bottom: context.scrollBottomPadding,
         ),
         controller: widget.scrollController,
         children: [
@@ -345,7 +355,7 @@ class PopularStoresSection extends StatelessWidget {
         final homeState = ref.watch(homeProvider.select((e) => (e.getStoresApiResponse, e.stores)));
         final stores = homeState.$2 ?? [];
         return SizedBox(
-          height: context.screenheight * 0.20,
+          height: context.storeSectionHeight,
           child: Column(
             spacing: 10,
             children: [
@@ -411,7 +421,7 @@ class StoreCardWidget extends StatelessWidget {
       },
       child: Container(
         height: double.infinity,
-        width: 94.w,
+        width: context.storeCardWidth,
         padding: EdgeInsets.symmetric(horizontal: 20.r),
         decoration: BoxDecoration(
           color: Color.fromRGBO(243, 243, 243, 1),
@@ -421,7 +431,7 @@ class StoreCardWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(Assets.store, width: 50.r, height: 50.r),
+            Image.asset(Assets.store, width: 50.iw, height: 50.ih),
             Text(data.title!, maxLines: 1, style: context.textStyle.bodySmall, textAlign: TextAlign.center,),
             Text(data.address!, style: context.textStyle.titleSmall, maxLines: 1, textAlign: TextAlign.center,),
             // Row(
@@ -452,7 +462,7 @@ class NearbyStoresSection extends StatelessWidget {
         final homeState = ref.watch(homeProvider.select((e) => (e.getNearbyStoresApiResponse, e.nearbyStores)));
         final stores = homeState.$2 ?? [];
         return locationData != null? SizedBox(
-          height: context.screenheight * 0.20,
+          height: context.storeSectionHeight,
           child: Column(
             spacing: 10,
             children: [
@@ -517,7 +527,7 @@ class CategoriesSection extends StatelessWidget {
         final homeState = ref.watch(homeProvider.select((e)=>(e.getCategoriesApiResponse, e.categories)));
         final categories = homeState.$2 ?? [];
         return SizedBox(
-          height: context.screenheight * 0.17,
+          height: context.categorySectionHeight,
           child: Column(
             // crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
@@ -556,7 +566,7 @@ class CategoriesSection extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final category = categories[index];
                     return SizedBox(
-                      width: context.screenwidth * 0.17,
+                      width: context.categoryItemWidth,
                       child: GestureDetector(
                         onTap: () {
                           AppRouter.push(CategoryStoreView(title: category.title, categoryId: category.id!));
@@ -565,7 +575,7 @@ class CategoriesSection extends StatelessWidget {
                           spacing: 10,
                           children: [
                             CircleAvatar(
-                              radius: 25.r,
+                              radius: 25.iw,
                               backgroundColor: Color.fromRGBO(238, 247, 254, 1),
                               child: Padding(
                                 padding: EdgeInsets.all(5.r),
@@ -603,20 +613,17 @@ class SpecialOfferBannerSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: context.screenheight * 0.20,
+      height: context.specialOfferSectionHeight,
       child: Column(
         spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(context.tr('special_offers'), style: context.textStyle.displayMedium),
           Expanded(
-            child:AdSliderWidget(images: ["", "", "", "", ""]),
-            //  ClipRRect(
-            //   child: Image.asset(
-            //     Assets.specialDiscountBanner,
-            //     fit: BoxFit.contain,
-            //   ),
-            // ),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 4.ih),
+              child: AdSliderWidget(images: ["", "", "", "", ""]),
+            ),
           ),
         ],
       ),
@@ -685,18 +692,16 @@ class _AdSliderWidgetState extends State<AdSliderWidget> {
                     });
                   },
                   itemBuilder: (context, index) {
-                    // return DisplayNetworkImage(
-                    //     imageUrl: widget.images[index])
-                    //     ;
                     return Image.asset(
-                            Assets.specialDiscountBanner,
-                            fit: BoxFit.cover,
-                      );
+                      Assets.specialDiscountBanner,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    );
                   },
                 ),
               ),
             ),
-            7.ph,
+            SizedBox(height: 8.ih),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

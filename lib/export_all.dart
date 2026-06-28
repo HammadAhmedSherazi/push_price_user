@@ -9,7 +9,6 @@ export 'package:flutter_localizations/flutter_localizations.dart';
 export 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 export 'package:flutter_rating_bar/flutter_rating_bar.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
-export 'package:flutter_screenutil/flutter_screenutil.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:path_provider/path_provider.dart';
@@ -17,6 +16,10 @@ export 'package:phone_numbers_parser/phone_numbers_parser.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
+export './utils/responsive.dart';
+export './utils/responsive_scope.dart';
+export './utils/extension.dart';
+export './widget/responsive_layout_widget.dart';
 export './config/env_config.dart';
 export './data/enums/api_status.dart';
 export './data/network/api_endpoints.dart';

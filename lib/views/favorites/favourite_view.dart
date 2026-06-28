@@ -99,58 +99,89 @@ class _FavouriteViewState extends ConsumerState<FavouriteView> {
       top: false,
       child: Scaffold(
         
-        appBar: CustomAppBarWidget(height: context.screenheight * 0.15, title: context.tr("my_favourite"), children: [
-          CustomSearchBarWidget(
-            hintText: context.tr('hinted_search_text'),
-             onTapOutside: (x){
-             FocusScope.of(context).unfocus();
-          }, onChanged:(value){
-             if (_searchDebounce?.isActive ?? false) {
-                        _searchDebounce!.cancel();
-                      }
-          
-                      _searchDebounce = Timer(
-                        const Duration(milliseconds: 500),
-                        () {
-                          if (value.length >= 3) {
-                            fetchFavouriteProducts(search: value);
-                            
-                          }
-                          // else{
-                          //   fetchProduct(skip: 0);
-                          // }
-                        },
-                      );
-          },)
-        ]),
+        appBar: CustomAppBarWidget(
+          height: context.tabAppBarWithSearchHeight,
+          title: context.tr("my_favourite"),
+          children: [
+            CustomSearchBarWidget(
+              hintText: context.tr('hinted_search_text'),
+              onTapOutside: (x) {
+                FocusScope.of(context).unfocus();
+              },
+              onChanged: (value) {
+                if (_searchDebounce?.isActive ?? false) {
+                  _searchDebounce!.cancel();
+                }
+
+                _searchDebounce = Timer(
+                  const Duration(milliseconds: 500),
+                  () {
+                    if (value.length >= 3) {
+                      fetchFavouriteProducts(search: value);
+                    }
+                  },
+                );
+              },
+            ),
+          ],
+        ),
         body: Column(
           children: [
             Expanded(
               child: Consumer(
                 builder: (context, ref, child) {
-                  final data = ref.watch(favouriteProvider.select((e)=>(e.getFavouriteProductsApiResponse, e.favouriteProducts)));
+                  final data = ref.watch(favouriteProvider.select(
+                    (e) => (e.getFavouriteProductsApiResponse, e.favouriteProducts),
+                  ));
                   final response = data.$1;
                   final list = data.$2 ?? [];
                   return AsyncStateHandler(
-                   dataList: list,
-                   status: response.status,
+                    dataList: list,
+                    status: response.status,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.pageHorizontalPadding,
+                      vertical: 10.ih,
+                    ),
                     itemBuilder: (context, index) {
                       final favourite = list[index];
-                      return FavouriteTitleWidget(favourite: favourite, 
-                      onEditCall: (){
-                        // AppRouter.push()
-                        AppRouter.push(AddNewFavouriteView(isSignUp: false, data: favourite,));
-                      }, onDeleteCall: (){
-                        showDeleteFavouriteItemDialog(context, favourite.favoriteId);
-                      },);
-                    }, onRetry: ()=>fetchFavouriteProducts(), );
-                }
+                      return FavouriteTitleWidget(
+                        favourite: favourite,
+                        onEditCall: () {
+                          AppRouter.push(
+                            AddNewFavouriteView(
+                              isSignUp: false,
+                              data: favourite,
+                            ),
+                          );
+                        },
+                        onDeleteCall: () {
+                          showDeleteFavouriteItemDialog(
+                            context,
+                            favourite.favoriteId,
+                          );
+                        },
+                      );
+                    },
+                    onRetry: () => fetchFavouriteProducts(),
+                  );
+                },
               ),
             ),
-            Padding(padding: EdgeInsets.all(AppTheme.horizontalPadding), child: CustomButtonWidget(title: context.tr("add_new_favorite"), onPressed: (){
-              AppRouter.push(SearchProductView());
-            }),),
-           ],
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                context.pageHorizontalPadding,
+                12.ih,
+                context.pageHorizontalPadding,
+                context.bottomNavBottomPadding + 12.ih,
+              ),
+              child: CustomButtonWidget(
+                title: context.tr("add_new_favorite"),
+                onPressed: () {
+                  AppRouter.push(SearchProductView());
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -189,7 +220,7 @@ class FavouriteTitleWidget extends StatelessWidget {
           OverlappingImages(images: favourite.products.map((p) => p.image).toList())
         ]
         else ...[
-          DisplayNetworkImage(imageUrl: favourite.products.first.image,width: 57.r, height: 70.r,)
+          DisplayNetworkImage(imageUrl: favourite.products.first.image,width: 57, height: 70,)
         ],
         20.pw,
         

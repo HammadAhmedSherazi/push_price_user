@@ -7,7 +7,7 @@ import '../export_all.dart';
 class AppTheme {
 
   AppTheme._();
-  static final ThemeData darkTheme = ThemeData(
+  static ThemeData get darkTheme => ThemeData(
     fontFamily: "Roboto",
     useMaterial3: false,
     brightness: Brightness.dark,
@@ -90,7 +90,7 @@ class AppTheme {
     // Add other theme properties as needed
   );
 
-  static final ThemeData lightTheme = ThemeData(
+  static ThemeData get lightTheme => ThemeData(
       fontFamily: "Roboto",
       useMaterial3: false,
       brightness: Brightness.light,
@@ -212,7 +212,7 @@ class AppTheme {
     onError: Colors.white,
   );
 
-  static BottomNavigationBarThemeData bottomNavigationBarLightTheme =
+  static BottomNavigationBarThemeData get bottomNavigationBarLightTheme =>
       BottomNavigationBarThemeData(
           showSelectedLabels: true,
           showUnselectedLabels: true,
@@ -229,7 +229,7 @@ class AppTheme {
               fontSize: 12.sp,
               fontWeight: FontWeight.w600));
 
-  static BottomNavigationBarThemeData bottomNavigationBarDakTheme =
+  static BottomNavigationBarThemeData get bottomNavigationBarDakTheme =>
       BottomNavigationBarThemeData(
           showSelectedLabels: true,
           showUnselectedLabels: true,
@@ -245,7 +245,7 @@ class AppTheme {
               color: AppColors.primaryColor,
               fontSize: 12.sp,
               fontWeight: FontWeight.normal));
-  static InputDecorationTheme inputDecorationLightTheme = InputDecorationTheme(
+  static InputDecorationTheme get inputDecorationLightTheme => InputDecorationTheme(
     // hintStyle: lightTheme.textTheme.bodyLarge!
     //     .copyWith(fontSize: 16.sp, color: Colors.black.withValues(0.3)),
     errorMaxLines: 3,
@@ -273,7 +273,7 @@ class AppTheme {
         ),
         borderRadius: BorderRadius.circular(4.r),),
   );
-  static InputDecorationThemeData inputDecorationDarkTheme = InputDecorationThemeData(
+  static InputDecorationThemeData get inputDecorationDarkTheme => InputDecorationThemeData(
     // hintStyle: lightTheme.textTheme.bodyLarge!
     //     .copyWith(fontSize: 16.sp, color: Colors.black.withValues(0.3)),
     errorMaxLines: 3,
@@ -295,14 +295,14 @@ class AppTheme {
 
   static double get horizontalPadding => 20.r;
 
-  static BoxDecoration boxDecoration =  BoxDecoration(
+  static BoxDecoration get boxDecoration => BoxDecoration(
             color: Color.fromRGBO(251, 251, 251, 1),
             border: Border.all(
               color: AppColors.borderColor
             ),
             borderRadius: BorderRadius.circular(8.r)
           );
-  static BoxDecoration productBoxDecoration = BoxDecoration(
+  static BoxDecoration get productBoxDecoration => BoxDecoration(
       borderRadius: BorderRadius.circular(8.r),
        color: Color.fromRGBO(243, 243, 243, 1)
   );

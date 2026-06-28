@@ -60,7 +60,7 @@ class _NotificationViewState extends ConsumerState<NotificationView> {
             onRetry: () => ref.read(notificationProvider.notifier).getNotifications(limit: 10, skip: 0),
             customSuccessWidget: ListView.separated(
               controller: _scrollController,
-              padding: EdgeInsets.all(AppTheme.horizontalPadding),
+              padding: context.pagePadding,
               itemBuilder: (context, index) {
                 final notification = data.$1[index];
                 return NotificationTile(

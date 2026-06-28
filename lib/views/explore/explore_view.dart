@@ -43,7 +43,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBarWidget(
-        height: context.screenheight * 0.15,
+        height: context.tabAppBarWithSearchHeight,
         title: context.tr("explore"),
         children: [
           CustomSearchBarWidget(
@@ -86,23 +86,28 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
           ),
         ],
       ),
-      body: searchFlag ? Container(
-        height: context.screenheight,
-        width: context.screenwidth,
-        padding:  EdgeInsets.all(AppTheme.horizontalPadding),
-        child: DisplaySearchStore(
-          scrollController: _scrollController,
-        ),
-      ) :ListView(
-        controller: widget.scrollController,
-        padding: EdgeInsets.symmetric(
-          horizontal: AppTheme.horizontalPadding,
-          vertical: AppTheme.horizontalPadding,
-        ),
-        children: [PopularStoresSection(), 10.ph, NearbyStoreGirdViewSection(
-          scrollController: _scrollController,
-        )],
-      ),
+      body: searchFlag
+          ? Container(
+              height: context.screenheight,
+              width: context.screenwidth,
+              padding: context.pagePadding.copyWith(
+                bottom: context.scrollBottomPadding,
+              ),
+              child: DisplaySearchStore(
+                scrollController: _scrollController,
+              ),
+            )
+          : ListView(
+              controller: widget.scrollController,
+              padding: context.tabScrollPadding,
+              children: [
+                PopularStoresSection(),
+                10.ph,
+                NearbyStoreGirdViewSection(
+                  scrollController: _scrollController,
+                ),
+              ],
+            ),
     );
   }
 }
@@ -145,7 +150,7 @@ class NearbyStoreGirdViewSection extends StatelessWidget {
             return AsyncStateHandler(
               status: response.status,
               dataList: list,
-              boxHeight: context.screenheight * 0.35,
+              boxHeight: context.nearbyGridSectionHeight,
               customSuccessWidget: GridView.builder(
           // padding: const EdgeInsets.all(12),
           controller: scrollController,
@@ -153,7 +158,7 @@ class NearbyStoreGirdViewSection extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount:list.length,
           gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 4 items per row
+            crossAxisCount: context.gridCrossAxisCount(mobile: 3),
             mainAxisSpacing: 10.r,
             crossAxisSpacing: 10.r,
 
@@ -208,7 +213,7 @@ class DisplaySearchStore extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount:stores.length,
           gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 4 items per row
+            crossAxisCount: context.gridCrossAxisCount(mobile: 3),
             mainAxisSpacing: 10.r,
             crossAxisSpacing: 10.r,
 

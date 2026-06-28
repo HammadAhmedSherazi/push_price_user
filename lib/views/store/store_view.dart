@@ -100,65 +100,89 @@ class _StoreViewState extends ConsumerState<StoreView> {
         ),
       ),),) : null,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(context.screenheight * 0.12),
+        preferredSize: Size.fromHeight(context.innerAppBarHeight),
         child:
-            // Container(
-            //   decoration: BoxDecoration(
-            //     color: AppColors.primaryAppBarColor,
-            //     borderRadius: BorderRadius.vertical(
-            //       bottom: Radius.circular(30.r)
-            //     )
-            //   ),
-            // )
             AppBar(
               elevation: 0.0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(30.r),
+                  bottom: Radius.circular(30.iw),
                 ),
               ),
               backgroundColor: AppColors.primaryAppBarColor,
-              leadingWidth: 56.r,
-              leading: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppTheme.horizontalPadding,
-                  vertical: 10.r,
+              automaticallyImplyLeading: false,
+              toolbarHeight: 56.ih,
+              flexibleSpace: Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.paddingOf(context).top,
+                  left: context.pageHorizontalPadding,
+                  right: context.pageHorizontalPadding,
                 ),
-                child: CustomBackWidget(),
-              ),
-              centerTitle: true,
-              title: Consumer(
-                builder: (context, ref, child) {
-                  final StoreDataModel store = widget.storeData.storeName == ''? ref.watch(homeProvider.select((e)=>e.products!.first.store))! : widget.storeData;
-                  return GestureDetector(
-                    onTap: (){
-                      AppRouter.push(StoreDetailView(
-                        storeData: store,
-                      ));
-                    },
-                    child: Text(store.storeName, style: context.textStyle.displayMedium));
-                }
-              ),
-              actions: [
-                Consumer(
-                  builder: (context, ref, child) {
-                    final String profileImage = ref.watch(authProvider.select((e)=>e.userData?.profileImage ?? ""));
-                    return UserProfileWidget(
-                      radius: 18.r,
-                      imageUrl: profileImage,
-                      borderWidth: 2,
-                    );
-                  }
+                child: SizedBox(
+                  height: 56.ih,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: CustomBackWidget(),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 48.iw),
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final StoreDataModel store =
+                                widget.storeData.storeName == ''
+                                    ? ref.watch(homeProvider.select(
+                                        (e) => e.products!.first.store,
+                                      ))!
+                                    : widget.storeData;
+                            return GestureDetector(
+                              onTap: () {
+                                AppRouter.push(
+                                  StoreDetailView(storeData: store),
+                                );
+                              },
+                              child: Text(
+                                store.storeName,
+                                style: context.textStyle.displayMedium,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final String profileImage = ref.watch(
+                              authProvider.select(
+                                (e) => e.userData?.profileImage ?? "",
+                              ),
+                            );
+                            return UserProfileWidget(
+                              radius: 18,
+                              imageUrl: profileImage,
+                              borderWidth: 2,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                20.pw,
-              ],
+              ),
               bottom: PreferredSize(
                 preferredSize: Size.fromHeight(context.screenheight),
                 child: Consumer(
                   builder: (context, ref, child) {
                     final String address = ref.watch(geolocatorProvider.select((e)=>e.locationData?.addressLine1 ?? ""));
                     return address != ""? Padding(
-                      padding: EdgeInsets.only(bottom: 20.r),
+                      padding: EdgeInsets.only(bottom: 20.ih),
                       child: Row(
                         spacing: 10,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -166,7 +190,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                           SvgPicture.asset(Assets.locationIcon),
                           Container(
                             constraints: BoxConstraints(
-                              maxWidth: context.screenwidth * 0.65
+                              maxWidth: context.responsiveWidth(0.65)
                             ),
                             child: Text(
                               address,
@@ -322,7 +346,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
                               spacing: 10,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                DisplayNetworkImage(imageUrl: product.image, width: 57.r, height: 70.r,),
+                                DisplayNetworkImage(imageUrl: product.image, width: 57, height: 70,),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,

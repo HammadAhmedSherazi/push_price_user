@@ -250,7 +250,7 @@ class DiscountLIstTitleWidget extends StatelessWidget {
       ),
       child: ListTile(
         leading: icon.contains(".png")
-            ? Image.asset(icon, width: 42.r, height: 40.r)
+            ? Image.asset(icon, width: 42.iw, height: 40.ih)
             : SvgPicture.asset(icon, width: 42.r, height: 40.r),
         title: Text(title),
         subtitle: Text(subtitle),

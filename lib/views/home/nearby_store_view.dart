@@ -1,4 +1,5 @@
 import '../../export_all.dart';
+import '../../utils/extension.dart';
 
 class NearbyStoreView extends ConsumerStatefulWidget {
   final String title;
@@ -49,13 +50,13 @@ class _NearbyStoreViewState extends ConsumerState<NearbyStoreView> {
         dataList: stores,
         itemBuilder: null,
         scrollController: _scrollController,
-        padding: EdgeInsets.all(AppTheme.horizontalPadding),
+        padding: context.pagePadding,
         customSuccessWidget: GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.all(AppTheme.horizontalPadding),
+          padding: context.pagePadding,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: context.gridCrossAxisCount(mobile: 3),
             mainAxisSpacing: 10.r,
             crossAxisSpacing: 10.r,
             childAspectRatio: 0.87,

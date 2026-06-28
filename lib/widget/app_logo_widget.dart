@@ -7,6 +7,11 @@ class AppLogoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(Assets.logo, width: 185.r, height: 95.r ,);
+    return Image.asset(
+      Assets.logo,
+      width: width ?? 185.iw,
+      height: height ?? 95.ih,
+      fit: BoxFit.contain,
+    );
   }
 }

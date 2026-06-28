@@ -44,7 +44,7 @@ class ScanView extends StatelessWidget {
                               }
                 },
                 child: Container(
-                  height: context.screenheight * 0.42,
+                  height: context.responsiveHeight(0.42),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.r),

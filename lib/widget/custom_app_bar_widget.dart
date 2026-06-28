@@ -21,111 +21,121 @@ class CustomAppBarWidget extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final unreadCount = ref.watch(notificationProvider.select((e) => e.unreadCount ?? 0));
+    final unreadCount =
+        ref.watch(notificationProvider.select((e) => e.unreadCount ?? 0));
+    final actionSize = 40.iw;
+    final titleSideInset = actionSize + 8.iw;
+
     return PreferredSize(
       preferredSize: Size.fromHeight(height),
       child: Container(
         padding: EdgeInsets.only(
-          top: 40.r,
-          left: AppTheme.horizontalPadding,
-          right: AppTheme.horizontalPadding,
-          bottom: 20.r,
+          top: 36.ih,
+          left: context.pageHorizontalPadding,
+          right: context.pageHorizontalPadding,
+          bottom: context.isTablet ? 18.ih : 14.ih,
         ),
         width: double.infinity,
         height: double.infinity,
-
         decoration: BoxDecoration(
           color: backgroundColor ?? AppColors.primaryAppBarColor,
           borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(radius ?? 35.r),
+            bottom: Radius.circular(radius ?? 35.iw),
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: context.screenwidth * 0.15,
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          // AppRouter.closeKeyboard();
-                          // AppRouter.closeKeyboard();
-                          await Future.delayed(
-                            const Duration(milliseconds: 150),
-                          );
-
-                          if (AppRouter
-                                  .scaffoldkey
-                                  ?.currentState
-                                  ?.isDrawerOpen !=
-                              true) {
-                            AppRouter.scaffoldkey?.currentState?.openDrawer();
-                          }
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
-                          radius: 20.r,
-                          child: SvgPicture.asset(Assets.menuNavIcon),
-                        ),
+            SizedBox(
+              height: actionSize,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () async {
+                        await Future.delayed(
+                          const Duration(milliseconds: 150),
+                        );
+                        if (AppRouter.scaffoldkey?.currentState?.isDrawerOpen !=
+                            true) {
+                          AppRouter.scaffoldkey?.currentState?.openDrawer();
+                        }
+                      },
+                      child: CircleAvatar(
+                        backgroundColor:
+                            const Color.fromRGBO(234, 241, 255, 0.6),
+                        radius: 20.iw,
+                        child: SvgPicture.asset(Assets.menuNavIcon),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-
-                Expanded(
-                  child: Text(
-                    title,
-                    style: context.textStyle.displayMedium,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: titleSideInset),
+                    child: Text(
+                      title,
+                      style: context.textStyle.displayMedium,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-
-                SizedBox(
-                  width: context.screenwidth * 0.15,
-                  child: GestureDetector(
-                    onTap: () {
-                      AppRouter.push(NotificationView());
-                    },
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Color.fromRGBO(234, 241, 255, 0.6),
-                          radius: 20.r,
-                          child: SvgPicture.asset(Assets.notificationIcon),
-                        ),
-                        if (unreadCount > 0)
-                          Positioned(
-                            right: 10,
-                            top: 0,
-                            child: Container(
-                              width: 16.r,
-                              height: 16.r,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Text(
-                                unreadCount > 99 ? '99+' : unreadCount.toString(),
-                                style: context.textStyle.bodySmall!.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 10.sp,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () => AppRouter.push(NotificationView()),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor:
+                                const Color.fromRGBO(234, 241, 255, 0.6),
+                            radius: 20.iw,
+                            child: SvgPicture.asset(Assets.notificationIcon),
+                          ),
+                          if (unreadCount > 0)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Container(
+                                width: 16.iw,
+                                height: 16.iw,
+                                alignment: Alignment.center,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  unreadCount > 99
+                                      ? '99+'
+                                      : unreadCount.toString(),
+                                  style:
+                                      context.textStyle.bodySmall!.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 10.sp,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            ...children,
+            if (children.isNotEmpty) ...[
+              SizedBox(height: 8.ih),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: children,
+                ),
+              ),
+            ],
           ],
         ),
       ),

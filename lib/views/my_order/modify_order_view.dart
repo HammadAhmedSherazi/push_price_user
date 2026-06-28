@@ -237,7 +237,7 @@ class _ModifyOrderViewState extends ConsumerState<ModifyOrderView> {
                 spacing: 10,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  DisplayNetworkImage(imageUrl: item.listingData.product?.image ?? "", width: 57.r, height: 73.r ,),
+                  DisplayNetworkImage(imageUrl: item.listingData.product?.image ?? "", width: 57, height: 73 ,),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
