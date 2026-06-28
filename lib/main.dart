@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:push_price_user/config/env_config.dart';
 import 'package:push_price_user/firebase_options.dart';
 
 
@@ -128,7 +129,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
   await SharedPreferenceManager.init();
-  Stripe.publishableKey = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM';
+  await EnvConfig.load();
+  Stripe.publishableKey = EnvConfig.stripePublishableKey;
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

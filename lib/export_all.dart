@@ -17,7 +17,7 @@ export 'package:phone_numbers_parser/phone_numbers_parser.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
-//DATA
+export './config/env_config.dart';
 export './data/enums/api_status.dart';
 export './data/network/api_endpoints.dart';
 export './data/network/http_client.dart';

@@ -361,7 +361,7 @@ class OrderProvider extends Notifier<OrderState> {
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: 'Your App Name',
+          merchantDisplayName: EnvConfig.stripeMerchantDisplayName,
         ),
       );
 
