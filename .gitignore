@@ -6,6 +6,7 @@
 .DS_Store
 .atom/
 .build/
+.upload-keystore.jks
 .buildlog/
 .history
 .svn/
@@ -44,3 +45,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 TODO.md
+.env
+
