@@ -10,8 +10,14 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
+  static const double _avatarRadius = 45;
+  static const double _avatarBorderWidth = 5;
+
   @override
   Widget build(BuildContext context) {
+    final avatarSize = (_avatarRadius + _avatarBorderWidth) * 2;
+    final titleAvatarGap = 14.ih;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Consumer(
@@ -26,48 +32,59 @@ class _ProfileViewState extends State<ProfileView> {
             customSuccessWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    CustomAppBarWidget(
-                      height: context.tabAppBarTitleHeight,
-                      title: context.tr("profile"),
-                      children: const [],
-                    ),
-                    Positioned(
-                      bottom: -45.iw,
-                      child: Consumer(
-                        builder: (context, ref, child) {
-                          final image = ref.watch(
-                            authProvider.select(
-                              (e) => e.userData!.profileImage,
-                            ),
-                          );
-                          return UserProfileWidget(
-                            radius: 45,
-                            imageUrl: image,
-                          );
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      bottom: -45.iw,
-                      right: context.pageHorizontalPadding,
-                      child: IconButton(
-                        onPressed: () {
-                          AppRouter.push(CreateProfileView(isEdit: true));
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                          color: AppColors.secondaryColor,
-                          size: 22.iw,
+                SizedBox(
+                  height:
+                      context.tabAppBarTitleHeight + titleAvatarGap + avatarSize.iw,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      SizedBox(
+                        height: context.tabAppBarTitleHeight,
+                        width: double.infinity,
+                        child: CustomAppBarWidget(
+                          height: context.tabAppBarTitleHeight,
+                          title: context.tr("profile"),
+                          children: const [],
                         ),
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Consumer(
+                            builder: (context, ref, child) {
+                              final image = ref.watch(
+                                authProvider.select(
+                                  (e) => e.userData!.profileImage,
+                                ),
+                              );
+                              return UserProfileWidget(
+                                radius: _avatarRadius,
+                                imageUrl: image,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: context.pageHorizontalPadding,
+                        child: IconButton(
+                          onPressed: () {
+                            AppRouter.push(CreateProfileView(isEdit: true));
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            color: AppColors.secondaryColor,
+                            size: 22.iw,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 45.iw + 20.ih),
+                SizedBox(height: 20.ih),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.symmetric(

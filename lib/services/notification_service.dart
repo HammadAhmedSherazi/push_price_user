@@ -15,6 +15,38 @@ class NotificationService {
 
   static NotificationService get notificationInstance => _singleton;
 
+  static const String foregroundServiceChannelId = 'my_foreground';
+
+  /// Required before starting [flutter_background_service] with a custom channel id.
+  static Future<void> ensureForegroundServiceChannel() async {
+    if (!Platform.isAndroid) return;
+
+    final androidPlugin = _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    const channel = AndroidNotificationChannel(
+      foregroundServiceChannelId,
+      'Travel Mode',
+      description: 'Shows while Travel Mode is tracking your location',
+      importance: Importance.low,
+      playSound: false,
+      enableVibration: false,
+      showBadge: false,
+    );
+
+    await androidPlugin?.createNotificationChannel(channel);
+  }
+
+  static Future<void> requestAndroidNotificationPermission() async {
+    if (!Platform.isAndroid) return;
+
+    final androidPlugin = _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.requestNotificationsPermission();
+  }
+
   // Initialize both Firebase and local notifications for iOS and Android
   static Future<void> initNotifications() async {
     // Initialize local notifications
@@ -41,6 +73,8 @@ class NotificationService {
         _handleNotificationTap(payload);
         }
     );
+
+    await ensureForegroundServiceChannel();
 
     // Request permissions for Firebase Messaging
     await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(

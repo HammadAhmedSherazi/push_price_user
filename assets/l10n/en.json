@@ -375,6 +375,13 @@
   "location_permission_required": "Location permission is required to add a new address.",
   "enable_location": "Enable Location",
   "location_permission_denied": "Location permission denied. Please enable it to proceed.",
+  "travel_mode_disclosure_title": "Allow background location for Travel Mode?",
+  "travel_mode_disclosure_body": "Push Price collects your device location in the background while Travel Mode is on. We use this to update nearby store deals and travel-based discounts as you move between shopping areas.",
+  "travel_mode_disclosure_points": "• Location is collected even when the app is closed or not in use\n• A persistent notification is shown while Travel Mode is active\n• You can turn off Travel Mode at any time from Home",
+  "travel_mode_disclosure_allow": "Continue",
+  "travel_mode_disclosure_not_now": "Not Now",
+  "travel_mode_background_permission_required": "Background location permission is required for Travel Mode. Please select \"Allow all the time\" in your device settings.",
+  "location_services_disabled": "Location services are turned off. Please enable location on your device to use Travel Mode.",
    "tax": "Tax"
    
 }

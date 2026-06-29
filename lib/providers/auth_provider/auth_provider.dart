@@ -14,6 +14,8 @@ UserDataModel _parseUserDataFromJson(String jsonStr) =>
     UserDataModel.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
 
 class AuthProvider extends Notifier<AuthState> {
+  int _userSyncGeneration = 0;
+
   @override
   AuthState build() {
     return AuthState(
@@ -461,18 +463,24 @@ class AuthProvider extends Notifier<AuthState> {
 
   FutureOr<void> getUser() async {
     if (!ref.mounted) return;
+    final requestGeneration = _userSyncGeneration;
     try {
       state = state.copyWith(getUserApiResponse: ApiResponse.loading());
       final response = await MyHttpClient.instance.get(ApiEndpoints.getUser);
-      if (!ref.mounted) return;
+      if (!ref.mounted || requestGeneration != _userSyncGeneration) return;
 
       if (response != null) {
-        state = state.copyWith(
-          getUserApiResponse: ApiResponse.completed(response),
-        );
         final Map<String, dynamic>? user = response;
         if (user != null) {
-          savedUserData(user);
+          final updatedUser = UserDataModel.fromJson(user);
+          state = state.copyWith(
+            getUserApiResponse: ApiResponse.completed(response),
+            userData: updatedUser,
+          );
+          await savedUserData(user, isSet: false);
+          await _syncDeviceTokenIfNeeded(updatedUser);
+        } else {
+          state = state.copyWith(getUserApiResponse: ApiResponse.completed(response));
         }
       } else {
         state = state.copyWith(getUserApiResponse: ApiResponse.error());
@@ -490,6 +498,7 @@ class AuthProvider extends Notifier<AuthState> {
   }) async {
     if (!onBackground!) {
       if (!ref.mounted) return;
+      _userSyncGeneration++;
       try {
         state = state.copyWith(updateProfileApiResponse: ApiResponse.loading());
 
@@ -497,6 +506,8 @@ class AuthProvider extends Notifier<AuthState> {
           ApiEndpoints.updateProfile,
           userDataModel.toJson(),
         );
+
+        if (!ref.mounted) return;
 
         if (response != null &&
             !(response is Map && response.containsKey('detail'))) {
@@ -509,12 +520,20 @@ class AuthProvider extends Notifier<AuthState> {
             );
           }
 
-          state = state.copyWith(
-            updateProfileApiResponse: ApiResponse.completed(response),
-          );
           final Map<String, dynamic>? user = response['user'];
           if (user != null) {
-            savedUserData(user);
+            final updatedUser = UserDataModel.fromJson(user);
+            state = state.copyWith(
+              updateProfileApiResponse: ApiResponse.completed(response),
+              userData: updatedUser,
+            );
+            await savedUserData(user, isSet: false);
+            await _syncDeviceTokenIfNeeded(updatedUser);
+          } else {
+            state = state.copyWith(
+              updateProfileApiResponse: ApiResponse.completed(response),
+              userData: userDataModel,
+            );
           }
         } else {
           Helper.showMessage(
@@ -881,11 +900,17 @@ class AuthProvider extends Notifier<AuthState> {
     if (userData != null) {
       final user = await compute(_parseUserDataFromJson, userData);
       state = state.copyWith(userData: user);
-      if ((user.deviceToken == "" && FirebaseService.fcmToken != "" )|| user.deviceToken != FirebaseService.fcmToken) {
-        updateProfile(
-          userDataModel: user.copyWith(deviceToken: FirebaseService.fcmToken),
-        );
-      }
+      await _syncDeviceTokenIfNeeded(user);
+    }
+  }
+
+  Future<void> _syncDeviceTokenIfNeeded(UserDataModel user) async {
+    if (!ref.mounted) return;
+    if ((user.deviceToken == "" && FirebaseService.fcmToken != "") ||
+        user.deviceToken != FirebaseService.fcmToken) {
+      await updateProfile(
+        userDataModel: user.copyWith(deviceToken: FirebaseService.fcmToken),
+      );
     }
   }
 
@@ -1051,6 +1076,8 @@ class AuthProvider extends Notifier<AuthState> {
 
 
   void toggleTravelMode(bool chk) {
+    _userSyncGeneration++;
+    if (state.userData == null) return;
     state = state.copyWith(
       userData: state.userData!.copyWith(isTravelMode: chk),
     );

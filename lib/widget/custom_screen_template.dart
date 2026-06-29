@@ -30,8 +30,9 @@ class CustomScreenTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final actionSlotWidth = 40.iw;
-    final titleSideInset = actionSlotWidth + 8.iw;
+    const backButtonSize = CustomBackWidget.defaultSize;
+    final titleSideInset = backButtonSize.iw + 12.iw;
+    final appBarHorizontalPadding = 16.iw;
 
     return SafeArea(
       top: false,
@@ -52,7 +53,7 @@ class CustomScreenTemplate extends StatelessWidget {
             flexibleSpace: Padding(
               padding: EdgeInsets.only(
                 top: MediaQuery.paddingOf(context).top,
-                left: context.pageHorizontalPadding,
+                left: appBarHorizontalPadding,
                 right: context.pageHorizontalPadding,
               ),
               child: SizedBox(

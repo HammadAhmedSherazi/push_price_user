@@ -12,8 +12,7 @@ plugins {
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
     // END: FlutterFire Configuration
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -26,10 +25,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
         isCoreLibraryDesugaringEnabled = true
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
@@ -45,7 +40,7 @@ android {
             create("release") {
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = file(keystoreProperties["storeFile"] as String)
+                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
                 storePassword = keystoreProperties["storePassword"] as String
             }
         }
@@ -59,6 +54,12 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 

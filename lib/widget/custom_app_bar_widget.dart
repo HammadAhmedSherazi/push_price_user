@@ -30,13 +30,13 @@ class CustomAppBarWidget extends ConsumerWidget implements PreferredSizeWidget {
       preferredSize: Size.fromHeight(height),
       child: Container(
         padding: EdgeInsets.only(
-          top: 36.ih,
+          top: 32.ih,
           left: context.pageHorizontalPadding,
           right: context.pageHorizontalPadding,
-          bottom: context.isTablet ? 18.ih : 14.ih,
+          bottom: context.isTablet ? 16.ih : 12.ih,
         ),
         width: double.infinity,
-        height: double.infinity,
+        height: height,
         decoration: BoxDecoration(
           color: backgroundColor ?? AppColors.primaryAppBarColor,
           borderRadius: BorderRadius.vertical(
@@ -127,12 +127,15 @@ class CustomAppBarWidget extends ConsumerWidget implements PreferredSizeWidget {
               ),
             ),
             if (children.isNotEmpty) ...[
-              SizedBox(height: 8.ih),
+              SizedBox(height: 6.ih),
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: children,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: children,
+                  ),
                 ),
               ),
             ],

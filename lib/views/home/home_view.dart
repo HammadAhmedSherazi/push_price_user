@@ -256,7 +256,6 @@ class _HomeViewState extends ConsumerState<HomeView>  {
             ),
             ),
           ),
-          SizedBox(height: 8.ih),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -314,8 +313,21 @@ class _HomeViewState extends ConsumerState<HomeView>  {
                   return CustomSwitchWidget(
                     scale: context.isTablet ? 0.85 : 1.0,
                     value: isTravelMode,
-                    onChanged: (val) {
-                      ref.read(geolocatorProvider.notifier).toggleTravelMode(val);
+                    onChanged: (val) async {
+                      if (val) {
+                        if (!TravelModeDisclosure.isAcceptedThisSession) {
+                          final accepted =
+                              await TravelModeDisclosure.show(context);
+                          if (!accepted || !context.mounted) return;
+                          TravelModeDisclosure.markAccepted();
+                        }
+                      } else {
+                        TravelModeDisclosure.clearAccepted();
+                      }
+                      if (!context.mounted) return;
+                      await ref
+                          .read(geolocatorProvider.notifier)
+                          .toggleTravelMode(val);
                     },
                   );
                 },
@@ -612,21 +624,16 @@ class SpecialOfferBannerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: context.specialOfferSectionHeight,
-      child: Column(
-        spacing: 10,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(context.tr('special_offers'), style: context.textStyle.displayMedium),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 4.ih),
-              child: AdSliderWidget(images: ["", "", "", "", ""]),
-            ),
-          ),
-        ],
-      ),
+    return Column(
+      spacing: 10,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.tr('special_offers'),
+          style: context.textStyle.displayMedium,
+        ),
+        const AdSliderWidget(images: ["", "", "", "", ""]),
+      ],
     );
   }
 }
@@ -640,6 +647,8 @@ class AdSliderWidget extends StatefulWidget {
 }
 
 class _AdSliderWidgetState extends State<AdSliderWidget> {
+  static const double _bannerAspectRatio = 1176 / 486;
+
   final PageController _pageController = PageController();
   int _currentIndex = 0;
   late Timer _timer;
@@ -679,41 +688,40 @@ class _AdSliderWidgetState extends State<AdSliderWidget> {
   Widget build(BuildContext context) {
     return widget.images.isNotEmpty
         ? Column(
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.r),
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: widget.images.length,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  },
-                  itemBuilder: (context, index) {
-                    return Image.asset(
-                      Assets.specialDiscountBanner,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    );
-                  },
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AspectRatio(
+                aspectRatio: _bannerAspectRatio,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.r),
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: widget.images.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return Image.asset(
+                        Assets.specialDiscountBanner,
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 8.ih),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                PagerDot(
+              SizedBox(height: 8.ih),
+              Center(
+                child: PagerDot(
                   length: widget.images.length,
                   currentIndex: _currentIndex,
                   isCircle: true,
-                )
-              ],
-            ),
-          ],
-        )
+                ),
+              ),
+            ],
+          )
         : const SizedBox.shrink();
   }
 }

@@ -61,14 +61,14 @@ extension AppContextExtension on BuildContext {
   double get storeCardWidth => responsiveWidth(isTablet ? 0.22 : 0.26);
 
   double get homeAppBarHeight =>
-      responsiveHeight(isTablet ? 0.24 : 0.22);
+      responsiveHeight(isTablet ? 0.26 : 0.25);
 
   double get specialOfferSectionHeight =>
       responsiveHeight(isTablet ? 0.24 : 0.21);
 
   /// Tab screens with search below title (Explore, Favourites).
   double get tabAppBarWithSearchHeight =>
-      responsiveHeight(isTablet ? 0.20 : 0.18);
+      responsiveHeight(isTablet ? 0.21 : 0.20);
 
   /// Tab screens with title only (Profile header).
   double get tabAppBarTitleHeight =>

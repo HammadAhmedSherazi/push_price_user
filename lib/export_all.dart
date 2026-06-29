@@ -54,6 +54,7 @@ export './services/google_map_services.dart';
 export './services/notification_service.dart';
 export './services/secure_storage.dart';
 export './services/shared_preferences.dart';
+export './services/travel_mode_permission_service.dart';
 export './utils/assets.dart';
 //UTILS
 export './utils/colors.dart';
@@ -129,6 +130,7 @@ export './widget/quantity_selector_widget.dart';
 export './widget/select_chip_widget.dart';
 export './widget/show_empty_item_diaplay_widget.dart';
 export './widget/time_range_selector_widget.dart';
+export './widget/travel_mode_disclosure_dialog.dart';
 export './widget/user_profile_widget.dart';
 export 'providers/geolocator_provider/geolocator_provider.dart';
 export 'views/explore/explore_view.dart';

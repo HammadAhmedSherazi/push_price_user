@@ -5,6 +5,19 @@ allprojects {
     }
 }
 
+subprojects {
+    buildscript {
+        repositories {
+            google()
+            mavenCentral()
+        }
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")

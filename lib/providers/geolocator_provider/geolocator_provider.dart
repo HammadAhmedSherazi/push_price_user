@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
+import 'package:push_price_user/services/travel_mode_permission_service.dart';
 
 import 'geolocator_state.dart';
 
@@ -65,26 +69,102 @@ class GeolocatorProvider extends Notifier<GeolocatorState> {
     
   }
 
-  void toggleTravelMode(bool enabled) async {
-    if (enabled) {
-      // Check and request permissions in foreground before starting travel mode
-      try {
-        await _geolocatorService.getCurrentLocation(enableBackgroundMode: true);
+  Future<bool> toggleTravelMode(bool enabled) async {
+    final context = AppRouter.navKey.currentContext;
+    if (context == null) return false;
 
-      } catch (e) {
-        Helper.showMessage(
-          AppRouter.navKey.currentContext!,
-          message: e.toString(),
-        );
-        return; // Don't enable if permissions failed
-      }
-    } else {
-
-    }
-    state = state.copyWith(locationData: state.locationData);
     ref.read(authProvider.notifier).toggleTravelMode(enabled);
-    final user = ref.read(authProvider.select((e)=>e.userData))!;
-    ref.read(authProvider.notifier).updateProfile(userDataModel: user.copyWith(isTravelMode: enabled));
+
+    try {
+      if (enabled) {
+        await TravelModePermissionService.instance.ensureReadyForTravelMode();
+
+        final user = ref.read(authProvider.select((e) => e.userData));
+        if (user == null) {
+          throw Exception(context.tr('something_went_wrong_try_again'));
+        }
+
+        final locationData = await _geolocatorService.getCurrentLocation(
+          skipPermissions: true,
+        );
+
+        await ref.read(authProvider.notifier).updateProfile(
+              userDataModel: user.copyWith(
+                isTravelMode: true,
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+              ),
+            );
+        if (ref.read(authProvider).updateProfileApiResponse.status ==
+            Status.error) {
+          throw Exception(context.tr('failed_to_update_profile'));
+        }
+
+        await _startTravelModeService();
+        TravelModeDisclosure.clearAccepted();
+      } else {
+        await _stopTravelModeService();
+        final user = ref.read(authProvider.select((e) => e.userData));
+        if (user != null) {
+          await ref.read(authProvider.notifier).updateProfile(
+                userDataModel: user.copyWith(isTravelMode: false),
+              );
+          if (ref.read(authProvider).updateProfileApiResponse.status ==
+              Status.error) {
+            throw Exception(context.tr('failed_to_update_profile'));
+          }
+        }
+      }
+
+      if (ref.mounted) {
+        ref.read(homeProvider.notifier).getNearbyStores(limit: 10, skip: 0);
+        state = state.copyWith(locationData: state.locationData);
+      }
+      return true;
+    } on TravelModePermissionException catch (e) {
+      ref.read(authProvider.notifier).toggleTravelMode(false);
+      if (e.openSettings) {
+        await Geolocator.openAppSettings();
+      }
+      Helper.showMessage(context, message: context.tr(e.messageKey));
+      return false;
+    } on PlatformException catch (e) {
+      ref.read(authProvider.notifier).toggleTravelMode(!enabled);
+      Helper.showMessage(
+        context,
+        message: e.message ?? context.tr('something_went_wrong_try_again'),
+      );
+      return false;
+    } catch (e) {
+      ref.read(authProvider.notifier).toggleTravelMode(!enabled);
+      Helper.showMessage(
+        context,
+        message: e.toString().replaceFirst('Exception: ', ''),
+      );
+      return false;
+    }
+  }
+
+  Future<void> _startTravelModeService() async {
+    await TravelModePermissionService.instance.ensureForegroundServiceCanStart();
+
+    final service = FlutterBackgroundService();
+    if (await service.isRunning()) return;
+
+    final started = await service.startService();
+    if (!started) {
+      throw PlatformException(
+        code: 'service_start_failed',
+        message: 'Unable to start Travel Mode background service.',
+      );
+    }
+  }
+
+  Future<void> _stopTravelModeService() async {
+    final service = FlutterBackgroundService();
+    if (await service.isRunning()) {
+      service.invoke('stopService');
+    }
   }
 
   Future<void> getAddresses() async {
