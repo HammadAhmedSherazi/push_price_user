@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:push_price_user/data/network/api_response.dart';
-import 'package:push_price_user/utils/extension.dart';
 
 import '../export_all.dart';
 

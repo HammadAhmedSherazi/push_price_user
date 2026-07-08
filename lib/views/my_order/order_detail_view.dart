@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class OrderDetailView extends ConsumerStatefulWidget {
   final int orderId;

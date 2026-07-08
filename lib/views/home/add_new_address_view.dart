@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
 

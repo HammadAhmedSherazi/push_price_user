@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class ProductDetailView extends ConsumerStatefulWidget {
   final int quatity;

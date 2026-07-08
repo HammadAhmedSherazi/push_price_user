@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:push_price_user/views/home/search_store_view.dart';
 
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   final ScrollController scrollController;

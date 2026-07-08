@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class StoreCodeView extends StatefulWidget {
   final int orderId;

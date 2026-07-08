@@ -4,7 +4,6 @@ import 'package:push_price_user/providers/favourite_provider/favourite_provider.
 import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class SearchProductView extends ConsumerStatefulWidget {
   final bool? isSignUp;

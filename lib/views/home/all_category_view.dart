@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class AllCategoryView extends ConsumerStatefulWidget {
   const AllCategoryView({super.key});

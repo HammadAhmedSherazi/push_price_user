@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class NearbyStoreView extends ConsumerStatefulWidget {
   final String title;

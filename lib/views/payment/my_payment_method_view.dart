@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class MyPaymentMethodView extends StatefulWidget {
   const MyPaymentMethodView({super.key});

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class CartView extends ConsumerStatefulWidget {
   final int? count;

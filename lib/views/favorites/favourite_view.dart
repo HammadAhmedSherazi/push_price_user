@@ -5,7 +5,6 @@ import 'package:push_price_user/views/favorites/add_new_favourite_view.dart';
 
 import '../../export_all.dart';
 import '../../models/favourite_data_model.dart';
-import '../../utils/extension.dart';
 import '../../widget/overlapping_images_widget.dart';
 
 class FavouriteView extends ConsumerStatefulWidget {

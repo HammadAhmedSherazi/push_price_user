@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import '../../utils/extension.dart';
 import '../export_all.dart';
 
 class QuantitySelector extends StatefulWidget {

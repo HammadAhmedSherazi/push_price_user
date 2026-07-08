@@ -64,7 +64,7 @@ class _StoreDisplayGenericWidgetState extends State<StoreDisplayGenericWidget> {
           scrollDirection: Axis.horizontal,
           padding: EdgeInsets.zero,
           itemCount: widget.stores.length,
-          separatorBuilder: (_, __) => SizedBox(width: 8.iw),
+          separatorBuilder: (_, _) => SizedBox(width: 8.iw),
           itemBuilder: (context, index) {
             final store = widget.stores[index];
             final isSelected =

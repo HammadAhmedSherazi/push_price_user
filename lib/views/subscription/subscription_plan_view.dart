@@ -1,7 +1,6 @@
 import 'package:push_price_user/models/subscription_plan_data_model.dart';
 
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class SubscriptionPlanView extends ConsumerStatefulWidget {
   final bool? isPro;

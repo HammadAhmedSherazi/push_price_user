@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class MyLocationView extends ConsumerStatefulWidget {
   const MyLocationView({super.key});

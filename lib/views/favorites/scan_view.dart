@@ -1,7 +1,6 @@
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class ScanView extends StatelessWidget {
   final bool isSignUp;

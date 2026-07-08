@@ -6,7 +6,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:push_price_user/data/network/api_response.dart';
 import 'package:push_price_user/export_all.dart';
-import 'package:push_price_user/services/travel_mode_permission_service.dart';
 
 import 'geolocator_state.dart';
 

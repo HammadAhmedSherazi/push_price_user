@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:push_price_user/providers/notification_provider/notification_provider.dart';
-import 'package:push_price_user/utils/extension.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../export_all.dart';

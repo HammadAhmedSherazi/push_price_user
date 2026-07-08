@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class OrderSuccessModifiedView extends StatelessWidget {
   final String message;

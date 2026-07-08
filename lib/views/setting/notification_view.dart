@@ -1,4 +1,3 @@
-import 'package:push_price_user/utils/extension.dart';
 
 import '../../export_all.dart';
 import '../../providers/notification_provider/notification_provider.dart';

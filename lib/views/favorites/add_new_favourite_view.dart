@@ -3,7 +3,6 @@ import 'package:push_price_user/models/favourite_data_model.dart';
 import 'package:push_price_user/providers/favourite_provider/favourite_provider.dart';
 
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class AddNewFavouriteView extends ConsumerStatefulWidget {
   final bool isSignUp;

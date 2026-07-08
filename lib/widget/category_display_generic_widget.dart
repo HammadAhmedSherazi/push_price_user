@@ -68,7 +68,7 @@ class _CategoryDisplayGenericWidgetState
           scrollDirection: Axis.horizontal,
           padding: EdgeInsets.zero,
           itemCount: itemCount,
-          separatorBuilder: (_, __) => SizedBox(width: 8.iw),
+          separatorBuilder: (_, _) => SizedBox(width: 8.iw),
           itemBuilder: (context, index) {
             if (widget.response.status == Status.loadingMore &&
                 widget.categories.length == index) {

@@ -1,5 +1,4 @@
 import '../../export_all.dart';
-import '../../utils/extension.dart';
 
 class StoreDetailView extends StatelessWidget {
   final StoreDataModel storeData;
