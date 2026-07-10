@@ -13,6 +13,8 @@ class CustomButtonWidget extends StatelessWidget {
   final BoxBorder? border;
   final bool? isElevated;
   final bool? isEnabled;
+  final bool fitContent;
+  final bool compact;
 
   const CustomButtonWidget(
       {super.key,
@@ -27,45 +29,63 @@ class CustomButtonWidget extends StatelessWidget {
       this.isLoad = false,
       this.radius,
       this.border,
-      this.width});
+      this.width,
+      this.fitContent = false,
+      this.compact = false});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width ?? double.infinity,
-      decoration: BoxDecoration(
-        border: border,
-          color:  color == null ? context.colors.primary : null,
-          borderRadius: BorderRadius.circular(radius ?? 32.r)),
+    final buttonColor = color ?? AppColors.primaryColor;
+    final labelColor = textColor ?? Colors.white;
+    final fontSize = 14.sp;
+    final labelStyle = TextStyle(
+      fontSize: fontSize,
+      fontWeight: FontWeight.w600,
+      color: labelColor,
+      letterSpacing: 0.5,
+    );
+
+    return SizedBox(
+      width: fitContent ? width : (width ?? double.infinity),
       height: height ?? 40.h,
-      child: ElevatedButton(
-          style: ButtonStyle(
-            animationDuration: Duration(milliseconds: 300),
-            elevation: isElevated!? null : const WidgetStatePropertyAll(0.0),
-            alignment: Alignment.center,
-            backgroundColor:
-                WidgetStatePropertyAll(color ?? Colors.transparent),
-            shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular( radius ?? 32.r))),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: border,
+          borderRadius: BorderRadius.circular(radius ?? 32.r),
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            elevation: isElevated == true ? 2 : 0,
+            backgroundColor: buttonColor,
+            foregroundColor: labelColor,
+            disabledBackgroundColor: buttonColor,
+            disabledForegroundColor: labelColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radius ?? 32.r),
+            ),
+            textStyle: labelStyle,
+            padding: compact
+                ? EdgeInsets.symmetric(horizontal: 12.iw, vertical: 8.ih)
+                : EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           ),
-          onPressed: !isLoad ? onPressed : () {},
-          child: !isLoad
-              ? child ??
-                  (!isLoad
-                      ? Text( 
-                          title.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: context.textStyle.labelMedium!.copyWith(
-                              color: textColor ?? Colors.white,
-                             ),
-                        )
-                      : CircularProgressIndicator.adaptive(
-                          valueColor:
-                              AlwaysStoppedAnimation(textColor ?? Colors.white),
-                        )) :
-                  CircularProgressIndicator.adaptive(
-                  valueColor: AlwaysStoppedAnimation(textColor ?? Colors.white),
-                )),
+          onPressed: !isLoad ? onPressed : null,
+          child: isLoad
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator.adaptive(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation(labelColor),
+                  ),
+                )
+              : child ??
+                  Text(
+                    title.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: labelStyle,
+                  ),
+        ),
+      ),
     );
   }
 }
@@ -79,6 +99,7 @@ class CustomOutlineButtonWidget extends StatelessWidget {
   final Widget? child;
   final Color? outlineColor;
   final bool isLoad;
+  final bool compact;
 
   const CustomOutlineButtonWidget(
       {super.key,
@@ -91,43 +112,53 @@ class CustomOutlineButtonWidget extends StatelessWidget {
       this.outlineColor,
       this.isLoad = false,
       this.radius,
-      this.width});
+      this.width,
+      this.compact = false});
 
   @override
   Widget build(BuildContext context) {
+    final labelColor = textColor ?? AppColors.primaryTextColor;
+    final fontSize = 14.sp;
+    final labelStyle = TextStyle(
+      fontSize: fontSize,
+      fontWeight: FontWeight.w600,
+      color: labelColor,
+      letterSpacing: 0.5,
+    );
+
     return SizedBox(
       width: width ?? double.infinity,
       height: height ?? 40.h,
       child: OutlinedButton(
-          style: ButtonStyle(
-            animationDuration: Duration(milliseconds: 300),
-              elevation: const WidgetStatePropertyAll(0.0),
+          style: OutlinedButton.styleFrom(
+              elevation: 0,
               alignment: Alignment.center,
-              side: WidgetStatePropertyAll(
-                  BorderSide(color: outlineColor ?? AppColors.borderColor)),
-              shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(radius ?? 32.r))),
-              backgroundColor:
-                  WidgetStatePropertyAll(color ?? Colors.transparent)),
+              side: BorderSide(color: outlineColor ?? AppColors.borderColor),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(radius ?? 32.r)),
+              backgroundColor: color ?? Colors.transparent,
+              foregroundColor: labelColor,
+              textStyle: labelStyle,
+              padding: compact
+                  ? EdgeInsets.symmetric(horizontal: 12.iw, vertical: 8.ih)
+                  : EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
           onPressed: !isLoad ? onPressed : null,
-          child: !isLoad
-              ? child ??
-                  (!isLoad
-                      ? Text( 
-                          title.toUpperCase(),
-                           textAlign: TextAlign.center,
-                          style: context.textStyle.labelMedium!.copyWith(
-                              color: textColor ?? AppColors.primaryTextColor,
-                              ),
-                        )
-                      : CircularProgressIndicator.adaptive(
-                          valueColor: AlwaysStoppedAnimation(
-                              outlineColor ?? Colors.white),
-                        ))
-              : CircularProgressIndicator.adaptive(
-                  valueColor:
-                      AlwaysStoppedAnimation(outlineColor ?? Colors.white),
-                )),
+          child: isLoad
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator.adaptive(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation(
+                        outlineColor ?? AppColors.primaryColor),
+                  ),
+                )
+              : child ??
+                  Text(
+                    title.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: labelStyle,
+                  )),
     );
   }
 }

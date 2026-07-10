@@ -25,12 +25,20 @@ class _MyLocationViewState extends ConsumerState<MyLocationView> {
       barrierDismissible: true,
       builder: (context) {
         return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: context.isTablet ? 48 : 24,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: const Color(0xFFF2F7FA),
-          child: Padding(
-            padding: EdgeInsets.all(AppTheme.horizontalPadding),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: context.dialogMaxWidth),
+            child: SizedBox(
+            width: context.isTablet ? context.dialogMaxWidth : double.infinity,
+            child: Padding(
+            padding: EdgeInsets.all(context.pageHorizontalPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(context.tr('delete'), style: context.textStyle.displayMedium!.copyWith(fontSize: 18.sp)),
                 10.ph,
@@ -46,6 +54,7 @@ class _MyLocationViewState extends ConsumerState<MyLocationView> {
                     Expanded(
                       child: CustomOutlineButtonWidget(
                         title: context.tr("cancel"),
+                        compact: true,
                         onPressed: () => AppRouter.back(),
                       ),
                     ),
@@ -57,6 +66,7 @@ class _MyLocationViewState extends ConsumerState<MyLocationView> {
                             isLoad: isLoad,
                             color: Color.fromRGBO(174, 27, 13, 1),
                             title: context.tr("delete"),
+                            compact: true,
                             onPressed: () {
                               ref.read(geolocatorProvider.notifier).deleteAddress(id);
                             },
@@ -68,6 +78,8 @@ class _MyLocationViewState extends ConsumerState<MyLocationView> {
                 ),
               ],
             ),
+          ),
+          ),
           ),
         );
       },

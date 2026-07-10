@@ -6,11 +6,17 @@ class AboutAppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScreenTemplate(title: context.tr("about_app"), child: ListView(
-      padding: EdgeInsets.all(AppTheme.horizontalPadding),
-      children: [
-        Text(AppConstant.content, style: context.textStyle.bodyMedium,)
-      ],
-    ));
+    return CustomScreenTemplate(
+      title: context.tr("about_app"),
+      child: ListView(
+        padding: EdgeInsets.all(AppTheme.horizontalPadding),
+        children: [
+          Text(
+            AppConstant.aboutAppContent,
+            style: context.textStyle.bodyMedium,
+          ),
+        ],
+      ),
+    );
   }
 }

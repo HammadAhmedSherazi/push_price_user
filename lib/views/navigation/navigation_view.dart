@@ -76,10 +76,13 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
           backgroundColor: const Color(0xFFF2F7FA),
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: context.dialogMaxWidth),
+            child: SizedBox(
+            width: context.isTablet ? context.dialogMaxWidth : double.infinity,
             child: Padding(
-            padding: EdgeInsets.all(AppTheme.horizontalPadding),
+            padding: EdgeInsets.all(context.pageHorizontalPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
                   context.tr('logout'),
@@ -102,6 +105,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                     Expanded(
                       child: CustomOutlineButtonWidget(
                         title: context.tr("cancel"),
+                        compact: true,
                         onPressed: () => AppRouter.back(),
                       ),
                     ),
@@ -118,6 +122,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                           return CustomButtonWidget(
                             isLoad: isLoad,
                             title: context.tr("logout"),
+                            compact: true,
                             onPressed: () {
                               ref.read(authProvider.notifier).logout();
                             },
@@ -129,6 +134,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                 ),
               ],
             ),
+          ),
           ),
           ),
         );
@@ -151,10 +157,13 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
           backgroundColor: const Color(0xFFF2F7FA),
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: context.dialogMaxWidth),
+            child: SizedBox(
+            width: context.isTablet ? context.dialogMaxWidth : double.infinity,
             child: Padding(
-            padding: EdgeInsets.all(AppTheme.horizontalPadding),
+            padding: EdgeInsets.all(context.pageHorizontalPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
                   context.tr('exit_app'),
@@ -177,12 +186,14 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                     Expanded(
                       child: CustomOutlineButtonWidget(
                         title: context.tr("cancel"),
+                        compact: true,
                         onPressed: () => AppRouter.back(),
                       ),
                     ),
                     Expanded(
                       child: CustomButtonWidget(
                         title: context.tr("exit_app"),
+                        compact: true,
                         onPressed: () {
                           AppRouter.back();
                           SystemNavigator.pop();
@@ -193,6 +204,7 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                 ),
               ],
             ),
+          ),
           ),
           ),
         );

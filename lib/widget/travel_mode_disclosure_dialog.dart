@@ -25,8 +25,10 @@ class TravelModeDisclosure {
           backgroundColor: const Color(0xFFF2F7FA),
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: context.dialogMaxWidth),
+            child: SizedBox(
+            width: context.isTablet ? context.dialogMaxWidth : double.infinity,
             child: Padding(
-              padding: EdgeInsets.all(AppTheme.horizontalPadding),
+              padding: EdgeInsets.all(context.pageHorizontalPadding),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -86,6 +88,7 @@ class TravelModeDisclosure {
                 ],
               ),
             ),
+          ),
           ),
         );
       },
