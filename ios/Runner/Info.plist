@@ -29,11 +29,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to your camera to scan barcodes and take photos of products.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location to provide location-based services.</string>
+	<string>Push Price uses your location to show nearby grocery stores and deals, and — when Travel Mode is on — to alert you about relevant offers while you travel. For example, we use your location to sort Nearby Stores by distance and to notify you when you pass a store with discounts on your favorite items.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>We need your location even when the app is closed.</string>
+	<string>Push Price needs background location access only when Travel Mode is enabled, so we can notify you about nearby store deals while you travel. For example, if you pass a store offering a discount on an item you saved, we can send you an alert.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location to provide location-based services.</string>
+	<string>Push Price uses your location to show nearby grocery stores and deals while you use the app. For example, when you open Nearby Stores, we use your current location to sort stores by distance from you.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to your photo library to select product images.</string>
 	<key>NSUserNotificationsUsageDescription</key>

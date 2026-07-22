@@ -5,6 +5,7 @@ import 'package:push_price_user/models/subscription_plan_data_model.dart';
 class AuthState {
   final ApiResponse loginApiResponse;
   final ApiResponse logoutApiResponse;
+  final ApiResponse deleteAccountApiResponse;
   final ApiResponse registrationApiResponse;
   final ApiResponse verifyOtpApiResponse;
   final ApiResponse resendOtpApiResponse;
@@ -42,6 +43,7 @@ class AuthState {
     required this.updateProfileApiResponse,
     required this.submitFeedbackApiResponse,
     required this.logoutApiResponse,
+    required this.deleteAccountApiResponse,
     required this.subscriptionPlanApiRes,
     required this.subcribeNow,
     required this.mySubcribePlanRes,
@@ -67,17 +69,21 @@ class AuthState {
     ApiResponse? removeImageApiResponse,
     ApiResponse? updateProfileApiResponse,
     ApiResponse? logoutApiResponse,
+    ApiResponse? deleteAccountApiResponse,
     ApiResponse? submitFeedbackApiResponse,
     subcribeNow,
     ApiResponse<SubscriptionModel?>? mySubcribePlanRes, 
     ApiResponse<List<SubscriptionPlanModel?>>? subscriptionPlanApiRes,
     UserDataModel? userData,
+    bool clearUserData = false,
     String? imageUrl,
     StaffModel? staffInfo,
     List<CategoryDataModel>? categories,
     int? categoriesSkip,
   }) => AuthState(
     logoutApiResponse: logoutApiResponse ?? this.logoutApiResponse,
+    deleteAccountApiResponse:
+        deleteAccountApiResponse ?? this.deleteAccountApiResponse,
     loginApiResponse: loginApiResponse ?? this.loginApiResponse,
     registrationApiResponse: registrationApiResponse ?? this.registrationApiResponse,
     verifyOtpApiResponse: verifyOtpApiResponse ?? this.verifyOtpApiResponse,
@@ -92,7 +98,7 @@ class AuthState {
     removeImageApiResponse: removeImageApiResponse ?? this.removeImageApiResponse,
     updateProfileApiResponse: updateProfileApiResponse ?? this.updateProfileApiResponse,
     submitFeedbackApiResponse: submitFeedbackApiResponse ?? this.submitFeedbackApiResponse,
-    userData: userData ?? this.userData,
+    userData: clearUserData ? null : (userData ?? this.userData),
     staffInfo: staffInfo ?? this.staffInfo,
     imageUrl: imageUrl ?? this.imageUrl,
     categories: categories ?? this.categories,

@@ -7,8 +7,7 @@ class StoreDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final List<UserRatingDataModel> userRating = List.generate(4, (index)=> UserRatingDataModel(userName: "Sara Williams", userImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn9zilY2Yu2hc19pDZFxgWDTUDy5DId7ITqA&s", rating: 4.0, description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit,  eiusmod tempor Lorem ipsum dolor sit amet, consectetur adipiscing elit,  eiusmod tempor i ", date: DateTime.now()));
-
+    
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: PreferredSize(

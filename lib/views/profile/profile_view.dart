@@ -55,7 +55,7 @@ class _ProfileViewState extends State<ProfileView> {
                             builder: (context, ref, child) {
                               final image = ref.watch(
                                 authProvider.select(
-                                  (e) => e.userData!.profileImage,
+                                  (e) => e.userData?.profileImage,
                                 ),
                               );
                               return UserProfileWidget(
@@ -92,7 +92,10 @@ class _ProfileViewState extends State<ProfileView> {
                     child: Consumer(
                       builder: (context, ref, child) {
                         final user =
-                            ref.watch(authProvider.select((e) => e.userData))!;
+                            ref.watch(authProvider.select((e) => e.userData));
+                        if (user == null) {
+                          return const SizedBox.shrink();
+                        }
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [

@@ -351,11 +351,15 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                         ),
                       ) == Status.loading;
                       if (user == null && !isLoading) {
-                        Future.microtask(() {
+                        Future.microtask(() async {
+                          final hasToken =
+                              await SecureStorageManager.sharedInstance.hasToken();
+                          if (!hasToken || !context.mounted) return;
                           ref.read(authProvider.notifier).getUser();
                         });
                       }
-                      if (isLoading) {
+                      // Only shimmer when we have nothing to show yet.
+                      if (user == null && isLoading) {
                         return Center(
                           child: Shimmer.fromColors(
                             baseColor: Colors.grey.shade300,
@@ -403,13 +407,13 @@ class _NavigationViewState extends ConsumerState<NavigationView> {
                             ),
                             5.ph,
                             Text(
-                              "${user?.fullName}",
+                              user?.fullName ?? "",
                               style: context.textStyle.headlineMedium!.copyWith(
                                 fontSize: 18.sp,
                               ),
                             ),
                             Text(
-                              "${user?.email}",
+                              user?.email ?? "",
                               style: context.textStyle.bodyMedium,
                             ),
                           ],

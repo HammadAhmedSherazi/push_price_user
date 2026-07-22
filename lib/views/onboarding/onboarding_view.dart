@@ -133,7 +133,7 @@ class _OnboardingViewState extends State<OnboardingView>
                         child: FadeTransition(
                           opacity: _opacity,
                           child: Text(
-                            context.tr("lorem_ipsum_description"),
+                            context.tr("onboarding_description"),
                             style: context.textStyle.titleMedium,
                             textAlign: TextAlign.center,
                           ),

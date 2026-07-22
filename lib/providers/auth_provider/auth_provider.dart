@@ -33,6 +33,7 @@ class AuthProvider extends Notifier<AuthState> {
       removeImageApiResponse: ApiResponse.undertermined(),
       updateProfileApiResponse: ApiResponse.undertermined(),
       logoutApiResponse: ApiResponse.undertermined(),
+      deleteAccountApiResponse: ApiResponse.undertermined(),
       submitFeedbackApiResponse: ApiResponse.undertermined(),
       subscriptionPlanApiRes: ApiResponse.undertermined(),
       subcribeNow: ApiResponse.undertermined(),
@@ -69,16 +70,17 @@ class AuthProvider extends Notifier<AuthState> {
         state = state.copyWith(
           loginApiResponse: ApiResponse.completed(response['data']),
         );
-        final Map<String, dynamic>? user = response["user"];
-        if (user != null) {
-          savedUserData(user);
-        }
+        // Store tokens first — savedUserData may call update-profile (device token sync).
         await SecureStorageManager.sharedInstance.storeToken(
           response['access_token'] ?? "",
         );
         await SecureStorageManager.sharedInstance.storeRefreshToken(
           response['refresh_token'] ?? "",
         );
+        final Map<String, dynamic>? user = response["user"];
+        if (user != null) {
+          await savedUserData(user);
+        }
         AppRouter.pushAndRemoveUntil(NavigationView());
       } else {
         // Show error message if condition is false
@@ -124,6 +126,8 @@ class AuthProvider extends Notifier<AuthState> {
         );
         // Clear local data
         await SecureStorageManager.sharedInstance.clearAll();
+        await SharedPreferenceManager.sharedInstance.clearUserSession();
+        state = state.copyWith(clearUserData: true);
         AppRouter.pushAndRemoveUntil(LoginView());
       } else {
         Helper.showMessage(
@@ -138,10 +142,64 @@ class AuthProvider extends Notifier<AuthState> {
       }
     } catch (e) {
       if (!ref.mounted) return;
-      state = state.copyWith(logoutApiResponse: ApiResponse.error());
+      state = state.copyWith(logoutApiResponse: ApiResponse.error(), clearUserData: true);
       // Even if API call fails, clear local data and logout
       await SecureStorageManager.sharedInstance.clearAll();
+      await SharedPreferenceManager.sharedInstance.clearUserSession();
       AppRouter.pushAndRemoveUntil(LoginView());
+    }
+  }
+
+  FutureOr<void> deleteAccount() async {
+    if (!ref.mounted) return;
+    try {
+      state = state.copyWith(deleteAccountApiResponse: ApiResponse.loading());
+      final response = await MyHttpClient.instance.delete(
+        ApiEndpoints.deleteAccount,
+        {},
+      );
+      if (!ref.mounted) return;
+
+      if (response != null &&
+          !(response is Map && response.containsKey('detail'))) {
+        await SecureStorageManager.sharedInstance.clearAll();
+        await SharedPreferenceManager.sharedInstance.clearUserSession();
+        AppRouter.pushAndRemoveUntil(const LoginView());
+        final ctx = AppRouter.navKey.currentContext;
+        if (ctx != null) {
+          Helper.showMessage(
+            ctx,
+            message: ctx.tr("account_deleted_successfully"),
+          );
+        }
+        // Clear in-memory user after route swap so Settings/Profile do not rebuild on null.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!ref.mounted) return;
+          state = state.copyWith(
+            deleteAccountApiResponse: ApiResponse.completed(response),
+            clearUserData: true,
+          );
+        });
+      } else {
+        Helper.showMessage(
+          AppRouter.navKey.currentContext!,
+          message: (response is Map && response.containsKey('detail'))
+              ? response['detail'] as String
+              : AppRouter.navKey.currentContext!.tr(
+                  "something_went_wrong_try_again",
+                ),
+        );
+        state = state.copyWith(deleteAccountApiResponse: ApiResponse.error());
+      }
+    } catch (e) {
+      if (!ref.mounted) return;
+      Helper.showMessage(
+        AppRouter.navKey.currentContext!,
+        message: AppRouter.navKey.currentContext!.tr(
+          "something_went_wrong_try_again",
+        ),
+      );
+      state = state.copyWith(deleteAccountApiResponse: ApiResponse.error());
     }
   }
 
@@ -333,16 +391,16 @@ class AuthProvider extends Notifier<AuthState> {
         state = state.copyWith(
           completeProfileApiResponse: ApiResponse.completed(response['data']),
         );
-        final Map<String, dynamic>? user = response["user"];
-        if (user != null) {
-          savedUserData(user);
-        }
         await SecureStorageManager.sharedInstance.storeToken(
           response['access_token'] ?? "",
         );
         await SecureStorageManager.sharedInstance.storeRefreshToken(
           response['refresh_token'] ?? "",
         );
+        final Map<String, dynamic>? user = response["user"];
+        if (user != null) {
+          await savedUserData(user);
+        }
         AppRouter.push(SubscriptionPlanView(isPro: true, fromSignup: true));
       } else {
         Helper.showMessage(
@@ -463,9 +521,18 @@ class AuthProvider extends Notifier<AuthState> {
 
   FutureOr<void> getUser() async {
     if (!ref.mounted) return;
+    final hasToken = await SecureStorageManager.sharedInstance.hasToken();
+    if (!hasToken) {
+      state = state.copyWith(getUserApiResponse: ApiResponse.completed(null));
+      return;
+    }
     final requestGeneration = _userSyncGeneration;
+    final hasCachedUser = state.userData != null;
     try {
-      state = state.copyWith(getUserApiResponse: ApiResponse.loading());
+      // Keep showing cached profile while refreshing — avoids drawer shimmer after login.
+      if (!hasCachedUser) {
+        state = state.copyWith(getUserApiResponse: ApiResponse.loading());
+      }
       final response = await MyHttpClient.instance.get(ApiEndpoints.getUser);
       if (!ref.mounted || requestGeneration != _userSyncGeneration) return;
 

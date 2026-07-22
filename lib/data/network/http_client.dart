@@ -462,29 +462,30 @@ class MyHttpClient extends BaseApiServices {
         String msg =
             json.decode(response.body.toString())['detail'] ??
             AppRouter.navKey.currentContext!.tr("something_went_wrong_try_again");
-        
-        Helper.showMessage( AppRouter.navKey.currentContext!,message: msg);
-        
-       
-        if(msg.contains("Invalid")){
-           if(msg == "Invalid token"){
-        
-         
-          AuthProvider().refreshToken();
-           
-           }
-           else{
-              return json.decode(response.body.toString());
-           }
-          
+
+        // Missing Authorization header (race / unauthenticated call) — do not wipe session.
+        if (msg == "Not authenticated") {
+          return json.decode(response.body.toString());
         }
-        else {
+
+        Helper.showMessage(AppRouter.navKey.currentContext!, message: msg);
+
+        if (msg.contains("Invalid")) {
+          if (msg == "Invalid token") {
+            AuthProvider().refreshToken();
+          } else {
+            return json.decode(response.body.toString());
+          }
+        } else {
           SecureStorageManager.sharedInstance.clearAll();
 
           AppRouter.pushAndRemoveUntil(const LoginView());
-          Helper.showMessage( AppRouter.navKey.currentContext!,message: AppRouter.navKey.currentContext!.tr("please_login_again"));
+          Helper.showMessage(
+            AppRouter.navKey.currentContext!,
+            message: AppRouter.navKey.currentContext!.tr("please_login_again"),
+          );
         }
-        
+
         return null;
         // throw BadRequestException(
         //   response.statusCode,
